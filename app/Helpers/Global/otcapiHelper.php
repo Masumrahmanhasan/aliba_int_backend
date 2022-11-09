@@ -169,7 +169,9 @@ if (!function_exists('getDescription')) {
     if ($response->getStatusCode() == 200) {
       $content = json_decode($response->getBody(), true);
       if (is_array($content)) {
-        return getArrayKeyData($content, 'ItemDescription', []);
+        return getArrayKeyData(
+            getArrayKeyData($content, 'OtapiItemDescription', []), 'ItemDescription', []
+        );
       }
     }
     return [];

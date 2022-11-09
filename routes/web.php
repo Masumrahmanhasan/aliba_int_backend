@@ -4,6 +4,23 @@ use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\Frontend\HomeController;
 use GuzzleHttp\Client;
 
+Route::get('/dump', function() {
+    // $base_url = get_setting('mybd_api_url') . '/service-json/';
+    // $instanceKey = get_setting('mybd_api_token');
+    // dd($instanceKey);
+
+    $query = [
+        'instanceKey' => 'aa96861a-3c3d-49fb-bfa9-c4ec294c4fbf',
+        'language' => 'en',
+        'itemId' => '555582080064'
+    ];
+
+    $client = new Client();
+    $response = $client->request('GET', 'http://otapi.net/service-json/GetItemFullInfoWithDeliveryCosts', ['query' => $query]);
+    $contents = (string) $response->getBody();
+    dd($contents);
+});
+
 /*
  * Global Routes
  * Routes that are used between both frontend and backend.

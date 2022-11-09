@@ -17,6 +17,13 @@ class CreateWishlistsTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('product_id');
             $table->string('ItemId');
+            $table->string('img')->nullable();
+            $table->string('name');
+            $table->double('rating');
+            $table->double('regular_price');
+            $table->double('sale_price');
+            $table->integer('stock');
+            $table->integer('total_sold');
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
             $table->softDeletes();
