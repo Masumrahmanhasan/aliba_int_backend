@@ -50,9 +50,9 @@ class HomeController extends Controller
   }
 
 
-  public function getSectionProducts()
+  public function getSectionProducts($section)
   {
-    $section = request('section');
+    // $section = request('section');
     if ($section) {
       $_query_type = $section . '_query_type';
       $_query_url = $section . '_query_url';

@@ -39,7 +39,7 @@ Route::group(['prefix' => 'v1', 'as' => 'v1.'], function () {
   Route::get('/email/resend', [HomeController::class, 'resend'])->name('verificationapi.resend');
   Route::post('/banners', [HomeController::class, 'banners']);
 
-  Route::get('/get-section-products', [HomeController::class, 'getSectionProducts']);
+  Route::get('/get-section-products/{section}', [HomeController::class, 'getSectionProducts']);
 
   Route::get('/loving-products', [HomeController::class, 'lovingProducts']);
   Route::post('/buying-products', [HomeController::class, 'buyingProducts']);
