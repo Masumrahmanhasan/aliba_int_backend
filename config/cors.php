@@ -34,10 +34,8 @@ return [
   'allowed_origins' => [
     'http://localhost:3000',
     'http://192.168.31.245:3000',
-    'http://uniqaz.com',
-    'https://uniqaz.com',
-    'https://www.uniqaz.com',
-    'http://www.uniqaz.com'
+    'https://aliba-int.netlify.app',
+    'http://alibainternational.com',
   ],
 
   /*

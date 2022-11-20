@@ -53,8 +53,10 @@ class CatalogController extends Controller
     }
 
     if ($taxonomy->ProviderType === 'Taobao') {
-      $otc_id = $taxonomy->otc_id;
-      $products = get_category_browsing_items($otc_id, 'category',  $offset, $limit);
+    //   $otc_id = $taxonomy->otc_id;
+    //   $products = get_category_browsing_items($otc_id, 'category',  $offset, $limit);
+        $keyword = $taxonomy->keyword ? $taxonomy->keyword : $taxonomy->name;
+        $products = get_category_browsing_items($keyword, 'text',  $offset, $limit);
     } else {
       $keyword = $taxonomy->keyword ? $taxonomy->keyword : $taxonomy->name;
       $products = get_category_browsing_items($keyword, 'text',  $offset, $limit);
