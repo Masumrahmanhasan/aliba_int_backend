@@ -10,7 +10,9 @@ use App\Models\Content\SearchLog;
 use App\Models\Content\Taxonomy;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Str;
-use Validator;
+// use Validator;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class CatalogController extends Controller
 {
@@ -53,10 +55,10 @@ class CatalogController extends Controller
     }
 
     if ($taxonomy->ProviderType === 'Taobao') {
-    //   $otc_id = $taxonomy->otc_id;
-    //   $products = get_category_browsing_items($otc_id, 'category',  $offset, $limit);
-        $keyword = $taxonomy->keyword ? $taxonomy->keyword : $taxonomy->name;
-        $products = get_category_browsing_items($keyword, 'text',  $offset, $limit);
+      $otc_id = $taxonomy->otc_id;
+      $products = get_category_browsing_items($otc_id, 'category',  $offset, $limit);
+      // $keyword = $taxonomy->keyword ? $taxonomy->keyword : $taxonomy->name;
+      // $products = get_category_browsing_items($keyword, 'text',  $offset, $limit);
     } else {
       $keyword = $taxonomy->keyword ? $taxonomy->keyword : $taxonomy->name;
       $products = get_category_browsing_items($keyword, 'text',  $offset, $limit);
@@ -119,27 +121,35 @@ class CatalogController extends Controller
 
   public function searchPicture()
   {
-    $validator = Validator::make(request()->all(), [
-      'picture' => 'required|max:8000|mimes:jpeg,jpg,png,webp,gif',
-    ]);
-    if ($validator->fails()) {
-      return $this->error('Validation fail', 422);
-    }
+    // $validator = Validator::make(request()->all(), [
+    //   'picture' => 'required | max:10000 | mimes: jpeg, jpg, png, webp, gif',
+    // ]);
+
+    // if ($validator->fails()) {
+    //   return $this->error('Validation fail', 422);
+    // }
+
     $search = '';
     if (request()->hasFile('picture')) {
       $file = request()->file('picture');
-      $saveDirectory = 'search/' . date('Y-m');
-      $search = store_search_picture($file, $saveDirectory, time());
+      $name = $file->getClientOriginalName();
+      $name = pathinfo($name, PATHINFO_FILENAME);
+      $extension = $file->getClientOriginalExtension();
+      $newFilename = time() . '.' . $extension;
+      $path = 'storage/search/' . date('Y-m');
+      create_public_directory($path);
+      $file->move($path, $newFilename);
+
       $search_id = Str::random(30);
       $log = SearchLog::create([
         'search_id' => $search_id,
         'search_type' => 'picture',
-        'query_data' => asset($search),
+        'query_data' => $name,
         'user_id' => auth()->check() ? auth()->id() : null,
       ]);
 
       return $this->success([
-        'picture' => asset($search),
+        'picture' => $path . '/' . $newFilename,
         'search_id' => $search_id,
       ]);
     }

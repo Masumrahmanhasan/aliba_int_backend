@@ -21,7 +21,7 @@ class TaxonomyController extends Controller
    */
   public function index()
   {
-    // $this->refresh_root_taxonomy();
+    $this->refresh_root_taxonomy();
     $mainCategories = Taxonomy::with('children')->whereNull("ParentId")->get();
     return view('backend.content.taxonomy.index', compact('mainCategories'));
   }
