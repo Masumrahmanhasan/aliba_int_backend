@@ -4,23 +4,25 @@ use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\Frontend\HomeController;
 use GuzzleHttp\Client;
 
-Route::get('/dump', function() {
-    // $base_url = get_setting('mybd_api_url') . '/service-json/';
-    // $instanceKey = get_setting('mybd_api_token');
-    // dd($instanceKey);
+// Route::get('/dump', function() {
+//     $query = [
+//         'instanceKey' => '7367999f-de6f-4e88-9d36-1642cff1746b',
+//         'language' => 'en',
+//         'itemId' => 'abb-639225839350'
+//     ];
 
-    $query = [
-        // 'instanceKey' => 'aa96861a-3c3d-49fb-bfa9-c4ec294c4fbf',
-        // 'instanceKey' => '7367999f-de6f-4e88-9d36-1642cff1746b',
-        'language' => 'en',
-        'itemId' => '555582080064'
-    ];
+//     $client = new Client();
+//     $response = $client->request('GET', 'http://otapi.net/service-json/GetItemFullInfoWithDeliveryCosts', ['query' => $query]);
+//     $contents = (string) $response->getBody();
 
-    $client = new Client();
-    $response = $client->request('GET', 'http://otapi.net/service-json/GetItemFullInfoWithDeliveryCosts', ['query' => $query]);
-    $contents = (string) $response->getBody();
-    dd($contents);
-});
+//     if ($response->getStatusCode() == 200) {
+//         $body = json_decode($response->getBody(), true);
+//         if (is_array($body)) {
+//           return key_exists('OtapiItemFullInfo', $body) ? $body['OtapiItemFullInfo'] : [];
+//         }
+//       }
+//     return [];
+// });
 
 /*
  * Global Routes

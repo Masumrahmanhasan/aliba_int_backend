@@ -175,4 +175,27 @@ class HomeController extends Controller
       'singles' => $singles
     ]);
   }
+
+  public function getProductPageCards($card)
+  {
+    if ($card) {
+        $_content = $card . '_content';
+        $_image = $card . '_image';
+        $content = get_setting($_content);
+        $image = get_setting($_image);
+
+        return response()->json([
+            'status' => 'Success',
+            'data' => [
+                'content' => $content,
+                'image' => $image
+            ]
+        ]);
+    }
+
+    return response()->json([
+        'status' => 'Failed',
+        'data' => null
+    ]);
+  }
 }

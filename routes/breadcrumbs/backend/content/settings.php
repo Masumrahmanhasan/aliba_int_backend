@@ -34,6 +34,7 @@ Breadcrumbs::for('admin.setting.cache.control', function ($trail) {
 Breadcrumbs::for('admin.front-setting.manage.sections', function ($trail) {
   $trail->push('Manage Sections', route('admin.front-setting.manage.sections'));
 });
+
 Breadcrumbs::for('admin.front-setting.banner.right', function ($trail) {
   $trail->push('Banner Right Settings', route('admin.front-setting.banner.right'));
 });
@@ -44,4 +45,8 @@ Breadcrumbs::for('admin.front-setting.topNotice.create', function ($trail) {
 
 Breadcrumbs::for('admin.front-setting.image.loading.create', function ($trail) {
   $trail->push('Image Loader Setting', route('admin.front-setting.image.loading.create'));
+});
+
+Breadcrumbs::for('admin.front-setting.manage.product-page-cards', function ($trail) {
+    $trail->push('Manage Product Page Cards', route('admin.front-setting.manage.product-page-cards'));
 });

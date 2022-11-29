@@ -52,6 +52,8 @@ Route::group(['prefix' => 'v1', 'as' => 'v1.'], function () {
   Route::get('/contact-us', [HomeController::class, 'contactUs']);
   Route::get('/single-page/{slug}', [HomeController::class, 'singlePages']);
 
+  Route::get('/get-products-page-cards/{card}', [HomeController::class, 'getProductPageCards']);
+
 
   Route::get('/categories', [CatalogController::class, 'categories']);
   Route::get('/banners', [CatalogController::class, 'banners']);
