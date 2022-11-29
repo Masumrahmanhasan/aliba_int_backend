@@ -120,14 +120,4 @@ Route::namespace('Content')->group(function () {
     Route::post('manage-product-page-cards-store', [SettingController::class, 'manageProductPageCardsStore'])->name('manage.product-page-cards.store');
   });
 
-  Route::group(['prefix' => 'product-settings', 'as' => 'product-settings.'], function () {
-    Route::group(['prefix' => 'ad-banners', 'as' => 'ad-banners.'], function () {
-        Route::get('/', [ProductSettingsController::class, 'ad_banners'])->name('index');
-        Route::get('create', [ProductSettingsController::class, 'ad_banners_create'])->name('create');
-        Route::post('store', [ProductSettingsController::class, 'ad_banners_store'])->name('store');
-        Route::get('edit/{ad-banner}', [ProductSettingsController::class, 'ad_banners_edit'])->name('edit');
-        Route::put('update/{ad-banner}', [ProductSettingsController::class, 'ad_banners_update'])->name('update');
-        Route::delete('destroy/{ad-banner}', [ProductSettingsController::class, 'ad_banners_destroy'])->name('destroy');
-        Route::get('trashed', [ProductSettingsController::class, 'ad_banners_trashed'])->name('trashed');
-    });
-re');
+});
