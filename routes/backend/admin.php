@@ -5,6 +5,7 @@ use App\Http\Controllers\Backend\Content\SettingController;
 use App\Http\Controllers\Backend\Content\InvoiceController;
 use App\Http\Controllers\Backend\Content\OrderController;
 use App\Http\Controllers\Backend\Content\ProductController;
+use App\Http\Controllers\Backend\Content\ProductSettingsController;
 use App\Http\Controllers\Backend\Content\TaxonomyController;
 
 // All route names are prefixed with 'admin.'.
@@ -114,5 +115,19 @@ Route::namespace('Content')->group(function () {
 
     Route::get('image-loader', [SettingController::class, 'createImageLoader'])->name('image.loading.create');
     Route::post('image-loader', [SettingController::class, 'storeImageLoader'])->name('image.loading.store');
+
+    Route::get('manage-product-page-cards', [SettingController::class, 'manageProductPageCards'])->name('manage.product-page-cards');
+    Route::post('manage-product-page-cards-store', [SettingController::class, 'manageProductPageCardsStore'])->name('manage.product-page-cards.store');
   });
-});
+
+  Route::group(['prefix' => 'product-settings', 'as' => 'product-settings.'], function () {
+    Route::group(['prefix' => 'ad-banners', 'as' => 'ad-banners.'], function () {
+        Route::get('/', [ProductSettingsController::class, 'ad_banners'])->name('index');
+        Route::get('create', [ProductSettingsController::class, 'ad_banners_create'])->name('create');
+        Route::post('store', [ProductSettingsController::class, 'ad_banners_store'])->name('store');
+        Route::get('edit/{ad-banner}', [ProductSettingsController::class, 'ad_banners_edit'])->name('edit');
+        Route::put('update/{ad-banner}', [ProductSettingsController::class, 'ad_banners_update'])->name('update');
+        Route::delete('destroy/{ad-banner}', [ProductSettingsController::class, 'ad_banners_destroy'])->name('destroy');
+        Route::get('trashed', [ProductSettingsController::class, 'ad_banners_trashed'])->name('trashed');
+    });
+re');
