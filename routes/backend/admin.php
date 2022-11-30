@@ -121,6 +121,9 @@ Route::namespace('Content')->group(function () {
 
     Route::get('manage-homepage-cards', [SettingController::class, 'manageHomepageCards'])->name('manage.homepage-cards');
     Route::post('manage-homepage-cards-store', [SettingController::class, 'manageHomepageCardsStore'])->name('manage.homepage-cards.store');
+
+    Route::get('checkout-discounts', [SettingController::class, 'checkoutDiscounts'])->name('checkout-discounts');
+    Route::post('checkout-discounts', [SettingController::class, 'checkoutDiscountsStore'])->name('checkout-discounts.store');
   });
 
 });

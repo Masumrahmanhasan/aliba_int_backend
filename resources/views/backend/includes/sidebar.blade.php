@@ -213,6 +213,14 @@
               </a>
             </li>
 
+            <li class="nav-item">
+                <a href="{{ route('admin.front-setting.checkout-discounts') }}"
+                   class="nav-link {{ active_class(Route::is('admin.front-setting.checkout-discounts')) }}">
+                  <i class="nav-icon fa fa-desktop"></i>
+                  <p class="text">Checkout Discounts</p>
+                </a>
+            </li>
+
           </ul>
         </li>
 

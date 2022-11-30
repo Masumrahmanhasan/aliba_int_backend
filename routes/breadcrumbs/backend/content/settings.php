@@ -54,3 +54,7 @@ Breadcrumbs::for('admin.front-setting.manage.product-page-cards', function ($tra
 Breadcrumbs::for('admin.front-setting.manage.homepage-cards', function ($trail) {
     $trail->push('Manage Homepage Cards', route('admin.front-setting.manage.homepage-cards'));
 });
+
+Breadcrumbs::for('admin.front-setting.checkout-discounts', function ($trail) {
+    $trail->push('Checkout Discount Settings', route('admin.front-setting.checkout-discounts'));
+});

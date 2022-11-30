@@ -264,4 +264,33 @@ class CatalogController extends Controller
         }
         return $this->error('some error occurred', 417);
     }
+
+    public function checkoutDiscounts()
+    {
+        $first_payment = get_setting('checkout_payment_first');
+        $second_payment = get_setting('checkout_payment_second');
+        $third_payment = get_setting('checkout_payment_third');
+
+        $first_discount = get_setting('checkout_discount_first');
+        $second_discount = get_setting('checkout_discount_second');
+        $third_discount = get_setting('checkout_discount_third');
+
+        return response()->json([
+            'status' => 'Success',
+            'data' => [
+                'first' => [
+                    'payment_completion' => $first_payment,
+                    'discount' => $first_discount
+                ],
+                'second' => [
+                    'payment_completion' => $second_payment,
+                    'discount' => $second_discount
+                ],
+                'third' => [
+                    'payment_completion' => $third_payment,
+                    'discount' => $third_discount
+                ],
+            ]
+        ]);
+    }
 }

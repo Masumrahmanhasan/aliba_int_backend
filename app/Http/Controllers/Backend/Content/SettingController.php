@@ -319,4 +319,20 @@ class SettingController extends Controller
         Setting::save_settings($data);
         return redirect()->back()->withFlashSuccess('Homepage Card Updated Successfully');
     }
+
+    public function checkoutDiscounts()
+    {
+        return view('backend.content.settings.checkout-discounts');
+    }
+
+
+    public function checkoutDiscountsStore()
+    {
+        $data = \request()->all();
+        unset($data['_token']);
+
+        Setting::save_settings($data);
+
+        return redirect()->back()->withFlashSuccess('Checkout Discount Updated Successfully');
+    }
 }
