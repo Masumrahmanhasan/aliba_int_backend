@@ -118,6 +118,9 @@ Route::namespace('Content')->group(function () {
 
     Route::get('manage-product-page-cards', [SettingController::class, 'manageProductPageCards'])->name('manage.product-page-cards');
     Route::post('manage-product-page-cards-store', [SettingController::class, 'manageProductPageCardsStore'])->name('manage.product-page-cards.store');
+
+    Route::get('manage-homepage-cards', [SettingController::class, 'manageHomepageCards'])->name('manage.homepage-cards');
+    Route::post('manage-homepage-cards-store', [SettingController::class, 'manageHomepageCardsStore'])->name('manage.homepage-cards.store');
   });
 
 });

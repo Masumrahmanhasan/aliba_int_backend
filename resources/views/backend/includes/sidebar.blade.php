@@ -198,6 +198,14 @@
             </li>
 
             <li class="nav-item">
+                <a href="{{ route('admin.front-setting.manage.homepage-cards') }}"
+                   class="nav-link {{ active_class(Route::is('admin.front-setting.manage.homepage-cards')) }}">
+                  <i class="nav-icon fa fa-desktop"></i>
+                  <p class="text">Homepage Cards</p>
+                </a>
+            </li>
+
+            <li class="nav-item">
               <a href="{{ route('admin.front-setting.manage.product-page-cards') }}"
                  class="nav-link {{ active_class(Route::is('admin.front-setting.manage.product-page-cards')) }}">
                 <i class="nav-icon fa fa-desktop"></i>

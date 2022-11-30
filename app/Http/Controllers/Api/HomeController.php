@@ -215,4 +215,35 @@ class HomeController extends Controller
         'data' => null
     ]);
   }
+
+  public function getHomepageCards($card)
+  {
+    if ($card) {
+        $_image = 'hp_' . $card . '_image';
+        $_title = 'hp_' . $card . '_title';
+        $_btn_name = 'hp_' . $card . '_btn_name';
+        $_url = 'hp_' . $card . '_url';
+
+        $image = get_setting($_image);
+        $title = get_setting($_title);
+        $btn_name = get_setting($_btn_name);
+        $url = get_setting($_url);
+
+        return response()->json([
+            'status' => 'Success',
+            'data' => [
+                'image' => $image,
+                'title' => $title,
+                'btn_name' => $btn_name,
+                'url' => $url
+            ]
+        ]);
+
+    }
+
+    return response()->json([
+        'status' => 'Failed',
+        'data' => null
+    ]);
+  }
 }

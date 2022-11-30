@@ -289,4 +289,34 @@ class SettingController extends Controller
         Setting::save_settings($data);
         return redirect()->back()->withFlashSuccess('Product Page Card Updated Successfully');
     }
+
+    public function manageHomepageCards()
+    {
+        return view('backend.content.settings.manage-homepage-cards.index');
+    }
+
+    public function manageHomepageCardsStore()
+    {
+        $data = \request()->all();
+        unset($data['_token']);
+
+        if (\request()->hasFile('hp_card_one_image')) {
+            $data['hp_card_one_image'] = store_picture(\request()->file('hp_card_one_image'), 'setting');
+        }
+
+        if (\request()->hasFile('hp_card_two_image')) {
+            $data['hp_card_two_image'] = store_picture(\request()->file('hp_card_two_image'), 'setting');
+        }
+
+        if (\request()->hasFile('hp_card_three_image')) {
+            $data['hp_card_three_image'] = store_picture(\request()->file('hp_card_three_image'), 'setting');
+        }
+
+        if (\request()->hasFile('hp_card_four_image')) {
+            $data['hp_card_four_image'] = store_picture(\request()->file('hp_card_four_image'), 'setting');
+        }
+
+        Setting::save_settings($data);
+        return redirect()->back()->withFlashSuccess('Homepage Card Updated Successfully');
+    }
 }

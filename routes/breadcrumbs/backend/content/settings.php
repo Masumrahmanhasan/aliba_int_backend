@@ -50,3 +50,7 @@ Breadcrumbs::for('admin.front-setting.image.loading.create', function ($trail) {
 Breadcrumbs::for('admin.front-setting.manage.product-page-cards', function ($trail) {
     $trail->push('Manage Product Page Cards', route('admin.front-setting.manage.product-page-cards'));
 });
+
+Breadcrumbs::for('admin.front-setting.manage.homepage-cards', function ($trail) {
+    $trail->push('Manage Homepage Cards', route('admin.front-setting.manage.homepage-cards'));
+});
