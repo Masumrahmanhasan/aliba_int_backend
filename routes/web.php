@@ -4,25 +4,25 @@ use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\Frontend\HomeController;
 use GuzzleHttp\Client;
 
-// Route::get('/dump', function() {
-//     $query = [
-//         'instanceKey' => '7367999f-de6f-4e88-9d36-1642cff1746b',
-//         'language' => 'en',
-//         'itemId' => 'abb-639225839350'
-//     ];
+Route::get('/dump', function() {
+    $query = [
+        'instanceKey' => '7367999f-de6f-4e88-9d36-1642cff1746b',
+        'language' => 'en',
+        // 'itemId' => 'abb-639225839350'
+        'vendorId' => 'abb-b2b-1833723532'
+    ];
 
-//     $client = new Client();
-//     $response = $client->request('GET', 'http://otapi.net/service-json/GetItemFullInfoWithDeliveryCosts', ['query' => $query]);
-//     $contents = (string) $response->getBody();
+    $client = new Client();
+    $response = $client->request('GET', 'http://otapi.net/service-json/GetVendorInfo', ['query' => $query]);
 
-//     if ($response->getStatusCode() == 200) {
-//         $body = json_decode($response->getBody(), true);
-//         if (is_array($body)) {
-//           return key_exists('OtapiItemFullInfo', $body) ? $body['OtapiItemFullInfo'] : [];
-//         }
-//       }
-//     return [];
-// });
+    if ($response->getStatusCode() == 200) {
+        $content = json_decode($response->getBody(), true);
+        if (is_array($content)) {
+          return getArrayKeyData($content, 'VendorInfo', []);
+        }
+      }
+      return [];
+});
 
 /*
  * Global Routes

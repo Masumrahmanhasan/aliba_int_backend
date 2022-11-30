@@ -36,6 +36,7 @@ return [
     'http://192.168.31.245:3000',
     'https://aliba-int.netlify.app',
     'http://alibainternational.com',
+    'https://1688cart.com',
   ],
 
   /*
