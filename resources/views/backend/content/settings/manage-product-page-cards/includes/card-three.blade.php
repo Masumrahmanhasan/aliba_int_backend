@@ -16,6 +16,16 @@
         </div> <!-- form-group-->
 
         <div class="form-group">
+            {{ html()->label('Shipping Delivery Time')->for('card_three_delivery') }}
+            {{ html()->text('card_three_delivery', get_setting('card_three_delivery'))->class('form-control')->placeholder('Estimated Delivery Time') }}
+        </div> <!-- form-group-->
+
+        <div class="form-group">
+            {{ html()->label('Price Per KG')->for('card_three_weight_price') }}
+            {{ html()->text('card_three_weight_price', get_setting('card_three_weight_price'))->class('form-control')->placeholder('Estimated Price per kg') }}
+        </div> <!-- form-group-->
+
+        <div class="form-group">
             {{ html()->label('Card Content')->for('card_three_content') }}
             <textarea class="editor form-control" name="card_three_content" id="card_three_content">{{ get_setting('card_three_content') }}</textarea>
         </div> <!-- form-group-->

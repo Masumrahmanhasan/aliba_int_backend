@@ -184,13 +184,30 @@ class HomeController extends Controller
         $content = get_setting($_content);
         $image = get_setting($_image);
 
-        return response()->json([
-            'status' => 'Success',
-            'data' => [
-                'content' => $content,
-                'image' => $image
-            ]
-        ]);
+        if ($card != 'card_one') {
+            $_delivery = $card . '_delivery';
+            $_weight_price = $card . '_weight_price';
+            $delivery = get_setting($_delivery);
+            $weight_price = get_setting($_weight_price);
+
+            return response()->json([
+                'status' => 'Success',
+                'data' => [
+                    'delivery' => $delivery,
+                    'weight_price' => $weight_price,
+                    'content' => $content,
+                    'image' => $image
+                ]
+            ]);
+        } else {
+            return response()->json([
+                'status' => 'Success',
+                'data' => [
+                    'content' => $content,
+                    'image' => $image
+                ]
+            ]);
+        }
     }
 
     return response()->json([
