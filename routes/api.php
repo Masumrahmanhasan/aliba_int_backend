@@ -63,6 +63,7 @@ Route::group(['prefix' => 'v1', 'as' => 'v1.'], function () {
   Route::get('/product-seller-information/{id}', [CatalogController::class, 'productSellerInfo']);
 
   Route::get('/vendor-products/{id}', [CatalogController::class, 'sameVendorProducts']);
+  Route::get('/products-bulk-prices/{id}', [CatalogController::class, 'productBulkPrices']);
 
 
   // searching products api

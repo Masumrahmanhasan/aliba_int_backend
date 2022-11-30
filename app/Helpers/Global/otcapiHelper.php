@@ -238,3 +238,26 @@ if (!function_exists('products_from_same_vendor')) {
         ];
     }
 }
+
+if (!function_exists('product_bulk_prices')) {
+    function product_bulk_prices($itemId)
+    {
+        $query = [
+            'instanceKey' => setOtcParams(),
+            'language' => 'en',
+            'itemId' => $itemId,
+            'xmlRequest' => '',
+            'blockList' => '',
+        ];
+
+        $client = new Client();
+        $response = $client->request('GET', load_otc_api() . 'BatchGetSimplifiedItemConfigurationInfo', ['query' => $query]);
+
+        $statusCode = $response->getStatusCode();
+        if ($statusCode == 200) {
+            $body = json_decode($response->getBody(), true);
+            $result = getArrayKeyData($body, 'Result', []);
+            return $result;
+        }
+    }
+}
