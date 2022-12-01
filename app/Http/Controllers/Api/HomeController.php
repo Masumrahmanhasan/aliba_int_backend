@@ -281,11 +281,11 @@ class HomeController extends Controller
     return response()->json([
         'status' => 'Success',
         'data' => [
-            'brand one' => $one,
-            'brand two' => $two,
-            'brand three' => $three,
-            'brand four' => $four,
-            'brand five' => $five,
+            'brand_one' => $one,
+            'brand_two' => $two,
+            'brand_three' => $three,
+            'brand_four' => $four,
+            'brand_five' => $five,
         ]
     ]);
   }
