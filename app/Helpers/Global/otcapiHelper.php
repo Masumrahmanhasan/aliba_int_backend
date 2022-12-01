@@ -223,18 +223,56 @@ if (!function_exists('products_from_same_vendor')) {
             $result = getArrayKeyData($body, 'Result', []);
             $items = getArrayKeyData($result, 'Items', []);
             $items = getArrayKeyData($items, 'Items', []);
-            $content = getArrayKeyData($items, 'Content', []);
+            $contents = getArrayKeyData($items, 'Content', []);
+
+            $data = [];
+
+            foreach ($contents as $content) {
+                $img = getArrayKeyData($content, 'MainPictureUrl', []);
+                $name = getArrayKeyData($content, 'Title', []);
+                $product_code = getArrayKeyData($content, 'Id', []);
+                $stock = getArrayKeyData($content, 'MasterQuantity', []);
+
+                $price = getArrayKeyData($content, 'Price', []);
+                $regular_price = getArrayKeyData($price, 'MarginPrice', []);
+                $sale_price = $regular_price;
+
+                $rating = "";
+                $total_sold = "";
+                $featured_values = getArrayKeyData($content, 'FeaturedValues', []);
+                foreach ($featured_values as $featured_value) {
+                    if ($featured_value['Name'] == 'rating') {
+                        $rating = $featured_value['Value'];
+                    }
+
+                    if ($featured_value['Name'] == 'TotalSales') {
+                        $total_sold = $featured_value['Value'];
+                    }
+                }
+
+                $content_data = [
+                    'img' => $img,
+                    'name' => $name,
+                    'product_code' => $product_code,
+                    'rating' => $rating,
+                    'regular_price' => $regular_price,
+                    'sale_price' => $sale_price,
+                    'stock' => $stock,
+                    'total_sold' => $total_sold
+                ];
+                array_push($data, $content_data);
+            }
 
             $TotalCount = getArrayKeyData($items, 'TotalCount', 0);
             return [
-                'Content' => $content,
-                'TotalCount' => $TotalCount
+                'TotalCount' => $TotalCount,
+                'Content' => $data
             ];
         }
 
         return [
-            'Content' => [],
-            'TotalCount' => 0
+            'TotalCount' => 0,
+            'Content' => []
         ];
     }
 }

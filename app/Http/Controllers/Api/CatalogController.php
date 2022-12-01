@@ -248,7 +248,7 @@ class CatalogController extends Controller
         $VendorProducts = products_from_same_vendor($VendorId, $offset, $limit);
         if (!empty($VendorProducts)) {
             return $this->success([
-                'VendorProducts' => $VendorProducts
+                'VendorProducts' => json_encode($VendorProducts)
             ]);
         }
         return $this->error('some error occurred', 417);
