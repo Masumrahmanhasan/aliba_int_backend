@@ -53,7 +53,7 @@ Route::group(['prefix' => 'v1', 'as' => 'v1.'], function () {
   Route::get('/single-page/{slug}', [HomeController::class, 'singlePages']);
 
   Route::get('/get-products-page-cards/{card}', [HomeController::class, 'getProductPageCards']);
-  Route::get('/get-homepage-cards/{card}', [HomeController::class, 'getHomepageCards']);
+  Route::get('/get-homepage-cards', [HomeController::class, 'getHomepageCards']);
   Route::get('/checkout-discounts', [CatalogController::class, 'checkoutDiscounts']);
   Route::get('/footer-brands', [HomeController::class, 'footerBanners']);
 

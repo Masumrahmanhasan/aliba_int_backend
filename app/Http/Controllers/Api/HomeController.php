@@ -216,34 +216,57 @@ class HomeController extends Controller
     ]);
   }
 
-  public function getHomepageCards($card)
+  public function getHomepageCards()
   {
-    if ($card) {
-        $_image = 'hp_' . $card . '_image';
-        $_title = 'hp_' . $card . '_title';
-        $_btn_name = 'hp_' . $card . '_btn_name';
-        $_url = 'hp_' . $card . '_url';
+    $data = [];
 
-        $image = get_setting($_image);
-        $title = get_setting($_title);
-        $btn_name = get_setting($_btn_name);
-        $url = get_setting($_url);
+    if (get_setting('hp_card_one_active') == 'enable') {
+        $card = [
+            'title' => get_setting('hp_card_one_title'),
+            'image' => get_setting('hp_card_one_image'),
+            'btn_name' => get_setting('hp_card_one_btn_name'),
+            'btn_url' => get_setting('hp_card_one_url')
+        ];
 
-        return response()->json([
-            'status' => 'Success',
-            'data' => [
-                'image' => $image,
-                'title' => $title,
-                'btn_name' => $btn_name,
-                'url' => $url
-            ]
-        ]);
+        array_push($data, $card);
+    }
 
+    if (get_setting('hp_card_two_active') == 'enable') {
+        $card = [
+            'title' => get_setting('hp_card_two_title'),
+            'image' => get_setting('hp_card_two_image'),
+            'btn_name' => get_setting('hp_card_two_btn_name'),
+            'btn_url' => get_setting('hp_card_two_url')
+        ];
+
+        array_push($data, $card);
+    }
+
+    if (get_setting('hp_card_three_active') == 'enable') {
+        $card = [
+            'title' => get_setting('hp_card_three_title'),
+            'image' => get_setting('hp_card_three_image'),
+            'btn_name' => get_setting('hp_card_three_btn_name'),
+            'btn_url' => get_setting('hp_card_three_url')
+        ];
+
+        array_push($data, $card);
+    }
+
+    if (get_setting('hp_card_four_active') == 'enable') {
+        $card = [
+            'title' => get_setting('hp_card_four_title'),
+            'image' => get_setting('hp_card_four_image'),
+            'btn_name' => get_setting('hp_card_four_btn_name'),
+            'btn_url' => get_setting('hp_card_four_url')
+        ];
+
+        array_push($data, $card);
     }
 
     return response()->json([
-        'status' => 'Failed',
-        'data' => null
+        'status' => 'Success',
+        'data' => $data
     ]);
   }
 
