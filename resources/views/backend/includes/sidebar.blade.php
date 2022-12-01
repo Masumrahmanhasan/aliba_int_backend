@@ -206,6 +206,14 @@
             </li>
 
             <li class="nav-item">
+                <a href="{{ route('admin.front-setting.footer-brand-settings') }}"
+                   class="nav-link {{ active_class(Route::is('admin.front-setting.footer-brand-settings')) }}">
+                  <i class="nav-icon fa fa-desktop"></i>
+                  <p class="text">Footer Banners</p>
+                </a>
+              </li>
+
+            <li class="nav-item">
               <a href="{{ route('admin.front-setting.manage.product-page-cards') }}"
                  class="nav-link {{ active_class(Route::is('admin.front-setting.manage.product-page-cards')) }}">
                 <i class="nav-icon fa fa-desktop"></i>

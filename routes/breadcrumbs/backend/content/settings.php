@@ -58,3 +58,7 @@ Breadcrumbs::for('admin.front-setting.manage.homepage-cards', function ($trail) 
 Breadcrumbs::for('admin.front-setting.checkout-discounts', function ($trail) {
     $trail->push('Checkout Discount Settings', route('admin.front-setting.checkout-discounts'));
 });
+
+Breadcrumbs::for('admin.front-setting.footer-brand-settings', function ($trail) {
+    $trail->push('Footer Brand Image Settings', route('admin.front-setting.footer-brand-settings'));
+});

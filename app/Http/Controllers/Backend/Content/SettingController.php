@@ -335,4 +335,37 @@ class SettingController extends Controller
 
         return redirect()->back()->withFlashSuccess('Checkout Discount Updated Successfully');
     }
+
+    public function footerBrandSettings()
+    {
+        return view('backend.content.settings.footer-brands');
+    }
+
+    public function footerBrandSettingsStore()
+    {
+        $data = [];
+        if (\request()->hasFile('footer_image_one')) {
+            $data['footer_image_one'] = store_picture(\request()->file('footer_image_one'), 'setting/loader');
+        }
+
+        if (\request()->hasFile('footer_image_two')) {
+            $data['footer_image_two'] = store_picture(\request()->file('footer_image_two'), 'setting/loader');
+        }
+
+        if (\request()->hasFile('footer_image_three')) {
+            $data['footer_image_three'] = store_picture(\request()->file('footer_image_three'), 'setting/loader');
+        }
+
+        if (\request()->hasFile('footer_image_four')) {
+            $data['footer_image_four'] = store_picture(\request()->file('footer_image_four'), 'setting/loader');
+        }
+
+        if (\request()->hasFile('footer_image_five')) {
+            $data['footer_image_five'] = store_picture(\request()->file('footer_image_five'), 'setting/loader');
+        }
+
+        Setting::save_settings($data);
+
+        return redirect()->back()->withFlashSuccess('Footer Images Updated Successfully');
+    }
 }

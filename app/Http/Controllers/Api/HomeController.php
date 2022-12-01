@@ -246,4 +246,24 @@ class HomeController extends Controller
         'data' => null
     ]);
   }
+
+  public function footerBanners()
+  {
+    $one = get_setting('footer_image_one');
+    $two = get_setting('footer_image_two');
+    $three = get_setting('footer_image_three');
+    $four = get_setting('footer_image_four');
+    $five = get_setting('footer_image_five');
+
+    return response()->json([
+        'status' => 'Success',
+        'data' => [
+            'brand one' => $one,
+            'brand two' => $two,
+            'brand three' => $three,
+            'brand four' => $four,
+            'brand five' => $five,
+        ]
+    ]);
+  }
 }

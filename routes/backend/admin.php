@@ -124,6 +124,9 @@ Route::namespace('Content')->group(function () {
 
     Route::get('checkout-discounts', [SettingController::class, 'checkoutDiscounts'])->name('checkout-discounts');
     Route::post('checkout-discounts', [SettingController::class, 'checkoutDiscountsStore'])->name('checkout-discounts.store');
+
+    Route::get('footer-brand-settings', [SettingController::class, 'footerBrandSettings'])->name('footer-brand-settings');
+    Route::post('footer-brand-settings-store', [SettingController::class, 'footerBrandSettingsStore'])->name('footer-brand-settings-store');
   });
 
 });
