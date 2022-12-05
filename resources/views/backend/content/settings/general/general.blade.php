@@ -29,6 +29,7 @@
                 <a class="nav-link" id="vert-tabs-smsConfigSetting-tab" data-toggle="pill" href="#vert-tabs-smsConfigSetting" role="tab" aria-controls="vert-tabs-smsConfigSetting" aria-selected="false">SMS Configuration Setting</a>
                 <a class="nav-link" id="vert-tabs-shortMessageSetting-tab" data-toggle="pill" href="#vert-tabs-shortMessageSetting" role="tab" aria-controls="vert-tabs-shortMessageSetting" aria-selected="false">SMTP Configuration Setting</a>
                 <a class="nav-link" id="vert-tabs-apiConfiguartion-tab" data-toggle="pill" href="#vert-tabs-apiConfiguartion" role="tab" aria-controls="vert-tabs-apiConfiguartion" aria-selected="false">MyBDStore API Configuration</a>
+                <a class="nav-link" id="vert-tabs-apiConfigImagga-tab" data-toggle="pill" href="#vert-tabs-apiConfigImagga" role="tab" aria-controls="vert-tabs-apiConfigImagga" aria-selected="false">Images Search API Configuration</a>
               </div>
             </div>
             <div class="col-7 col-sm-8">
@@ -53,6 +54,9 @@
                 </div>
                 <div class="tab-pane fade" id="vert-tabs-apiConfiguartion" role="tabpanel" aria-labelledby="vert-tabs-apiConfiguartion-tab">
                   @include("backend.content.settings.general.includes.apiConfiguartion")
+                </div>
+                <div class="tab-pane fade" id="vert-tabs-apiConfigImagga" role="tabpanel" aria-labelledby="vert-tabs-apiConfigImagga-tab">
+                  @include("backend.content.settings.general.includes.apiConfigImagga")
                 </div>
               </div>
             </div>

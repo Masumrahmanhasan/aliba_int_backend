@@ -140,17 +140,21 @@ class CatalogController extends Controller
             create_public_directory($path);
             $file->move($path, $newFilename);
 
+            $location = $path . '/' . $newFilename;
+            $result = getImageInfo($location);
+
             $search_id = Str::random(30);
             $log = SearchLog::create([
                 'search_id' => $search_id,
                 'search_type' => 'picture',
-                'query_data' => $name,
+                'query_data' => $result,
                 'user_id' => auth()->check() ? auth()->id() : null,
             ]);
 
             return $this->success([
                 'picture' => $path . '/' . $newFilename,
                 'search_id' => $search_id,
+                'result_keyword' => $result
             ]);
         }
 
