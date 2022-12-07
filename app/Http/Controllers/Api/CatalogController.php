@@ -164,6 +164,10 @@ class CatalogController extends Controller
     public function productDetails($item_id)
     {
         $item = GetItemFullInfoWithDeliveryCosts($item_id);
+        $bulkPrices = product_bulk_prices($item_id);
+
+        $item['BulkPrices'] = $bulkPrices;
+
         if (!empty($item)) {
             $this->storeProductToDatabase($item, $item_id);
             return $this->success([
