@@ -16,6 +16,13 @@ if (!function_exists('setOtcParams')) {
     }
 }
 
+if (!function_exists('getSiteUrl')) {
+    function getSiteUrl()
+    {
+        return get_setting('site_url');
+    }
+}
+
 if (!function_exists('getArrayKeyData')) {
     function getArrayKeyData(array $array, string $key, $default = null)
     {
@@ -297,5 +304,69 @@ if (!function_exists('product_bulk_prices')) {
             $result = getArrayKeyData($body, 'Result', []);
             return $result;
         }
+    }
+}
+
+if (!function_exists('otc_image_search_items')) {
+    function otc_image_search_items($search, $offset = 0, $limit = 36)
+    {
+        // otc_search_items('bag', 'text', 0, 5)
+        $query = [
+            'instanceKey' => setOtcParams(),
+            'language' => 'en',
+            'xmlParameters' => '<SearchItemsParameters><ImageUrl>' . getSiteUrl() . '/' . $search . '</ImageUrl></SearchItemsParameters>',
+            'framePosition' => $offset,
+            'frameSize' => $limit
+        ];
+
+        $client = new Client();
+        $response = $client->request('GET', load_otc_api() . 'SearchItemsFrame', ['query' => $query]);
+
+        $statusCode = $response->getStatusCode();
+        if ($statusCode == 200) {
+            $body = json_decode($response->getBody(), true);
+            $result = getArrayKeyData($body, 'Result', []);
+            $Items = getArrayKeyData($result, 'Items', []);
+            $Content = getArrayKeyData($Items, 'Content', []);
+            $TotalCount = getArrayKeyData($Items, 'TotalCount', 0);
+
+            $data = [];
+
+            foreach ($Content as $content) {
+                $ItemId = getArrayKeyData($content, 'Id', []);
+                $name = getArrayKeyData($content, 'Title', []);
+
+                $price = getArrayKeyData($content, 'Price', []);
+                $sale_price = getArrayKeyData($price, 'MarginPrice', []);
+
+                $img = getArrayKeyData($content, 'MainPictureUrl', []);
+
+                $total_sold = "";
+                $featured_values = getArrayKeyData($content, 'FeaturedValues', []);
+                foreach ($featured_values as $featured_value) {
+                    if ($featured_value['Name'] == 'TotalSales') {
+                        $total_sold = $featured_value['Value'];
+                    }
+                }
+
+                $content_data = [
+                    'ItemId' => $ItemId,
+                    'name' => $name,
+                    'img' => $img,
+                    'sale_price' => $sale_price,
+                    'total_sold' => $total_sold
+                ];
+                array_push($data, $content_data);
+            }
+
+            return [
+                'Content' => $data,
+                'TotalCount' => $TotalCount
+            ];
+        }
+        return [
+            'Content' => [],
+            'TotalCount' => 0
+        ];
     }
 }

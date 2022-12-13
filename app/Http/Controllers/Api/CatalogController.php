@@ -109,7 +109,8 @@ class CatalogController extends Controller
 
         $SearchLog = SearchLog::where('search_id', $search_id)->where('search_type', 'picture')->first();
         if ($SearchLog) {
-            $products = get_category_browsing_items($SearchLog->query_data, 'picture',  $offset, $limit);
+            // $products = get_category_browsing_items($SearchLog->query_data, 'picture',  $offset, $limit);
+            $products = otc_image_search_items($SearchLog->query_data, $offset, $limit);
 
             return $this->success([
                 'products' => json_encode($products)
@@ -129,6 +130,9 @@ class CatalogController extends Controller
         //   return $this->error('Validation fail', 422);
         // }
 
+        $offset = request('offset', 0);
+        $limit = request('limit', 36);
+
         $search = '';
         if (request()->hasFile('picture')) {
             $file = request()->file('picture');
@@ -137,24 +141,23 @@ class CatalogController extends Controller
             $extension = $file->getClientOriginalExtension();
             $newFilename = time() . '.' . $extension;
             $path = 'storage/search/' . date('Y-m');
+
             create_public_directory($path);
             $file->move($path, $newFilename);
 
             $location = $path . '/' . $newFilename;
-            $result = getImageInfo($location);
 
             $search_id = Str::random(30);
             $log = SearchLog::create([
                 'search_id' => $search_id,
                 'search_type' => 'picture',
-                'query_data' => $result,
+                'query_data' => $location,
                 'user_id' => auth()->check() ? auth()->id() : null,
             ]);
 
             return $this->success([
-                'picture' => $path . '/' . $newFilename,
                 'search_id' => $search_id,
-                'result_keyword' => $result
+                'picture' => $location
             ]);
         }
 
