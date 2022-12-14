@@ -233,16 +233,15 @@ if (!function_exists('products_from_same_vendor')) {
             $contents = getArrayKeyData($items, 'Content', []);
 
             $data = [];
-
+            $rate = get_setting('increase_rate', 20);
             foreach ($contents as $content) {
                 $img = getArrayKeyData($content, 'MainPictureUrl', []);
                 $name = getArrayKeyData($content, 'Title', []);
                 $product_code = getArrayKeyData($content, 'Id', []);
                 $stock = getArrayKeyData($content, 'MasterQuantity', []);
 
-                $price = getArrayKeyData($content, 'Price', []);
-                $regular_price = getArrayKeyData($price, 'MarginPrice', []);
-                $sale_price = $regular_price;
+                $regular_price = get_product_regular_price($content, $rate);
+                $sale_price = get_product_sale_price($content, $rate);
 
                 $rating = "";
                 $total_sold = "";
@@ -331,29 +330,37 @@ if (!function_exists('otc_image_search_items')) {
             $TotalCount = getArrayKeyData($Items, 'TotalCount', 0);
 
             $data = [];
-
+            $rate = get_setting('increase_rate', 20);
             foreach ($Content as $content) {
-                $ItemId = getArrayKeyData($content, 'Id', []);
-                $name = getArrayKeyData($content, 'Title', []);
-
-                $price = getArrayKeyData($content, 'Price', []);
-                $sale_price = getArrayKeyData($price, 'MarginPrice', []);
-
                 $img = getArrayKeyData($content, 'MainPictureUrl', []);
+                $name = getArrayKeyData($content, 'Title', []);
+                $product_code = getArrayKeyData($content, 'Id', []);
+                $stock = getArrayKeyData($content, 'MasterQuantity', []);
 
+                $regular_price = get_product_regular_price($content, $rate);
+                $sale_price = get_product_sale_price($content, $rate);
+
+                $rating = "";
                 $total_sold = "";
                 $featured_values = getArrayKeyData($content, 'FeaturedValues', []);
                 foreach ($featured_values as $featured_value) {
+                    if ($featured_value['Name'] == 'rating') {
+                        $rating = $featured_value['Value'];
+                    }
+
                     if ($featured_value['Name'] == 'TotalSales') {
                         $total_sold = $featured_value['Value'];
                     }
                 }
 
                 $content_data = [
-                    'ItemId' => $ItemId,
-                    'name' => $name,
                     'img' => $img,
+                    'name' => $name,
+                    'product_code' => $product_code,
+                    'rating' => $rating,
+                    'regular_price' => $regular_price,
                     'sale_price' => $sale_price,
+                    'stock' => $stock,
                     'total_sold' => $total_sold
                 ];
                 array_push($data, $content_data);
