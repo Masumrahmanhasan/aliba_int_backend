@@ -278,14 +278,35 @@ class HomeController extends Controller
     $four = get_setting('footer_image_four');
     $five = get_setting('footer_image_five');
 
+    $url_one = get_setting('footer_image_one_url');
+    $url_two = get_setting('footer_image_two_url');
+    $url_three = get_setting('footer_image_three_url');
+    $url_four = get_setting('footer_image_four_url');
+    $url_five = get_setting('footer_image_five_url');
+
     return response()->json([
         'status' => 'Success',
         'data' => [
-            'brand_one' => $one,
-            'brand_two' => $two,
-            'brand_three' => $three,
-            'brand_four' => $four,
-            'brand_five' => $five,
+            'brand_one' => [
+              'image' => $one,
+              'url' => $url_one
+            ],
+            'brand_two' => [
+              'image' => $two,
+              'url' => $url_two
+            ],
+            'brand_three' => [
+              'image' => $three,
+              'url' => $url_three
+            ],
+            'brand_four' => [
+              'image' => $four,
+              'url' => $url_four
+            ],
+            'brand_five' => [
+              'image' => $five,
+              'url' => $url_five
+            ],
         ]
     ]);
   }

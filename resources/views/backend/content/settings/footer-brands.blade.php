@@ -17,7 +17,8 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header with-border">
-                    <h3 class="card-title">Footer Brand Image Settings<small class="ml-2">(update information anytime)</small></h3>
+                    <h3 class="card-title">Footer Brand Image Settings<small class="ml-2">(update information
+                            anytime)</small></h3>
                 </div>
                 <div class="card-body">
 
@@ -34,6 +35,12 @@
                             {{ html()->file('footer_image_one')->class('form-control-file image d-none')->id('footer_image_one')->acceptImage() }}
                         </div> <!-- col-->
                     </div> <!-- form-group-->
+                    <div class="form-group row mb-4">
+                        {{ html()->label('Image One URL')->class('col-md-4 form-control-label text-right')->for('footer_image_one_url') }}
+                        <div class="col-md-8">
+                            {{ html()->text('footer_image_one_url', get_setting('footer_image_one_url'))->placeholder('URL')->class('form-control') }}
+                        </div> <!-- col-->
+                    </div> <!-- form-group-->
 
                     <div class="form-group row mb-4">
                         {{ html()->label('Image Two')->class('col-md-4 form-control-label text-right')->for('footer_image_two') }}
@@ -44,6 +51,12 @@
                                     style="max-width: 200px" alt="Image upload">
                             </label>
                             {{ html()->file('footer_image_two')->class('form-control-file image d-none')->id('footer_image_two')->acceptImage() }}
+                        </div> <!-- col-->
+                    </div> <!-- form-group-->
+                    <div class="form-group row mb-4">
+                        {{ html()->label('Image Two URL')->class('col-md-4 form-control-label text-right')->for('footer_image_two_url') }}
+                        <div class="col-md-8">
+                            {{ html()->text('footer_image_two_url', get_setting('footer_image_two_url'))->placeholder('URL')->class('form-control') }}
                         </div> <!-- col-->
                     </div> <!-- form-group-->
 
@@ -58,6 +71,12 @@
                             {{ html()->file('footer_image_three')->class('form-control-file image d-none')->id('footer_image_three')->acceptImage() }}
                         </div> <!-- col-->
                     </div> <!-- form-group-->
+                    <div class="form-group row mb-4">
+                        {{ html()->label('Image Three URL')->class('col-md-4 form-control-label text-right')->for('footer_image_three_url') }}
+                        <div class="col-md-8">
+                            {{ html()->text('footer_image_three_url', get_setting('footer_image_three_url'))->placeholder('URL')->class('form-control') }}
+                        </div> <!-- col-->
+                    </div> <!-- form-group-->
 
                     <div class="form-group row mb-4">
                         {{ html()->label('Image Four')->class('col-md-4 form-control-label text-right')->for('footer_image_four') }}
@@ -70,6 +89,12 @@
                             {{ html()->file('footer_image_four')->class('form-control-file image d-none')->id('footer_image_four')->acceptImage() }}
                         </div> <!-- col-->
                     </div> <!-- form-group-->
+                    <div class="form-group row mb-4">
+                        {{ html()->label('Image Four URL')->class('col-md-4 form-control-label text-right')->for('footer_image_four_url') }}
+                        <div class="col-md-8">
+                            {{ html()->text('footer_image_four_url', get_setting('footer_image_four_url'))->placeholder('URL')->class('form-control') }}
+                        </div> <!-- col-->
+                    </div> <!-- form-group-->
 
                     <div class="form-group row mb-4">
                         {{ html()->label('Image Five')->class('col-md-4 form-control-label text-right')->for('footer_image_five') }}
@@ -80,6 +105,12 @@
                                     style="max-width: 200px" alt="Image upload">
                             </label>
                             {{ html()->file('footer_image_five')->class('form-control-file image d-none')->id('footer_image_five')->acceptImage() }}
+                        </div> <!-- col-->
+                    </div> <!-- form-group-->
+                    <div class="form-group row mb-4">
+                        {{ html()->label('Image Five URL')->class('col-md-4 form-control-label text-right')->for('footer_image_five_url') }}
+                        <div class="col-md-8">
+                            {{ html()->text('footer_image_five_url', get_setting('footer_image_five_url'))->placeholder('URL')->class('form-control') }}
                         </div> <!-- col-->
                     </div> <!-- form-group-->
 

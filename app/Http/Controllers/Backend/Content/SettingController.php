@@ -343,7 +343,9 @@ class SettingController extends Controller
 
     public function footerBrandSettingsStore()
     {
-        $data = [];
+        $data = \request()->all();
+        unset($data['_token']);
+
         if (\request()->hasFile('footer_image_one')) {
             $data['footer_image_one'] = store_picture(\request()->file('footer_image_one'), 'setting/loader');
         }
