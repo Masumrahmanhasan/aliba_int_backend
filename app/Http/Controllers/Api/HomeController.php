@@ -310,4 +310,24 @@ class HomeController extends Controller
         ]
     ]);
   }
+
+  public function paymentQrCodes()
+  {
+    $bkash = get_setting('qr_code_bkash');
+    $nagad = get_setting('qr_code_nagad');
+
+    return response()->json([
+        'status' => 'Success',
+        'data' => [
+            'method_one' => [
+              'name' => 'bKash',
+              'qr_code' => $bkash
+            ],
+            'method_two' => [
+              'name' => 'Nagad',
+              'qr_code' => $nagad
+            ],
+        ]
+    ]);
+  }
 }

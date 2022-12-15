@@ -370,4 +370,24 @@ class SettingController extends Controller
 
         return redirect()->back()->withFlashSuccess('Footer Images Updated Successfully');
     }
+
+    public function paymentQrCodeSettings()
+    {
+        return view('backend.content.settings.paymentQrCodes');
+    }
+
+    public function paymentQrCodeSettingsStore()
+    {
+        if (\request()->hasFile('qr_code_bkash')) {
+            $data['qr_code_bkash'] = store_picture(\request()->file('qr_code_bkash'), 'setting/loader');
+        }
+
+        if (\request()->hasFile('qr_code_nagad')) {
+            $data['qr_code_nagad'] = store_picture(\request()->file('qr_code_nagad'), 'setting/loader');
+        }
+
+        Setting::save_settings($data);
+
+        return redirect()->back()->withFlashSuccess('Payment QR Codes Updated Successfully');
+    }
 }

@@ -56,6 +56,7 @@ Route::group(['prefix' => 'v1', 'as' => 'v1.'], function () {
   Route::get('/get-homepage-cards', [HomeController::class, 'getHomepageCards']);
   Route::get('/checkout-discounts', [CatalogController::class, 'checkoutDiscounts']);
   Route::get('/footer-brands', [HomeController::class, 'footerBanners']);
+  Route::get('/payment-qr-codes', [HomeController::class, 'paymentQrCodes']);
 
 
   Route::get('/categories', [CatalogController::class, 'categories']);

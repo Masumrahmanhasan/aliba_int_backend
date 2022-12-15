@@ -62,3 +62,7 @@ Breadcrumbs::for('admin.front-setting.checkout-discounts', function ($trail) {
 Breadcrumbs::for('admin.front-setting.footer-brand-settings', function ($trail) {
     $trail->push('Footer Brand Image Settings', route('admin.front-setting.footer-brand-settings'));
 });
+
+Breadcrumbs::for('admin.front-setting.payment-qr-codes', function ($trail) {
+    $trail->push('Payment QR Codes Settings', route('admin.front-setting.payment-qr-codes'));
+});
