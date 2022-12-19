@@ -301,7 +301,16 @@ if (!function_exists('product_bulk_prices')) {
         if ($statusCode == 200) {
             $body = json_decode($response->getBody(), true);
             $result = getArrayKeyData($body, 'Result', []);
-            return $result;
+
+            $rate = get_setting('increase_rate', 20);
+            $data = [];
+            foreach ($result['Configuration']['QuantityRanges'] as $item) {
+                $item['Price']['Base'] *= $rate;
+                array_push($data, $item);
+            }
+            // $result['Configuration']['QuantityRanges'] = $data;
+
+            return $data;
         }
     }
 }
