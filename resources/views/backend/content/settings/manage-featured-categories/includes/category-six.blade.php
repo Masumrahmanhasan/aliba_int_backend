@@ -10,6 +10,11 @@
         </div> <!-- form-group-->
 
         <div class="form-group">
+            {{ html()->label('Category URL')->for('hp_cat_six_url') }}
+            {{ html()->text('hp_cat_six_url', get_setting('hp_cat_six_url'))->class('form-control')->placeholder('https://') }}
+        </div> <!-- form-group-->
+
+        <div class="form-group">
             {{ html()->label('Section One Banner')->for('hp_cat_six_section_one_banner') }}
 
             <div class="col-md-12">

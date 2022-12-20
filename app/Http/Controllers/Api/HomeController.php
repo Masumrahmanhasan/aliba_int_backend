@@ -334,6 +334,7 @@ class HomeController extends Controller
     public function getFeaturedCategories()
     {
         $cat_feat_name = get_setting('hp_cat_feat_name');
+        $cat_feat_url = get_setting('hp_cat_feat_url');
         $cat_feat_ban = get_setting('hp_cat_feat_banner');
         $cat_feat_sec_one_ban = get_setting('hp_cat_feat_section_one_banner');
         $cat_feat_sec_one_url = get_setting('hp_cat_feat_section_one_url');
@@ -343,6 +344,7 @@ class HomeController extends Controller
         $cat_feat_sec_three_url = get_setting('hp_cat_feat_section_three_url');
 
         $cat_one_name = get_setting('hp_cat_one_name');
+        $cat_one_url = get_setting('hp_cat_one_url');
         $cat_one_sec_one_ban = get_setting('hp_cat_one_section_one_banner');
         $cat_one_sec_one_url = get_setting('hp_cat_one_section_one_url');
         $cat_one_sec_two_ban = get_setting('hp_cat_one_section_two_banner');
@@ -351,6 +353,7 @@ class HomeController extends Controller
         $cat_one_sec_three_url = get_setting('hp_cat_one_section_three_url');
 
         $cat_two_name = get_setting('hp_cat_two_name');
+        $cat_two_url = get_setting('hp_cat_two_url');
         $cat_two_sec_one_ban = get_setting('hp_cat_two_section_one_banner');
         $cat_two_sec_one_url = get_setting('hp_cat_two_section_one_url');
         $cat_two_sec_two_ban = get_setting('hp_cat_two_section_two_banner');
@@ -359,6 +362,7 @@ class HomeController extends Controller
         $cat_two_sec_three_url = get_setting('hp_cat_two_section_three_url');
 
         $cat_three_name = get_setting('hp_cat_three_name');
+        $cat_three_url = get_setting('hp_cat_three_url');
         $cat_three_sec_one_ban = get_setting('hp_cat_three_section_one_banner');
         $cat_three_sec_one_url = get_setting('hp_cat_three_section_one_url');
         $cat_three_sec_two_ban = get_setting('hp_cat_three_section_two_banner');
@@ -367,6 +371,7 @@ class HomeController extends Controller
         $cat_three_sec_three_url = get_setting('hp_cat_three_section_three_url');
 
         $cat_four_name = get_setting('hp_cat_four_name');
+        $cat_four_url = get_setting('hp_cat_four_url');
         $cat_four_sec_one_ban = get_setting('hp_cat_four_section_one_banner');
         $cat_four_sec_one_url = get_setting('hp_cat_four_section_one_url');
         $cat_four_sec_two_ban = get_setting('hp_cat_four_section_two_banner');
@@ -375,6 +380,7 @@ class HomeController extends Controller
         $cat_four_sec_three_url = get_setting('hp_cat_four_section_three_url');
 
         $cat_five_name = get_setting('hp_cat_five_name');
+        $cat_five_url = get_setting('hp_cat_five_url');
         $cat_five_sec_one_ban = get_setting('hp_cat_five_section_one_banner');
         $cat_five_sec_one_url = get_setting('hp_cat_five_section_one_url');
         $cat_five_sec_two_ban = get_setting('hp_cat_five_section_two_banner');
@@ -383,6 +389,7 @@ class HomeController extends Controller
         $cat_five_sec_three_url = get_setting('hp_cat_five_section_three_url');
 
         $cat_six_name = get_setting('hp_cat_six_name');
+        $cat_six_url = get_setting('hp_cat_six_url');
         $cat_six_sec_one_ban = get_setting('hp_cat_six_section_one_banner');
         $cat_six_sec_one_url = get_setting('hp_cat_six_section_one_url');
         $cat_six_sec_two_ban = get_setting('hp_cat_six_section_two_banner');
@@ -395,6 +402,7 @@ class HomeController extends Controller
             'data' => [
                 'featured' => [
                     'name' => $cat_feat_name,
+                    'url' => $cat_feat_url,
                     'banner' => $cat_feat_ban,
                     'sections' => [
                         [
@@ -414,6 +422,7 @@ class HomeController extends Controller
                 'non_featured' => [
                     [
                         'name' => $cat_one_name,
+                        'url' => $cat_one_url,
                         'sections' => [
                             [
                                 'banner' => $cat_one_sec_one_ban,
@@ -431,6 +440,7 @@ class HomeController extends Controller
                     ],
                     [
                         'name' => $cat_two_name,
+                        'url' => $cat_two_url,
                         'sections' => [
                             [
                                 'banner' => $cat_two_sec_one_ban,
@@ -448,6 +458,7 @@ class HomeController extends Controller
                     ],
                     [
                         'name' => $cat_three_name,
+                        'url' => $cat_three_url,
                         'sections' => [
                             [
                                 'banner' => $cat_three_sec_one_ban,
@@ -465,6 +476,7 @@ class HomeController extends Controller
                     ],
                     [
                         'name' => $cat_four_name,
+                        'url' => $cat_four_url,
                         'sections' => [
                             [
                                 'banner' => $cat_four_sec_one_ban,
@@ -482,6 +494,7 @@ class HomeController extends Controller
                     ],
                     [
                         'name' => $cat_five_name,
+                        'url' => $cat_five_url,
                         'sections' => [
                             [
                                 'banner' => $cat_five_sec_one_ban,
@@ -499,6 +512,7 @@ class HomeController extends Controller
                     ],
                     [
                         'name' => $cat_six_name,
+                        'url' => $cat_six_url,
                         'sections' => [
                             [
                                 'banner' => $cat_six_sec_one_ban,
