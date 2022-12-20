@@ -130,6 +130,9 @@ Route::namespace('Content')->group(function () {
 
     Route::get('payment-qr-codes', [SettingController::class, 'paymentQrCodeSettings'])->name('payment-qr-codes');
     Route::post('payment-qr-codes-store', [SettingController::class, 'paymentQrCodeSettingsStore'])->name('payment-qr-codes-store');
+
+    Route::get('manage-featured-categories', [SettingController::class, 'manageFeaturedCategories'])->name('manage.featured-categories');
+    Route::post('manage-featured-categories-store', [SettingController::class, 'manageFeaturedCategoriesStore'])->name('manage.featured-categories.store');
   });
 
 });

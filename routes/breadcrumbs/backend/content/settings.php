@@ -66,3 +66,7 @@ Breadcrumbs::for('admin.front-setting.footer-brand-settings', function ($trail) 
 Breadcrumbs::for('admin.front-setting.payment-qr-codes', function ($trail) {
     $trail->push('Payment QR Codes Settings', route('admin.front-setting.payment-qr-codes'));
 });
+
+Breadcrumbs::for('admin.front-setting.manage.featured-categories', function ($trail) {
+    $trail->push('Manage Featured Categories', route('admin.front-setting.manage.featured-categories'));
+});

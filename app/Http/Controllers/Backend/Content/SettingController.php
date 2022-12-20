@@ -390,4 +390,106 @@ class SettingController extends Controller
 
         return redirect()->back()->withFlashSuccess('Payment QR Codes Updated Successfully');
     }
+
+    public function manageFeaturedCategories()
+    {
+        return view('backend.content.settings.manage-featured-categories.index');
+    }
+
+    public function manageFeaturedCategoriesStore()
+    {
+        $data = \request()->all();
+        unset($data['_token']);
+
+        if (\request()->hasFile('hp_cat_feat_banner')) {
+            $data['hp_cat_feat_banner'] = store_picture(\request()->file('hp_cat_feat_banner'), 'setting');
+        }
+
+        if (\request()->hasFile('hp_cat_feat_section_one_banner')) {
+            $data['hp_cat_feat_section_one_banner'] = store_picture(\request()->file('hp_cat_feat_section_one_banner'), 'setting');
+        }
+
+        if (\request()->hasFile('hp_cat_feat_section_two_banner')) {
+            $data['hp_cat_feat_section_two_banner'] = store_picture(\request()->file('hp_cat_feat_section_two_banner'), 'setting');
+        }
+
+        if (\request()->hasFile('hp_cat_feat_section_three_banner')) {
+            $data['hp_cat_feat_section_three_banner'] = store_picture(\request()->file('hp_cat_feat_section_three_banner'), 'setting');
+        }
+
+        if (\request()->hasFile('hp_cat_one_section_one_banner')) {
+            $data['hp_cat_one_section_one_banner'] = store_picture(\request()->file('hp_cat_one_section_one_banner'), 'setting');
+        }
+
+        if (\request()->hasFile('hp_cat_one_section_two_banner')) {
+            $data['hp_cat_one_section_two_banner'] = store_picture(\request()->file('hp_cat_one_section_two_banner'), 'setting');
+        }
+
+        if (\request()->hasFile('hp_cat_one_section_three_banner')) {
+            $data['hp_cat_one_section_three_banner'] = store_picture(\request()->file('hp_cat_one_section_three_banner'), 'setting');
+        }
+
+        if (\request()->hasFile('hp_cat_two_section_one_banner')) {
+            $data['hp_cat_two_section_one_banner'] = store_picture(\request()->file('hp_cat_two_section_one_banner'), 'setting');
+        }
+
+        if (\request()->hasFile('hp_cat_two_section_two_banner')) {
+            $data['hp_cat_two_section_two_banner'] = store_picture(\request()->file('hp_cat_two_section_two_banner'), 'setting');
+        }
+
+        if (\request()->hasFile('hp_cat_two_section_three_banner')) {
+            $data['hp_cat_two_section_three_banner'] = store_picture(\request()->file('hp_cat_two_section_three_banner'), 'setting');
+        }
+
+        if (\request()->hasFile('hp_cat_three_section_one_banner')) {
+            $data['hp_cat_three_section_one_banner'] = store_picture(\request()->file('hp_cat_three_section_one_banner'), 'setting');
+        }
+
+        if (\request()->hasFile('hp_cat_three_section_two_banner')) {
+            $data['hp_cat_three_section_two_banner'] = store_picture(\request()->file('hp_cat_three_section_two_banner'), 'setting');
+        }
+
+        if (\request()->hasFile('hp_cat_three_section_three_banner')) {
+            $data['hp_cat_three_section_three_banner'] = store_picture(\request()->file('hp_cat_three_section_three_banner'), 'setting');
+        }
+
+        if (\request()->hasFile('hp_cat_four_section_one_banner')) {
+            $data['hp_cat_four_section_one_banner'] = store_picture(\request()->file('hp_cat_four_section_one_banner'), 'setting');
+        }
+
+        if (\request()->hasFile('hp_cat_four_section_two_banner')) {
+            $data['hp_cat_four_section_two_banner'] = store_picture(\request()->file('hp_cat_four_section_two_banner'), 'setting');
+        }
+
+        if (\request()->hasFile('hp_cat_four_section_three_banner')) {
+            $data['hp_cat_four_section_three_banner'] = store_picture(\request()->file('hp_cat_four_section_three_banner'), 'setting');
+        }
+
+        if (\request()->hasFile('hp_cat_five_section_one_banner')) {
+            $data['hp_cat_five_section_one_banner'] = store_picture(\request()->file('hp_cat_five_section_one_banner'), 'setting');
+        }
+
+        if (\request()->hasFile('hp_cat_five_section_two_banner')) {
+            $data['hp_cat_five_section_two_banner'] = store_picture(\request()->file('hp_cat_five_section_two_banner'), 'setting');
+        }
+
+        if (\request()->hasFile('hp_cat_five_section_three_banner')) {
+            $data['hp_cat_five_section_three_banner'] = store_picture(\request()->file('hp_cat_five_section_three_banner'), 'setting');
+        }
+
+        if (\request()->hasFile('hp_cat_six_section_one_banner')) {
+            $data['hp_cat_six_section_one_banner'] = store_picture(\request()->file('hp_cat_six_section_one_banner'), 'setting');
+        }
+
+        if (\request()->hasFile('hp_cat_six_section_two_banner')) {
+            $data['hp_cat_six_section_two_banner'] = store_picture(\request()->file('hp_cat_six_section_two_banner'), 'setting');
+        }
+
+        if (\request()->hasFile('hp_cat_six_section_three_banner')) {
+            $data['hp_cat_six_section_three_banner'] = store_picture(\request()->file('hp_cat_six_section_three_banner'), 'setting');
+        }
+
+        Setting::save_settings($data);
+        return redirect()->back()->withFlashSuccess('Homepage Card Updated Successfully');
+    }
 }
