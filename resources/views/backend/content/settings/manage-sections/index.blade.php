@@ -27,6 +27,8 @@
                 aria-controls="vert-tabs-four" aria-selected="false">Section Four</a>
               <a class="nav-link" id="vert-tabs-five-tab" data-toggle="pill" href="#vert-tabs-five" role="tab"
                 aria-controls="vert-tabs-five" aria-selected="false">Section Five</a>
+              <a class="nav-link" id="vert-tabs-six-tab" data-toggle="pill" href="#vert-tabs-six" role="tab"
+                aria-controls="vert-tabs-six" aria-selected="false">Section Super Deals</a>
             </div>
           </div>
           <div class="col-8 col-sm-9">
@@ -51,6 +53,9 @@
 
               <div class="tab-pane fade" id="vert-tabs-five" role="tabpanel" aria-labelledby="vert-tabs-five-tab">
                 @include("backend.content.settings.manage-sections.includes.sectionFive")
+              </div>
+              <div class="tab-pane fade" id="vert-tabs-six" role="tabpanel" aria-labelledby="vert-tabs-six-tab">
+                @include("backend.content.settings.manage-sections.includes.sectionSuperDeals")
               </div>
 
             </div>
