@@ -386,3 +386,37 @@ if (!function_exists('otc_image_search_items')) {
         ];
     }
 }
+
+if (!function_exists('getSaleOfferProducts')) {
+    function getSaleOfferProducts($item_id)
+    {
+        $query = [
+            'instanceKey' => setOtcParams(),
+            'language' => 'en',
+            'itemId' => $item_id
+        ];
+
+        $client = new Client();
+        $response = $client->request('GET', load_otc_api() . 'GetItemFullInfo', ['query' => $query]);
+
+        $body = json_decode($response->getBody(), true);
+        if (is_array($body)) {
+            $rate = get_setting('increase_rate', 20);
+            $rate = (float)$rate;
+
+            $OtapiItemFullInfo = array_key_exists('OtapiItemFullInfo', $body) ? $body['OtapiItemFullInfo'] : [];
+            $MainPictureUrl = array_key_exists('MainPictureUrl', $OtapiItemFullInfo) ? $OtapiItemFullInfo['MainPictureUrl'] : [];
+
+            $Price = array_key_exists('Price', $OtapiItemFullInfo) ? $OtapiItemFullInfo['Price'] : [];
+            $MarginPrice = array_key_exists('MarginPrice', $Price) ? $Price['MarginPrice'] : [];
+            $MarginPrice = $MarginPrice * $rate;
+
+            return [
+                'image' => $MainPictureUrl,
+                'price' => $MarginPrice
+            ];
+        }
+
+        return [];
+    }
+}

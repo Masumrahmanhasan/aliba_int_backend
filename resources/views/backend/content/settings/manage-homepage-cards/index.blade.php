@@ -22,6 +22,8 @@
                                     role="tab" aria-controls="vert-tabs-Three" aria-selected="false">Card Three</a>
                                 <a class="nav-link" id="vert-tabs-Four-tab" data-toggle="pill" href="#vert-tabs-Four"
                                     role="tab" aria-controls="vert-tabs-Four" aria-selected="false">Card Four</a>
+                                <a class="nav-link" id="vert-tabs-Five-tab" data-toggle="pill" href="#vert-tabs-Five"
+                                    role="tab" aria-controls="vert-tabs-Five" aria-selected="false">Exclusive Offer (Sign-in Section)</a>
                             </div>
                         </div>
                         <div class="col-8 col-sm-9">
@@ -51,6 +53,10 @@
                                     @include('backend.content.settings.manage-homepage-cards.includes.card-four')
                                 </div>
 
+                                <div class="tab-pane fade" id="vert-tabs-Five" role="tabpanel"
+                                    aria-labelledby="vert-tabs-Five-tab">
+                                    @include('backend.content.settings.manage-homepage-cards.includes.exclusive-offer')
+                                </div>
                             </div>
                         </div>
                     </div>

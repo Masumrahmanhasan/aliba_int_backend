@@ -8,18 +8,24 @@ Route::get('/dump', function() {
     $query = [
         'instanceKey' => '7367999f-de6f-4e88-9d36-1642cff1746b',
         'language' => 'en',
-        // 'itemId' => 'abb-639225839350'
-        'vendorId' => 'abb-b2b-1833723532'
+        'itemId' => 'abb-639225839350'
+        // 'vendorId' => 'abb-b2b-1833723532'
     ];
 
     $client = new Client();
-    $response = $client->request('GET', 'http://otapi.net/service-json/GetVendorInfo', ['query' => $query]);
+    $response = $client->request('GET', 'http://otapi.net/service-json/GetItemFullInfo', ['query' => $query]);
 
     if ($response->getStatusCode() == 200) {
         $content = json_decode($response->getBody(), true);
-        if (is_array($content)) {
-          return getArrayKeyData($content, 'VendorInfo', []);
-        }
+        // if (is_array($content)) {
+        //   return getArrayKeyData($content, 'VendorInfo', []);
+        // }
+
+        // return ;
+        return [
+          'image' => $content['OtapiItemFullInfo']['MainPictureUrl'],
+          'price' => $content['OtapiItemFullInfo']['Price']['MarginPrice']
+        ];
       }
       return [];
 });

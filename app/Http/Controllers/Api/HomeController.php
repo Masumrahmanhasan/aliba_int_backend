@@ -537,4 +537,35 @@ class HomeController extends Controller
             ]
         ]);
     }
+
+    public function getHomepageFeaturedItemCard()
+    {
+        $data = [];
+
+        if (get_setting('hp_card_five_active') == 'enable') {
+            $card = [
+                'text' => get_setting('hp_card_five_text'),
+                'image' => get_setting('hp_card_five_image'),
+                'products' => [
+                    [
+                        'id' => get_setting('hp_card_five_product_one_id'),
+                        'image' => get_setting('hp_card_five_product_one_image'),
+                        'price' => get_setting('hp_card_five_product_one_price'),
+                    ],
+                    [
+                        'id' => get_setting('hp_card_five_product_one_id'),
+                        'image' => get_setting('hp_card_five_product_one_image'),
+                        'price' => get_setting('hp_card_five_product_one_price'),
+                    ]
+                ]
+            ];
+
+            array_push($data, $card);
+        }
+
+        return response()->json([
+            'status' => 'Success',
+            'data' => $data
+        ]);
+    }
 }
