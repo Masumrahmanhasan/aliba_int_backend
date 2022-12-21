@@ -315,6 +315,7 @@ class HomeController extends Controller
     {
         $bkash = get_setting('qr_code_bkash');
         $nagad = get_setting('qr_code_nagad');
+        $bank_detail = get_setting('payment_bank_details');
 
         return response()->json([
             'status' => 'Success',
@@ -327,6 +328,10 @@ class HomeController extends Controller
                     'name' => 'Nagad',
                     'qr_code' => $nagad
                 ],
+                'method_three' => [
+                    'name' => 'Bank',
+                    'bank_detail' => $bank_detail
+                ]
             ]
         ]);
     }

@@ -378,6 +378,9 @@ class SettingController extends Controller
 
     public function paymentQrCodeSettingsStore()
     {
+        $data = \request()->all();
+        unset($data['_token']);
+
         if (\request()->hasFile('qr_code_bkash')) {
             $data['qr_code_bkash'] = store_picture(\request()->file('qr_code_bkash'), 'setting/loader');
         }

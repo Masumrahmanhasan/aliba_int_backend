@@ -48,6 +48,11 @@
                         </div> <!-- col-->
                     </div> <!-- form-group-->
 
+                    <div class="form-group">
+                        {{ html()->label('Bank Details')->for('payment_bank_details') }}
+                        <textarea name="payment_bank_details" class="editor form-control" id="payment_bank_details">{{ get_setting('payment_bank_details') }}</textarea>
+                    </div> <!-- form-group-->
+
                     <div class="form-group row mb-4">
                         <div class="col-md-8 offset-md-4">
                             {{ html()->button('Update')->class('btn btn-sm btn-success') }}
@@ -66,6 +71,12 @@
 
 @push('after-scripts')
     {{ script('assets/js/jscolor.js') }}
+    {!! script('assets/plugins/tinymce/jquery.tinymce.min.js') !!}
+    {!! script('assets/plugins/tinymce/tinymce.min.js') !!}
+    {!! script('assets/plugins/tinymce/editor-helper.js') !!}
+    {!! script('assets/plugins/moment/moment.js') !!}
+    {!! script('assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') !!}
+    {{ script('https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js') }}
 
     <script>
         function readImageURL(input, preview) {
@@ -82,6 +93,16 @@
             $(".image").change(function() {
                 holder = $(this).closest('.form-group').find('.holder');
                 readImageURL(this, holder);
+            });
+        });
+
+        $(document).ready(function() {
+            simple_editor('.editor', 450);
+            $('#datepicker-autoclose').datepicker({
+                format: "dd/mm/yyyy",
+                clearBtn: true,
+                autoclose: true,
+                todayHighlight: true,
             });
         });
     </script>

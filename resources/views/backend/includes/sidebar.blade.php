@@ -241,7 +241,7 @@
                 <a href="{{ route('admin.front-setting.payment-qr-codes') }}"
                    class="nav-link {{ active_class(Route::is('admin.front-setting.payment-qr-codes')) }}">
                   <i class="nav-icon fa fa-desktop"></i>
-                  <p class="text">Payment QR Codes</p>
+                  <p class="text">Payment Options</p>
                 </a>
             </li>
 
