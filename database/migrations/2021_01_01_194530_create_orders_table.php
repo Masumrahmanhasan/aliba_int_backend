@@ -26,6 +26,7 @@ class CreateOrdersTable extends Migration
       $table->string('pay_method')->nullable();
       $table->string('status')->nullable();
       $table->string('transaction_id')->nullable();
+      $table->string('trxId')->nullable();
       $table->string('currency', 20)->nullable();
       $table->string('coupon_code', 55)->nullable();
       $table->double('coupon_victory')->nullable();

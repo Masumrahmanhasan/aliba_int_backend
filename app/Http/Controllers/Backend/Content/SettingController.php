@@ -320,16 +320,20 @@ class SettingController extends Controller
             $data['hp_card_five_image'] = store_picture(\request()->file('hp_card_five_image'), 'setting');
         }
 
-        if ($data['hp_card_five_product_one_id'] != null) {
-            $exclusive_data = getSaleOfferProducts($data['hp_card_five_product_one_id']);
-            $data['hp_card_five_product_one_image'] = $exclusive_data['image'];
-            $data['hp_card_five_product_one_price'] = $exclusive_data['price'];
+        if (isset($data['hp_card_five_product_one_id'])) {
+            if ($data['hp_card_five_product_one_id'] != null) {
+                $exclusive_data = getSaleOfferProducts($data['hp_card_five_product_one_id']);
+                $data['hp_card_five_product_one_image'] = $exclusive_data['image'];
+                $data['hp_card_five_product_one_price'] = $exclusive_data['price'];
+            }
         }
 
-        if ($data['hp_card_five_product_two_id'] != null) {
-            $exclusive_data = getSaleOfferProducts($data['hp_card_five_product_two_id']);
-            $data['hp_card_five_product_two_image'] = $exclusive_data['image'];
-            $data['hp_card_five_product_two_price'] = $exclusive_data['price'];
+        if (isset($data['hp_card_five_product_two_id'])) {
+            if ($data['hp_card_five_product_two_id'] != null) {
+                $exclusive_data = getSaleOfferProducts($data['hp_card_five_product_two_id']);
+                $data['hp_card_five_product_two_image'] = $exclusive_data['image'];
+                $data['hp_card_five_product_two_price'] = $exclusive_data['price'];
+            }
         }
 
         Setting::save_settings($data);

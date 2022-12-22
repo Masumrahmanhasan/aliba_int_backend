@@ -89,6 +89,7 @@ class OrderController extends Controller
     $cartTotal = $summary['cartTotal'] ?? null;
     $advanced = $summary['advanced'] ?? null;
     $dueAmount = $summary['dueAmount'] ?? null;
+    $trxId = $summary['trxId'] ?? null;
 
     $order = Order::create([
       'name' => $user->full_name ?? $user->name ?? $user->first_name ?? 'No Name',
@@ -103,6 +104,7 @@ class OrderController extends Controller
       'status' => $status,
       'address' => json_encode($address),
       'transaction_id' => $tran_id,
+      'trxId' => $trxId,
       'currency' => 'BDT',
       'pay_method' => $pay_method,
     ]);

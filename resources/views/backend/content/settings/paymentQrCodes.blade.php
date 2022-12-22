@@ -96,14 +96,14 @@
             });
         });
 
-        $(document).ready(function() {
-            simple_editor('.editor', 450);
-            $('#datepicker-autoclose').datepicker({
-                format: "dd/mm/yyyy",
-                clearBtn: true,
-                autoclose: true,
-                todayHighlight: true,
-            });
-        });
+        // $(document).ready(function() {
+        //     simple_editor('.editor', 450);
+        //     $('#datepicker-autoclose').datepicker({
+        //         format: "dd/mm/yyyy",
+        //         clearBtn: true,
+        //         autoclose: true,
+        //         todayHighlight: true,
+        //     });
+        // });
     </script>
 @endpush

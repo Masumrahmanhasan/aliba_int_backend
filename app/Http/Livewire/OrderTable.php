@@ -68,6 +68,8 @@ class OrderTable extends TableComponent
                 ->format(function (Order $model) {
                     return floating($model->needToPay);
                 }),
+            Column::make('Trx ID or Bank Account No.', 'trxId')
+                ->searchable(),
             Column::make('Due', 'dueForProducts')
                 ->searchable()
                 ->format(function (Order $model) {
