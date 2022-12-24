@@ -568,4 +568,24 @@ class HomeController extends Controller
             'data' => $data
         ]);
     }
+
+    public function getSuperDealSection()
+    {
+        if (get_setting('section_super_deals_active') == 'enable') {
+            $offset = request('offset', 0);
+            $limit = request('limit', 6);
+
+            $search = get_setting('section_super_deals_search');
+            $section_super_deals_timer = get_setting('section_super_deals_timer');
+
+            $SuperDealProducts = getSuperDealProducts($search, $offset, $limit);
+            if (!empty($SuperDealProducts)) {
+                return $this->success([
+                    'SuperDealProducts' => $SuperDealProducts,
+                    'timer' => $section_super_deals_timer
+                ]);
+            }
+            return $this->error('some error occurred', 417);
+        }
+    }
 }

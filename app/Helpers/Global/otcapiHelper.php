@@ -240,8 +240,13 @@ if (!function_exists('products_from_same_vendor')) {
                 $product_code = getArrayKeyData($content, 'Id', []);
                 $stock = getArrayKeyData($content, 'MasterQuantity', []);
 
-                $regular_price = get_product_regular_price($content, $rate);
-                $sale_price = get_product_sale_price($content, $rate);
+                $Price = getArrayKeyData($content, 'Price', []);
+                $price = getArrayKeyData($Price, 'MarginPrice', []);
+                $regular_price = $price * $rate;
+                $sale_price = $price * $rate;
+
+                // $regular_price = get_product_regular_price($content, $rate);
+                // $sale_price = get_product_sale_price($content, $rate);
 
                 $rating = "";
                 $total_sold = "";
@@ -346,8 +351,10 @@ if (!function_exists('otc_image_search_items')) {
                 $product_code = getArrayKeyData($content, 'Id', []);
                 $stock = getArrayKeyData($content, 'MasterQuantity', []);
 
-                $regular_price = get_product_regular_price($content, $rate);
-                $sale_price = get_product_sale_price($content, $rate);
+                $Price = getArrayKeyData($content, 'Price', []);
+                $price = getArrayKeyData($Price, 'MarginPrice', []);
+                $regular_price = $price * $rate;
+                $sale_price = $price * $rate;
 
                 $rating = "";
                 $total_sold = "";
@@ -415,6 +422,73 @@ if (!function_exists('getSaleOfferProducts')) {
                 'image' => $MainPictureUrl,
                 'price' => $MarginPrice
             ];
+        }
+
+        return [];
+    }
+}
+
+if (!function_exists('getSuperDealProducts')) {
+    function getSuperDealProducts($search, $offset = 0, $limit = 6) {
+        $query = [
+            'instanceKey' => setOtcParams(),
+            'language' => 'en',
+            'xmlParameters' => '<SearchItemsParameters>
+                                <ItemTitle>' . $search . '</ItemTitle>
+                                <Features>
+                                <Feature Name="Discount">true</Feature>
+                                </Features>
+                                </SearchItemsParameters>',
+            'framePosition' => $offset,
+            'frameSize' => $limit,
+            'blockList' => '',
+        ];
+
+        $client = new Client();
+        $response = $client->request('GET', load_otc_api() . 'BatchSearchItemsFrame', ['query' => $query]);
+
+        if ($response->getStatusCode() == 200) {
+            $content = json_decode($response->getBody(), true);
+            if (is_array($content)) {
+                $Result = getArrayKeyData($content, 'Result', []);
+                $Items = getArrayKeyData($Result, 'Items', []);
+                $Items = getArrayKeyData($Items, 'Items', []);
+                $Content = getArrayKeyData($Items, 'Content', []);
+
+                $data = [];
+                $rate = get_setting('increase_rate', 20);
+                foreach ($Content as $content) {
+                    $product_code = getArrayKeyData($content, 'Id', []);
+                    $img = getArrayKeyData($content, 'MainPictureUrl', []);
+
+                    $total_sold = "";
+                    $featured_values = getArrayKeyData($content, 'FeaturedValues', []);
+                    foreach ($featured_values as $featured_value) {
+                        if ($featured_value['Name'] == 'TotalSales') {
+                            $total_sold = $featured_value['Value'];
+                        }
+                    }
+
+                    $PromotionPrice = getArrayKeyData($content, 'PromotionPrice', []);
+                    $MarginPrice = getArrayKeyData($PromotionPrice, 'MarginPrice', []);
+                    $discount_price = $MarginPrice * $rate;
+
+                    $PromotionPricePercent = getArrayKeyData($content, 'PromotionPricePercent', []);
+                    $discount_percentage = getArrayKeyData($PromotionPricePercent[0], 'Percent', []);
+
+                    $content_data = [
+                        'product_code' => $product_code,
+                        'img' => $img,
+                        'discount_price' => $discount_price,
+                        'discount_percentage' => $discount_percentage,
+                        'total_sold' => $total_sold
+                    ];
+
+                    array_push($data, $content_data);
+                }
+            }
+
+            return $data;
         }
 
         return [];

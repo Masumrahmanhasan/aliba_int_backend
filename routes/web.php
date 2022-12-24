@@ -4,30 +4,73 @@ use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\Frontend\HomeController;
 use GuzzleHttp\Client;
 
-Route::get('/dump', function() {
+Route::get('/dump', function () {
     $query = [
         'instanceKey' => '7367999f-de6f-4e88-9d36-1642cff1746b',
         'language' => 'en',
-        'itemId' => 'abb-639225839350'
+        // 'itemId' => 'abb-639225839350'
         // 'vendorId' => 'abb-b2b-1833723532'
+        'xmlParameters' => '<SearchItemsParameters>
+                            <ItemTitle>Water Bottle</ItemTitle>
+                            <Features>
+                            <Feature Name="Discount">true</Feature>
+                            </Features>
+                            </SearchItemsParameters>',
+        'framePosition' => 0,
+        'frameSize' => 10,
+        'blockList' => '',
     ];
 
     $client = new Client();
-    $response = $client->request('GET', 'http://otapi.net/service-json/GetItemFullInfo', ['query' => $query]);
+    $response = $client->request('GET', 'http://otapi.net/service-json/BatchSearchItemsFrame', ['query' => $query]);
 
     if ($response->getStatusCode() == 200) {
         $content = json_decode($response->getBody(), true);
-        // if (is_array($content)) {
-        //   return getArrayKeyData($content, 'VendorInfo', []);
-        // }
+        if (is_array($content)) {
+            $Result = getArrayKeyData($content, 'Result', []);
+            $Items = getArrayKeyData($Result, 'Items', []);
+            $Items = getArrayKeyData($Items, 'Items', []);
+            $Content = getArrayKeyData($Items, 'Content', []);
 
-        // return ;
-        return [
-          'image' => $content['OtapiItemFullInfo']['MainPictureUrl'],
-          'price' => $content['OtapiItemFullInfo']['Price']['MarginPrice']
-        ];
-      }
-      return [];
+            $data = [];
+            $rate = get_setting('increase_rate', 20);
+            foreach ($Content as $content) {
+                $product_code = getArrayKeyData($content, 'Id', []);
+                $img = getArrayKeyData($content, 'MainPictureUrl', []);
+
+                $total_sold = "";
+                $featured_values = getArrayKeyData($content, 'FeaturedValues', []);
+                foreach ($featured_values as $featured_value) {
+                    if ($featured_value['Name'] == 'TotalSales') {
+                        $total_sold = $featured_value['Value'];
+                    }
+                }
+
+                $PromotionPrice = getArrayKeyData($content, 'PromotionPrice', []);
+                $MarginPrice = getArrayKeyData($PromotionPrice, 'MarginPrice', []);
+                $discount_price = $MarginPrice * $rate;
+
+                $PromotionPricePercent = getArrayKeyData($content, 'PromotionPricePercent', []);
+                $discount_percentage = getArrayKeyData($PromotionPricePercent[0], 'Percent', []);
+
+                $content_data = [
+                    'product_code' => $product_code,
+                    'img' => $img,
+                    'discount_price' => $discount_price,
+                    'discount_percentage' => $discount_percentage,
+                    'total_sold' => $total_sold
+                ];
+                array_push($data, $content_data);
+            }
+            return $Content;
+        }
+
+        // return [
+        //   'image' => $content['OtapiItemFullInfo']['MainPictureUrl'],
+        //   'price' => $content['OtapiItemFullInfo']['Price']['MarginPrice']
+        // ];
+    }
+    return [];
 });
 
 /*
@@ -43,7 +86,7 @@ Route::get('lang/{lang}', [LanguageController::class, 'swap']);
  * Namespaces indicate folder structure
  */
 Route::group(['namespace' => 'Frontend', 'as' => 'frontend.'], function () {
-  include_route_files(__DIR__ . '/frontend/');
+    include_route_files(__DIR__ . '/frontend/');
 });
 
 /*
@@ -51,7 +94,7 @@ Route::group(['namespace' => 'Frontend', 'as' => 'frontend.'], function () {
  * Namespaces indicate folder structure
  */
 Route::group(['namespace' => 'Backend', 'prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'admin'], function () {
-  /*
+    /*
      * These routes need view-backend permission
      * (good if you want to allow more than one group in the backend,
      * then limit the backend features by different roles or permissions)
@@ -59,5 +102,5 @@ Route::group(['namespace' => 'Backend', 'prefix' => 'admin', 'as' => 'admin.', '
      * Note: Administrator has all permissions so you do not have to specify the administrator role everywhere.
      * These routes can not be hit if the password is expired
      */
-  include_route_files(__DIR__ . '/backend/');
+    include_route_files(__DIR__ . '/backend/');
 });

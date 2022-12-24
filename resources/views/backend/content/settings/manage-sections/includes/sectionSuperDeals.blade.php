@@ -20,38 +20,17 @@
           </div>
         </div> <!-- form-group-->
       </div>
-      <div class="form-group">
-        {{html()->label('Section Title')->for('section_super_deals_title')}}
-        {{html()->text('section_super_deals_title', get_setting('section_super_deals_title'))->class('form-control')->placeholder('Section
-        Title')->required(true)}}
-      </div> <!-- form-group-->
-
 
       <div class="form-group">
-        <div class="form-check form-check-inline">
-          {{html()->radio('section_super_deals_query_type', get_setting('section_super_deals_query_type', true),
-          'cat_query')->id('section_super_deals_cat_query')->class('form-check-input')}}
-          {{ html()->label("Category Query")->class('form-check-label')->for('section_super_deals_cat_query') }}
-        </div>
-        <div class="form-check form-check-inline">
-          {{html()->radio('section_super_deals_query_type', get_setting('section_super_deals_query_type') == 'search_query',
-          'search_query')->id('section_super_deals_search_query')->class('form-check-input')}}
-          {{ html()->label("Search Query")->class('form-check-label')->for('section_super_deals_search_query') }}
-        </div>
+        {{html()->label('Query Product')->for('section_super_deals_search')}}
+        {{html()->text('section_super_deals_search',
+        get_setting('section_super_deals_search'))->class('form-control')->placeholder('Search string')->required(true)}}
       </div> <!-- form-group-->
 
       <div class="form-group">
-        {{html()->label('Query last url after slash')->for('section_super_deals_query_url')}}
-        {{html()->text('section_super_deals_query_url',
-        get_setting('section_super_deals_query_url'))->class('form-control')->placeholder('/cat-slug?page=3 or
-        /bag?page=3')->required(true)}}
-      </div> <!-- form-group-->
-
-
-      <div class="form-group">
-        {{html()->label('Query Limit')->for('section_super_deals_query_limit')}}
-        {{html()->number('section_super_deals_query_limit',
-        get_setting('section_super_deals_query_limit'))->class('form-control')->placeholder('50')->required(true)}}
+        {{html()->label('Sale Timer')->for('section_super_deals_timer')}}
+        {{html()->datetime('section_super_deals_timer',
+        get_setting('section_super_deals_timer'))->class('form-control')->required(true)}}
       </div> <!-- form-group-->
 
       <div class="form-group">

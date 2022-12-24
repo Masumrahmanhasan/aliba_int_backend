@@ -14,8 +14,8 @@ if (!function_exists('generate_common_params')) {
         'name' => $product['Title'] ?? '',
         'product_code' => $product['Id'] ?? '',
         'rating' => $product['rating'] ?? '',
-        'regular_price' => get_product_regular_price($product, $rate),
-        'sale_price' => get_product_sale_price($product, $rate),
+        'regular_price' => $product['Price']['MarginPrice'] * $rate,
+        'sale_price' => $product['Price']['MarginPrice'] * $rate,
         'stock' => $product['MasterQuantity'] ?? 0,
         'total_sold' => get_features_value($product, 'TotalSales'),
       ];

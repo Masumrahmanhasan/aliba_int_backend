@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use PhpOffice\PhpSpreadsheet\Calculation\TextData\Format;
 
 class SettingController extends Controller
 {
@@ -170,7 +171,12 @@ class SettingController extends Controller
             $data['section_one_title_image'] = store_picture(\request()->file('section_one_title_image'), 'setting');
         }
 
-
+        if (isset($data['section_super_deals_timer'])) {
+            if ($data['section_super_deals_timer'] != null) {
+                $data['section_super_deals_timer'] = strtotime($data['section_super_deals_timer']);
+                $data['section_super_deals_timer'] = date('d-m-Y H:i:s', $data['section_super_deals_timer']);
+            }
+        }
 
         Setting::save_settings($data);
         return redirect()->back()->withFlashSuccess('Section Updated  Successfully');

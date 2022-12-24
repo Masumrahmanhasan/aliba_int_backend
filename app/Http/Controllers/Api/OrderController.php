@@ -67,7 +67,7 @@ class OrderController extends Controller
       if (is_array($feedback)) {
         return $this->success($feedback);
       }
-    } else if ($pay_method === "nagad_payment" || $pay_method === "bkash_payment") {
+    } else if ($pay_method === "nagad_payment" || $pay_method === "bkash_payment" || $pay_method === "bank_payment") {
 
       return $this->success([
         'status' => 'success',
