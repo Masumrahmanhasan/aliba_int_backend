@@ -4,6 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use App\Http\Controllers\Backend\Content\SettingController;
 
 /**
  * Class Kernel.
@@ -26,7 +27,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->call(function() {
+            if (get_setting('cache_auto_clean_active') == 'enable') {
+                (new SettingController)->cacheClearAll();
+            }
+        })->daily();
     }
 
     /**

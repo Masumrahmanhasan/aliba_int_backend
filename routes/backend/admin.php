@@ -100,6 +100,7 @@ Route::namespace('Content')->group(function () {
 
     Route::get('cache-control', [SettingController::class, 'cacheControl'])->name('cache.control');
     Route::post('cache-control-store', [SettingController::class, 'cacheClear'])->name('cache.control.store');
+    Route::post('cache-control-all-store', [SettingController::class, 'cacheClearAll'])->name('cache.control.all.store');
   });
 
   Route::group(['prefix' => 'front-setting', 'as' => 'front-setting.'], function () {
@@ -109,6 +110,8 @@ Route::namespace('Content')->group(function () {
 
     Route::get('manage-sections', [SettingController::class, 'manageSections'])->name('manage.sections');
     Route::post('manage-section-store', [SettingController::class, 'manageSectionsStore'])->name('manage.section.store');
+
+    Route::post('cache-setting', [SettingController::class, 'cacheSetting'])->name('manage.cache.setting');
 
     Route::get('banner-right', [SettingController::class, 'bannerRight'])->name('banner.right');
     Route::post('banner-right', [SettingController::class, 'bannerRightStore'])->name('banner.right.store');

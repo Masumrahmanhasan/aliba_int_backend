@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use League\Flysystem\Filesystem;
 use PhpOffice\PhpSpreadsheet\Calculation\TextData\Format;
 
 class SettingController extends Controller
@@ -154,6 +155,14 @@ class SettingController extends Controller
             return redirect()->back()->withFlashWarning('Browsing Cache Remove Successfully');
         }
         return redirect()->back()->withFlashDanger('Cache Type Not Found');
+    }
+
+    public function cacheClearAll()
+    {
+        $path = storage_path('app/browsing/');
+        File::cleanDirectory($path);
+
+        return redirect()->back()->withFlashSuccess('Browsing Cache Remove Successfully');
     }
 
 
@@ -521,5 +530,14 @@ class SettingController extends Controller
 
         Setting::save_settings($data);
         return redirect()->back()->withFlashSuccess('Homepage Card Updated Successfully');
+    }
+
+    public function cacheSetting()
+    {
+        $data = \request()->all();
+        unset($data['_token']);
+
+        Setting::save_settings($data);
+        return redirect()->back()->withFlashSuccess('Cache Settings Updated Successfully');
     }
 }
