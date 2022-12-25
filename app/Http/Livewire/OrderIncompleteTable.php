@@ -74,6 +74,12 @@ class OrderIncompleteTable extends TableComponent
       Column::make('Paid', 'needToPay')
         ->searchable()
         ->sortable(),
+      Column::make('Trx ID or Bank Account No.', 'trxId')
+        ->searchable()
+        ->sortable(),
+      Column::make('Pay Method', 'pay_method')
+        ->searchable()
+        ->sortable(),
       Column::make('Due', 'dueForProducts')
         ->searchable()
         ->sortable(),

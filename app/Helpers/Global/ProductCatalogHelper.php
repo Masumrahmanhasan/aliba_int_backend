@@ -233,7 +233,7 @@ if (!function_exists('sectionGetSearchProducts')) {
         $keyword = $log->query_data;
         $type = 'picture';
       }
-      $products = get_category_browsing_items($keyword, $type,  $offset, $limit);
+      $products = get_category_browsing_items($keyword, $type, rand(1,21), $limit);
     }
     return $products;
   }

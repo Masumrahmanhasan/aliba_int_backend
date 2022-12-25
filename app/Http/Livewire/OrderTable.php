@@ -38,7 +38,7 @@ class OrderTable extends TableComponent
 
     public function query(): Builder
     {
-        return Order::with('user')->whereNotIn('status', ['Waiting for Payment']);
+        return Order::with('user')->whereNotIn('status', ['Partial Paid']);
     }
 
     public function columns(): array
@@ -68,8 +68,6 @@ class OrderTable extends TableComponent
                 ->format(function (Order $model) {
                     return floating($model->needToPay);
                 }),
-            Column::make('Trx ID or Bank Account No.', 'trxId')
-                ->searchable(),
             Column::make('Due', 'dueForProducts')
                 ->searchable()
                 ->format(function (Order $model) {
