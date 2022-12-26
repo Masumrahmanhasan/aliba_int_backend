@@ -278,28 +278,71 @@ class CatalogController extends Controller
 
     public function checkoutDiscounts()
     {
-        $first_payment = get_setting('checkout_payment_first');
-        $second_payment = get_setting('checkout_payment_second');
-        $third_payment = get_setting('checkout_payment_third');
+        $bkash_first_payment = get_setting('checkout_bkash_payment_first');
+        $bkash_first_discount = get_setting('checkout_bkash_discount_first');
+        $bkash_second_payment = get_setting('checkout_bkash_payment_second');
+        $bkash_second_discount = get_setting('checkout_bkash_discount_second');
+        $bkash_third_payment = get_setting('checkout_bkash_payment_third');
+        $bkash_third_discount = get_setting('checkout_bkash_discount_third');
 
-        $first_discount = get_setting('checkout_discount_first');
-        $second_discount = get_setting('checkout_discount_second');
-        $third_discount = get_setting('checkout_discount_third');
+        $nagad_first_payment = get_setting('checkout_nagad_payment_first');
+        $nagad_first_discount = get_setting('checkout_nagad_discount_first');
+        $nagad_second_payment = get_setting('checkout_nagad_payment_second');
+        $nagad_second_discount = get_setting('checkout_nagad_discount_second');
+        $nagad_third_payment = get_setting('checkout_nagad_payment_third');
+        $nagad_third_discount = get_setting('checkout_nagad_discount_third');
+
+        $bank_first_payment = get_setting('checkout_bank_payment_first');
+        $bank_first_discount = get_setting('checkout_bank_discount_first');
+        $bank_second_payment = get_setting('checkout_bank_payment_second');
+        $bank_second_discount = get_setting('checkout_bank_discount_second');
+        $bank_third_payment = get_setting('checkout_bank_payment_third');
+        $bank_third_discount = get_setting('checkout_bank_discount_third');
 
         return response()->json([
             'status' => 'Success',
             'data' => [
-                'first' => [
-                    'payment_completion' => $first_payment,
-                    'discount' => $first_discount
+                'bkash_payment' => [
+                    [
+                        'payment_completion' => $bkash_first_payment,
+                        'discount' => $bkash_first_discount
+                    ],
+                    [
+                        'payment_completion' => $bkash_second_payment,
+                        'discount' => $bkash_second_discount
+                    ],
+                    [
+                        'payment_completion' => $bkash_third_payment,
+                        'discount' => $bkash_third_discount
+                    ]
                 ],
-                'second' => [
-                    'payment_completion' => $second_payment,
-                    'discount' => $second_discount
+                'nagad_payment' => [
+                    [
+                        'payment_completion' => $nagad_first_payment,
+                        'discount' => $nagad_first_discount
+                    ],
+                    [
+                        'payment_completion' => $nagad_second_payment,
+                        'discount' => $nagad_second_discount
+                    ],
+                    [
+                        'payment_completion' => $nagad_third_payment,
+                        'discount' => $nagad_third_discount
+                    ]
                 ],
-                'third' => [
-                    'payment_completion' => $third_payment,
-                    'discount' => $third_discount
+                'bank_payment' => [
+                    [
+                        'payment_completion' => $bank_first_payment,
+                        'discount' => $bank_first_discount
+                    ],
+                    [
+                        'payment_completion' => $bank_second_payment,
+                        'discount' => $bank_second_discount
+                    ],
+                    [
+                        'payment_completion' => $bank_third_payment,
+                        'discount' => $bank_third_discount
+                    ]
                 ],
             ]
         ]);
