@@ -29,6 +29,18 @@
       </div>
     </div> <!-- form-group-->
 
+    <div class="form-group">
+      {{html()->label('Frontend logo Footer Two (300x40)')->for('frontend_logo_footer_two')}}
+      {{html()->file('frontend_logo_footer_two')->class('form-control-file image
+      d-none')->id('frontend_logo_footer_two')->acceptImage()}}
+      <div class="d-block">
+        <label for="frontend_logo_footer_two">
+          <img src="{{asset(get_setting('frontend_logo_footer_two', $demoImg))}}" class="border img-fluid rounded holder"
+            alt="Image upload">
+        </label>
+      </div>
+    </div> <!-- form-group-->
+
 
     <div class="form-group">
       {{html()->label('Admin logo (60x60)')->for('admin_logo')}}

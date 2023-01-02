@@ -27,6 +27,9 @@ class SettingController extends Controller
         if (\request()->hasFile('frontend_logo_footer')) {
             $data['frontend_logo_footer'] = store_picture(\request()->file('frontend_logo_footer'), 'setting/logo');
         }
+        if (\request()->hasFile('frontend_logo_footer_two')) {
+            $data['frontend_logo_footer_two'] = store_picture(\request()->file('frontend_logo_footer_two'), 'setting/logo');
+        }
         if (\request()->hasFile('admin_logo')) {
             $data['admin_logo'] = store_picture(\request()->file('admin_logo'), 'setting/logo');
         }
