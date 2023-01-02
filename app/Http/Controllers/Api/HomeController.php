@@ -588,4 +588,20 @@ class HomeController extends Controller
             return $this->error('some error occurred', 417);
         }
     }
+
+    public function sectionCategoryProducts()
+    {
+        $url = request('url', null);
+        $limit = request('limit', 36);
+
+        return sectionGetCategoryProducts($url, $limit);
+    }
+
+    public function sectionSearchProducts()
+    {
+        $url = request('url', null);
+        $limit = request('limit', 36);
+
+        return sectionGetSearchProducts($url, $limit);
+    }
 }

@@ -110,7 +110,7 @@ class CatalogController extends Controller
         $SearchLog = SearchLog::where('search_id', $search_id)->where('search_type', 'picture')->first();
         if ($SearchLog) {
             // $products = get_category_browsing_items($SearchLog->query_data, 'picture',  $offset, $limit);
-            $products = otc_image_search_items($SearchLog->query_data, $offset, $limit);
+            $products = otc_image_search_items(getSiteUrl() . '/' .  $SearchLog->query_data, $offset, $limit);
 
             return $this->success([
                 'products' => json_encode($products)
@@ -346,5 +346,14 @@ class CatalogController extends Controller
                 ],
             ]
         ]);
+    }
+
+    public function image_search_items()
+    {
+        $image = request('image', null);
+        $offset = request('offset', 0);
+        $limit = request('limit', 36);
+
+        return otc_image_search_items($image, $offset, $limit);
     }
 }

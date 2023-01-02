@@ -327,7 +327,7 @@ if (!function_exists('otc_image_search_items')) {
         $query = [
             'instanceKey' => setOtcParams(),
             'language' => 'en',
-            'xmlParameters' => '<SearchItemsParameters><ImageUrl>' . getSiteUrl() . '/' . $search . '</ImageUrl></SearchItemsParameters>',
+            'xmlParameters' => '<SearchItemsParameters><ImageUrl>' . $search . '</ImageUrl></SearchItemsParameters>',
             'framePosition' => $offset,
             'frameSize' => $limit
         ];
