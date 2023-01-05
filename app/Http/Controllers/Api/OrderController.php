@@ -89,6 +89,7 @@ class OrderController extends Controller
     $cartTotal = $summary['cartTotal'] ?? null;
     $advanced = $summary['advanced'] ?? null;
     $dueAmount = $summary['dueAmount'] ?? null;
+    $refNumber = $summary['refNumber'] ?? null;
     $trxId = $summary['trxId'] ?? null;
 
     $order = Order::create([
@@ -104,6 +105,7 @@ class OrderController extends Controller
       'status' => $status,
       'address' => json_encode($address),
       'transaction_id' => $tran_id,
+      'refNumber' => $refNumber,
       'trxId' => $trxId,
       'currency' => 'BDT',
       'pay_method' => $pay_method,
@@ -259,5 +261,32 @@ class OrderController extends Controller
     }
 
     return $this->error('Invoice not found!', 417);
+  }
+
+  public function validateCoupon($code)
+  {
+    $coupon = Coupon::where('coupon_code', $code)->first();
+
+    if (!empty($coupon)) {
+        $redeemed = CouponUser::where('user_id', auth()->id())->where('coupon_code', $code)->first();
+
+        if (!empty($redeemed)) {
+            // return $this->error('Coupon has already been redeemed!', 417);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Coupon has already been redeemed!'
+            ]);
+        }
+
+        return $this->success([
+            'coupon' => $coupon
+        ]);
+    }
+
+    // return $this->error('Not found! Invalid Coupon!', 417);
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Not found! Invalid Coupon!'
+    ]);
   }
 }

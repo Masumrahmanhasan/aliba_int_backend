@@ -106,5 +106,8 @@ Route::group(['prefix' => 'v1', 'as' => 'v1.'], function () {
     Route::post('/delete-address', [AuthController::class, 'deleteAddress']);
 
     Route::post('/auth/logout', [AuthController::class, 'logout']);
-  });
+
+    });
+
+    Route::get('/validate-coupon/{code}', [OrderController::class, 'validateCoupon']);
 });
