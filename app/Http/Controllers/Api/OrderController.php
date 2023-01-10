@@ -79,6 +79,50 @@ class OrderController extends Controller
     return $this->error('Your order has not placed', 417);
   }
 
+  public function cancelOrders($order_id)
+  {
+    $order = Order::where('user_id', auth()->user()->id)->where('id', $order_id)->first();
+
+    if (!empty($order)) {
+      $order_items = OrderItem::where('order_id', $order->id)->get();
+
+      foreach ($order_items as $order_item) {
+        $order_item->delete();
+      }
+
+      $order->delete();
+
+      return $this->success([
+        'status' => 'success',
+        'message' => 'Your order has been canceled successfully',
+        'redirect' => '/dashboard/orders'
+      ]);
+    }
+
+    return $this->error('Order not found!', 417);
+  }
+
+  public function updateOrders($order_id)
+  {
+    $order = Order::where('user_id', auth()->user()->id)->where('id', $order_id)->first();
+
+    $summary = json_decode(request('summary'), true);
+    $trxId = $summary['trxId'] ?? null;
+
+    if (!empty($order)) {
+      $order->update([
+        'trxId' => $trxId
+      ]);
+
+      return $this->success([
+        'status' => 'success',
+        'message' => 'Your payment has been updated successfully',
+        'redirect' => '/dashboard/orders'
+      ]);
+    }
+
+    return $this->error('Order not found!', 417);
+  }
 
   public function orderStore($tran_id, $pay_method, $summary, $address, $status)
   {
@@ -268,25 +312,25 @@ class OrderController extends Controller
     $coupon = Coupon::where('coupon_code', $code)->first();
 
     if (!empty($coupon)) {
-        $redeemed = CouponUser::where('user_id', auth()->id())->where('coupon_code', $code)->first();
+      $redeemed = CouponUser::where('user_id', auth()->id())->where('coupon_code', $code)->first();
 
-        if (!empty($redeemed)) {
-            // return $this->error('Coupon has already been redeemed!', 417);
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Coupon has already been redeemed!'
-            ]);
-        }
-
-        return $this->success([
-            'coupon' => $coupon
+      if (!empty($redeemed)) {
+        // return $this->error('Coupon has already been redeemed!', 417);
+        return response()->json([
+          'status' => 'success',
+          'message' => 'Coupon has already been redeemed!'
         ]);
+      }
+
+      return $this->success([
+        'coupon' => $coupon
+      ]);
     }
 
     // return $this->error('Not found! Invalid Coupon!', 417);
     return response()->json([
-        'status' => 'success',
-        'message' => 'Not found! Invalid Coupon!'
+      'status' => 'success',
+      'message' => 'Not found! Invalid Coupon!'
     ]);
   }
 }

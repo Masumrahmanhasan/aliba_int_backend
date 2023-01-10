@@ -91,6 +91,8 @@ Route::group(['prefix' => 'v1', 'as' => 'v1.'], function () {
     Route::post('/get-wishlist', [WishlistController::class, 'getCustomerWishList']);
 
     Route::post('/confirm-order', [OrderController::class, 'confirmOrders']);
+    Route::post('/cancel-order/{id}', [OrderController::class, 'cancelOrders']);
+    Route::post('/update-order/{id}', [OrderController::class, 'updateOrders']);
     Route::post('/payment-confirm', [OrderController::class, 'confirmOrderPayment']);
 
     Route::get('/orders', [OrderController::class, 'orders']);

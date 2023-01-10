@@ -571,11 +571,13 @@ class HomeController extends Controller
 
     public function getSuperDealSection()
     {
-        if (get_setting('section_super_deals_active') == 'enable') {
+        // if (get_setting('section_super_deals_active') == 'enable') {
             $offset = request('offset', 0);
             $limit = request('limit', 6);
 
-            $search = get_setting('section_super_deals_search');
+            $searchLocal = get_setting('section_super_deals_search');
+            $search = request('search', $searchLocal);
+
             $section_super_deals_timer = get_setting('section_super_deals_timer');
 
             $SuperDealProducts = getSuperDealProducts($search, $offset, $limit);
@@ -586,7 +588,7 @@ class HomeController extends Controller
                 ]);
             }
             return $this->error('some error occurred', 417);
-        }
+        // }
     }
 
     public function sectionCategoryProducts()

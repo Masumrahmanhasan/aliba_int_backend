@@ -21,7 +21,9 @@ class TaxonomyController extends Controller
    */
   public function index()
   {
-    $this->refresh_root_taxonomy();
+    // $this->refresh_root_taxonomy();
+    // $this->refresh_taxonomy_thumbnails();
+
     $mainCategories = Taxonomy::with('children')->whereNull("ParentId")->get();
     return view('backend.content.taxonomy.index', compact('mainCategories'));
   }
@@ -280,5 +282,31 @@ class TaxonomyController extends Controller
       'status' => true,
       'msg' => 'Categories deleted successfully'
     ]);
+  }
+
+  public function refresh_taxonomy_thumbnails()
+  {
+    $taxonomies = Taxonomy::whereNotNull('ParentId')->whereNull('IconImageUrl')->get();
+
+    foreach ($taxonomies as $taxonomy) {
+      $product = otc_category_items($taxonomy->otc_id, 0, 1);
+      if (isset($product['TotalCount'])) {
+        if ($product['TotalCount'] != 0) {
+          $taxonomy->update([
+            'IconImageUrl' => $product['Content'][0]['MainPictureUrl']
+          ]);
+        } else {
+          $child = Taxonomy::where('ParentId', $taxonomy->otc_id)->first();
+          if (isset($child)) {
+            $childProduct = otc_category_items($child->otc_id, 0, 1);
+            if (isset($childProduct['Content'][0]['MainPictureUrl'])) {
+              $taxonomy->update([
+                'IconImageUrl' => $childProduct['Content'][0]['MainPictureUrl']
+              ]);
+            }
+          }
+        }
+      }
+    }
   }
 }
