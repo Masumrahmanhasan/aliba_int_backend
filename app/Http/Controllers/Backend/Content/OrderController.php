@@ -54,6 +54,28 @@ class OrderController extends Controller
     return redirect()->back()->withFlashSuccess('Incomplete order #' . $tran . ' make as partial paid');
   }
 
+  public function makeAsFullPayment($id)
+  {
+    $order = Order::findOrFail($id);
+    $order_id = $id;
+    $order_user_id = $order->user_id;
+    if ($order) {
+      DB::transaction(function () use ($order, $order_id, $order_user_id) {
+        $order->update([
+          'status' => 'full-paid'
+        ]);
+
+        OrderItem::where('order_id', $order_id)
+          ->where('user_id', $order_user_id)
+          ->update([
+            'status' => 'full-paid',
+          ]);
+      });
+    }
+    $tran = $order->order_number ?? '';
+    return redirect()->back()->withFlashSuccess('Incomplete order #' . $tran . ' make as full paid');
+  }
+
 
   public function orderPrint($id)
   {
@@ -125,6 +147,12 @@ class OrderController extends Controller
       $data = $request->only('status');
     } elseif ($status === 'delivered') {
       $data = $request->only('status');
+
+      $order = Order::findOrFail($orderItem->order_id);
+      $order->update([
+        'status' => 'order-completed'
+      ]);
+
     } elseif ($status === 'out-of-stock') {
       $data = $request->only('out_of_stock', 'out_of_stock_type', 'status');
       $amount = $data['out_of_stock'];

@@ -69,10 +69,11 @@ class OrderController extends Controller
       }
     } else if ($pay_method === "nagad_payment" || $pay_method === "bkash_payment" || $pay_method === "bank_payment") {
 
+    $order = Order::where('user_id', auth()->id())->latest()->first();
       return $this->success([
         'status' => 'success',
         'message' => 'Your order placed successfully',
-        'redirect' => '/dashboard/orders'
+        'redirect' => '/payment/' . $order->id
       ]);
     }
 

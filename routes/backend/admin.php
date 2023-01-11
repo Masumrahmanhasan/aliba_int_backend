@@ -25,6 +25,7 @@ Route::namespace('Content')->group(function () {
   Route::get('order/restore/{order}', 'OrderController@restore')->name('order.restore');
   Route::get('order/{order}/print', 'OrderController@orderPrint')->name('order.print');
   Route::get('makeAsPayment/{order}', [OrderController::class, 'makeAsPayment'])->name('order.makeAsPayment');
+  Route::get('makeAsFullPayment/{order}', [OrderController::class, 'makeAsFullPayment'])->name('order.makeAsFullPayment');
   Route::get('order/wallet', 'OrderController@walletOrders')->name('order.wallet');
   Route::post('order/wallet/{id}', [OrderController::class, 'walletDetails'])->name('order.wallet.details');
   Route::post('order/show/{id}', [OrderController::class, 'show'])->name('order.show');
