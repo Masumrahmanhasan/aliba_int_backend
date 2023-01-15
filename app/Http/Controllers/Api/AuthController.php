@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Artisan;
 
 class AuthController extends Controller
 {
@@ -256,6 +257,26 @@ class AuthController extends Controller
         ]);
     }
 
+    public function updateMe()
+    {
+        Artisan::call('cache:clear');
+        Artisan::call('route:clear');
+        Artisan::call('config:clear');
+
+        $request = request()->all();
+        $params = $request['params'];
+
+        $user = User::where('id', auth()->id())->first();
+        $user->update([
+            'name' => $params['name'],
+            'email' => $params['email'],
+            'phone' => $params['phone']
+        ]);
+
+        return $this->success([
+            'message' => 'Information updated successfully!'
+        ]);
+    }
 
     public function logout()
     {

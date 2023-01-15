@@ -90,6 +90,7 @@ Route::group(['prefix' => 'v1', 'as' => 'v1.'], function () {
 
   Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::post('/me', [AuthController::class, 'me']);
+    Route::post('/me/update', [AuthController::class, 'updateMe']);
     Route::post('/get-wishlist', [WishlistController::class, 'getCustomerWishList']);
 
     Route::post('/confirm-order', [OrderController::class, 'confirmOrders']);
