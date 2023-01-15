@@ -469,6 +469,10 @@ if (!function_exists('getSuperDealProducts')) {
                         }
                     }
 
+                    $Price = getArrayKeyData($content, 'Price', []);
+                    $OMarginPrice = getArrayKeyData($Price, 'MarginPrice', []);
+                    $original_price = $OMarginPrice * $rate;
+
                     $PromotionPrice = getArrayKeyData($content, 'PromotionPrice', []);
                     $MarginPrice = getArrayKeyData($PromotionPrice, 'MarginPrice', []);
                     $discount_price = $MarginPrice * $rate;
@@ -479,6 +483,7 @@ if (!function_exists('getSuperDealProducts')) {
                     $content_data = [
                         'product_code' => $product_code,
                         'img' => $img,
+                        'original_price' => $original_price,
                         'discount_price' => $discount_price,
                         'discount_percentage' => $discount_percentage,
                         'total_sold' => $total_sold

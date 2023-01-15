@@ -553,9 +553,29 @@ class HomeController extends Controller
                         'price' => get_setting('hp_card_five_product_one_price'),
                     ],
                     [
-                        'id' => get_setting('hp_card_five_product_one_id'),
-                        'image' => get_setting('hp_card_five_product_one_image'),
-                        'price' => get_setting('hp_card_five_product_one_price'),
+                        'id' => get_setting('hp_card_five_product_two_id'),
+                        'image' => get_setting('hp_card_five_product_two_image'),
+                        'price' => get_setting('hp_card_five_product_two_price'),
+                    ],
+                    [
+                        'id' => get_setting('hp_card_five_product_three_id'),
+                        'image' => get_setting('hp_card_five_product_three_image'),
+                        'price' => get_setting('hp_card_five_product_three_price'),
+                    ],
+                    [
+                        'id' => get_setting('hp_card_five_product_four_id'),
+                        'image' => get_setting('hp_card_five_product_four_image'),
+                        'price' => get_setting('hp_card_five_product_four_price'),
+                    ],
+                    [
+                        'id' => get_setting('hp_card_five_product_five_id'),
+                        'image' => get_setting('hp_card_five_product_five_image'),
+                        'price' => get_setting('hp_card_five_product_five_price'),
+                    ],
+                    [
+                        'id' => get_setting('hp_card_five_product_six_id'),
+                        'image' => get_setting('hp_card_five_product_six_image'),
+                        'price' => get_setting('hp_card_five_product_six_price'),
                     ]
                 ]
             ];
@@ -591,6 +611,25 @@ class HomeController extends Controller
         // }
     }
 
+    public function getSectionBelowBanner()
+    {
+        // if (get_setting('section_super_deals_active') == 'enable') {
+            $offset = request('offset', 0);
+            $limit = request('limit', 6);
+
+            $searchLocal = get_setting('section_seven_search');
+            $search = request('search', $searchLocal);
+
+            $SuperDealProducts = getSuperDealProducts($search, $offset, $limit);
+            if (!empty($SuperDealProducts)) {
+                return $this->success([
+                    'SuperDealProducts' => $SuperDealProducts
+                ]);
+            }
+            return $this->error('some error occurred', 417);
+        // }
+    }
+
     public function sectionCategoryProducts()
     {
         $url = request('url', null);
@@ -605,5 +644,12 @@ class HomeController extends Controller
         $limit = request('limit', 36);
 
         return sectionGetSearchProducts($url, $limit);
+    }
+
+    public function sectionSaleOfferProducts()
+    {
+        $item_id = request('item_id', null);
+
+        return getSaleOfferProducts($item_id);
     }
 }

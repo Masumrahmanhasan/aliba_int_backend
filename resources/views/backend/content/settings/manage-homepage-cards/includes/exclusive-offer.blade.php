@@ -45,6 +45,26 @@
             {{ html()->text('hp_card_five_product_two_id', get_setting('hp_card_five_product_two_id'))->class('form-control')->placeholder('Product ID') }}
         </div> <!-- form-group-->
 
+        <div class="form-group">
+            {{ html()->label('Product Three ID')->for('hp_card_five_product_three_id') }}
+            {{ html()->text('hp_card_five_product_three_id', get_setting('hp_card_five_product_three_id'))->class('form-control')->placeholder('Product ID') }}
+        </div> <!-- form-group-->
+
+        <div class="form-group">
+            {{ html()->label('Product Four ID')->for('hp_card_five_product_four_id') }}
+            {{ html()->text('hp_card_five_product_four_id', get_setting('hp_card_five_product_four_id'))->class('form-control')->placeholder('Product ID') }}
+        </div> <!-- form-group-->
+
+        <div class="form-group">
+            {{ html()->label('Product Five ID')->for('hp_card_five_product_five_id') }}
+            {{ html()->text('hp_card_five_product_five_id', get_setting('hp_card_five_product_five_id'))->class('form-control')->placeholder('Product ID') }}
+        </div> <!-- form-group-->
+
+        <div class="form-group">
+            {{ html()->label('Product Six ID')->for('hp_card_five_product_six_id') }}
+            {{ html()->text('hp_card_five_product_six_id', get_setting('hp_card_five_product_six_id'))->class('form-control')->placeholder('Product ID') }}
+        </div> <!-- form-group-->
+
 
         <div class="form-group">
             {{ html()->button('Update')->class('btn w-25 btn-primary') }}

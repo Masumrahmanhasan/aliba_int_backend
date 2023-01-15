@@ -354,6 +354,38 @@ class SettingController extends Controller
             }
         }
 
+        if (isset($data['hp_card_five_product_three_id'])) {
+            if ($data['hp_card_five_product_three_id'] != null) {
+                $exclusive_data = getSaleOfferProducts($data['hp_card_five_product_three_id']);
+                $data['hp_card_five_product_three_image'] = $exclusive_data['image'];
+                $data['hp_card_five_product_three_price'] = $exclusive_data['price'];
+            }
+        }
+
+        if (isset($data['hp_card_five_product_four_id'])) {
+            if ($data['hp_card_five_product_four_id'] != null) {
+                $exclusive_data = getSaleOfferProducts($data['hp_card_five_product_four_id']);
+                $data['hp_card_five_product_four_image'] = $exclusive_data['image'];
+                $data['hp_card_five_product_four_price'] = $exclusive_data['price'];
+            }
+        }
+
+        if (isset($data['hp_card_five_product_five_id'])) {
+            if ($data['hp_card_five_product_five_id'] != null) {
+                $exclusive_data = getSaleOfferProducts($data['hp_card_five_product_five_id']);
+                $data['hp_card_five_product_five_image'] = $exclusive_data['image'];
+                $data['hp_card_five_product_five_price'] = $exclusive_data['price'];
+            }
+        }
+
+        if (isset($data['hp_card_five_product_six_id'])) {
+            if ($data['hp_card_five_product_six_id'] != null) {
+                $exclusive_data = getSaleOfferProducts($data['hp_card_five_product_six_id']);
+                $data['hp_card_five_product_six_image'] = $exclusive_data['image'];
+                $data['hp_card_five_product_six_price'] = $exclusive_data['price'];
+            }
+        }
+
         Setting::save_settings($data);
 
         return redirect()->back()->withFlashSuccess('Homepage Card Updated Successfully');

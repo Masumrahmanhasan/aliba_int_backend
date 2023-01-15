@@ -42,6 +42,7 @@ Route::group(['prefix' => 'v1', 'as' => 'v1.'], function () {
   Route::get('/get-section-products/{section}', [HomeController::class, 'getSectionProducts']);
   Route::get('/section-category-products', [HomeController::class, 'sectionCategoryProducts']);
   Route::get('/section-search-products', [HomeController::class, 'sectionSearchProducts']);
+  Route::get('/section-sale-offer-products', [HomeController::class, 'sectionSaleOfferProducts']);
 
   Route::get('/loving-products', [HomeController::class, 'lovingProducts']);
   Route::post('/buying-products', [HomeController::class, 'buyingProducts']);
@@ -62,6 +63,7 @@ Route::group(['prefix' => 'v1', 'as' => 'v1.'], function () {
   Route::get('/payment-qr-codes', [HomeController::class, 'paymentQrCodes']);
   Route::get('/get-featured-categories', [HomeController::class, 'getFeaturedCategories']);
   Route::get('/get-super-deals', [HomeController::class, 'getSuperDealSection']);
+  Route::get('/get-discount-section', [HomeController::class, 'getSectionBelowBanner']);
 
 
   Route::get('/categories', [CatalogController::class, 'categories']);
