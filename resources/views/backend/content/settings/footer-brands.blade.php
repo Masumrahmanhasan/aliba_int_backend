@@ -1,6 +1,6 @@
 @extends('backend.layouts.app')
 
-@section('title', 'Footer Brand Image Settings')
+@section('title', 'Pop-up Banner Settings')
 
 @php
     $required = html()
@@ -17,7 +17,7 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header with-border">
-                    <h3 class="card-title">Footer Brand Image Settings<small class="ml-2">(update information
+                    <h3 class="card-title">Pop-up Banner Settings<small class="ml-2">(update information
                             anytime)</small></h3>
                 </div>
                 <div class="card-body">
@@ -25,96 +25,16 @@
                     <p class="mb-4 text-center text-danger">Click the Image for updating Process</p>
 
                     <div class="form-group row mb-4">
-                        {{ html()->label('Image One')->class('col-md-4 form-control-label text-right')->for('footer_image_one') }}
+                        {{ html()->label('Pop-up Banner')->class('col-md-4 form-control-label text-right')->for('popup_banner') }}
                         <div class="col-md-8">
-                            @php($aLogo = get_setting('footer_image_one') ?? $demoImg)
-                            <label for="footer_image_one">
+                            @php($aLogo = get_setting('popup_banner') ?? $demoImg)
+                            <label for="popup_banner">
                                 <img src="{{ asset($aLogo) }}" class="border img-fluid rounded holder"
                                     style="max-width: 200px" alt="Image upload">
                             </label>
-                            {{ html()->file('footer_image_one')->class('form-control-file image d-none')->id('footer_image_one')->acceptImage() }}
+                            {{ html()->file('popup_banner')->class('form-control-file image d-none')->id('popup_banner')->acceptImage() }}
                         </div> <!-- col-->
                     </div> <!-- form-group-->
-                    <div class="form-group row mb-4">
-                        {{ html()->label('Image One URL')->class('col-md-4 form-control-label text-right')->for('footer_image_one_url') }}
-                        <div class="col-md-8">
-                            {{ html()->text('footer_image_one_url', get_setting('footer_image_one_url'))->placeholder('URL')->class('form-control') }}
-                        </div> <!-- col-->
-                    </div> <!-- form-group-->
-
-                    <div class="form-group row mb-4">
-                        {{ html()->label('Image Two')->class('col-md-4 form-control-label text-right')->for('footer_image_two') }}
-                        <div class="col-md-8">
-                            @php($aLogo = get_setting('footer_image_two') ?? $demoImg)
-                            <label for="footer_image_two">
-                                <img src="{{ asset($aLogo) }}" class="border img-fluid rounded holder"
-                                    style="max-width: 200px" alt="Image upload">
-                            </label>
-                            {{ html()->file('footer_image_two')->class('form-control-file image d-none')->id('footer_image_two')->acceptImage() }}
-                        </div> <!-- col-->
-                    </div> <!-- form-group-->
-                    <div class="form-group row mb-4">
-                        {{ html()->label('Image Two URL')->class('col-md-4 form-control-label text-right')->for('footer_image_two_url') }}
-                        <div class="col-md-8">
-                            {{ html()->text('footer_image_two_url', get_setting('footer_image_two_url'))->placeholder('URL')->class('form-control') }}
-                        </div> <!-- col-->
-                    </div> <!-- form-group-->
-
-                    <div class="form-group row mb-4">
-                        {{ html()->label('Image Three')->class('col-md-4 form-control-label text-right')->for('footer_image_three') }}
-                        <div class="col-md-8">
-                            @php($aLogo = get_setting('footer_image_three') ?? $demoImg)
-                            <label for="footer_image_three">
-                                <img src="{{ asset($aLogo) }}" class="border img-fluid rounded holder"
-                                    style="max-width: 200px" alt="Image upload">
-                            </label>
-                            {{ html()->file('footer_image_three')->class('form-control-file image d-none')->id('footer_image_three')->acceptImage() }}
-                        </div> <!-- col-->
-                    </div> <!-- form-group-->
-                    <div class="form-group row mb-4">
-                        {{ html()->label('Image Three URL')->class('col-md-4 form-control-label text-right')->for('footer_image_three_url') }}
-                        <div class="col-md-8">
-                            {{ html()->text('footer_image_three_url', get_setting('footer_image_three_url'))->placeholder('URL')->class('form-control') }}
-                        </div> <!-- col-->
-                    </div> <!-- form-group-->
-
-                    <div class="form-group row mb-4">
-                        {{ html()->label('Image Four')->class('col-md-4 form-control-label text-right')->for('footer_image_four') }}
-                        <div class="col-md-8">
-                            @php($aLogo = get_setting('footer_image_four') ?? $demoImg)
-                            <label for="footer_image_four">
-                                <img src="{{ asset($aLogo) }}" class="border img-fluid rounded holder"
-                                    style="max-width: 200px" alt="Image upload">
-                            </label>
-                            {{ html()->file('footer_image_four')->class('form-control-file image d-none')->id('footer_image_four')->acceptImage() }}
-                        </div> <!-- col-->
-                    </div> <!-- form-group-->
-                    <div class="form-group row mb-4">
-                        {{ html()->label('Image Four URL')->class('col-md-4 form-control-label text-right')->for('footer_image_four_url') }}
-                        <div class="col-md-8">
-                            {{ html()->text('footer_image_four_url', get_setting('footer_image_four_url'))->placeholder('URL')->class('form-control') }}
-                        </div> <!-- col-->
-                    </div> <!-- form-group-->
-
-                    <div class="form-group row mb-4">
-                        {{ html()->label('Image Five')->class('col-md-4 form-control-label text-right')->for('footer_image_five') }}
-                        <div class="col-md-8">
-                            @php($aLogo = get_setting('footer_image_five') ?? $demoImg)
-                            <label for="footer_image_five">
-                                <img src="{{ asset($aLogo) }}" class="border img-fluid rounded holder"
-                                    style="max-width: 200px" alt="Image upload">
-                            </label>
-                            {{ html()->file('footer_image_five')->class('form-control-file image d-none')->id('footer_image_five')->acceptImage() }}
-                        </div> <!-- col-->
-                    </div> <!-- form-group-->
-                    <div class="form-group row mb-4">
-                        {{ html()->label('Image Five URL')->class('col-md-4 form-control-label text-right')->for('footer_image_five_url') }}
-                        <div class="col-md-8">
-                            {{ html()->text('footer_image_five_url', get_setting('footer_image_five_url'))->placeholder('URL')->class('form-control') }}
-                        </div> <!-- col-->
-                    </div> <!-- form-group-->
-
-
 
                     <div class="form-group row mb-4">
                         <div class="col-md-8 offset-md-4">

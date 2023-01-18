@@ -129,8 +129,8 @@ Route::namespace('Content')->group(function () {
     Route::get('checkout-discounts', [SettingController::class, 'checkoutDiscounts'])->name('checkout-discounts');
     Route::post('checkout-discounts', [SettingController::class, 'checkoutDiscountsStore'])->name('checkout-discounts.store');
 
-    Route::get('footer-brand-settings', [SettingController::class, 'footerBrandSettings'])->name('footer-brand-settings');
-    Route::post('footer-brand-settings-store', [SettingController::class, 'footerBrandSettingsStore'])->name('footer-brand-settings-store');
+    Route::get('popup-banner-settings', [SettingController::class, 'footerBrandSettings'])->name('footer-brand-settings');
+    Route::post('popup-banner-settings-store', [SettingController::class, 'footerBrandSettingsStore'])->name('footer-brand-settings-store');
 
     Route::get('payment-qr-codes', [SettingController::class, 'paymentQrCodeSettings'])->name('payment-qr-codes');
     Route::post('payment-qr-codes-store', [SettingController::class, 'paymentQrCodeSettingsStore'])->name('payment-qr-codes-store');

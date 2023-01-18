@@ -217,7 +217,7 @@
                 <a href="{{ route('admin.front-setting.footer-brand-settings') }}"
                    class="nav-link {{ active_class(Route::is('admin.front-setting.footer-brand-settings')) }}">
                   <i class="nav-icon fa fa-desktop"></i>
-                  <p class="text">Footer Banners</p>
+                  <p class="text">Pop-up Banner</p>
                 </a>
               </li>
 
