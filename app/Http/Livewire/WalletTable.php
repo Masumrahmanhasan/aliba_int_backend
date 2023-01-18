@@ -93,15 +93,15 @@ class WalletTable extends TableComponent
         ->format(function (OrderItem $model) {
           return $model->user->name ? $model->user->full_name : 'N/A';
         }),
+        Column::make('OrderNo.', 'order_number')
+          ->searchable()
+          ->format(function (OrderItem $model) {
+            return $this->html('<span class="order_number">' . $model->order_number . '</span>');
+          }),
       Column::make('TrackingNo.', 'tracking_number')
         ->searchable()
         ->format(function (OrderItem $model) {
           return $this->html('<span class="tracking_number">' . $model->tracking_number . '</span>');
-        }),
-      Column::make('TaobaoOrderNo.', 'order_number')
-        ->searchable()
-        ->format(function (OrderItem $model) {
-          return $this->html('<span class="order_number">' . $model->order_number . '</span>');
         }),
       Column::make('ProductsTitle', 'name')
         ->searchable()
@@ -112,10 +112,10 @@ class WalletTable extends TableComponent
         ->format(function (OrderItem $model) {
           return $this->html('<span>' . $model->shipped_by . '</span> <br> <span class="text-danger">' . $model->shipping_rate . '</span>');
         }),
-      Column::make('TaobaoLink', '1688_link')
+      Column::make('1688cartLink', '1688_link')
         ->format(function (OrderItem $model) {
           $product_id = isset($model->product) ? $model->product->ItemId : '';
-          return $this->html($this->link("https://item.taobao.com/item.htm?id=" . $product_id, 'Click', ['target' => '_blank']));
+          return $this->html($this->link("https://1688cart.com/product/" . $product_id, 'Click', ['target' => '_blank']));
         })
         ->excludeFromExport(),
       Column::make('Quantity', 'quantity')

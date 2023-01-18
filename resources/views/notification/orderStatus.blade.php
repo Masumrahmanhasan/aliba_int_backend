@@ -4,7 +4,7 @@
 {!! $data !!}
 
 Thanks,<br>
-<a href="{{('/')}}">
+<a href="https://1688cart.com">
 {{ config('app.name') }}
 </a>
 @endcomponent

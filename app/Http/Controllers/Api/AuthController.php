@@ -270,11 +270,12 @@ class AuthController extends Controller
         $user->update([
             'name' => $params['name'],
             'email' => $params['email'],
-            'phone' => $params['phone']
+            'phone' => $params['phone'],
+            'refund_credentials' => $params['refund_credentials']
         ]);
 
         return $this->success([
-            'message' => 'Information updated successfully!'
+            'message' => 'Information updated successfully!',
         ]);
     }
 
