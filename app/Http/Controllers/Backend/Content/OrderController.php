@@ -196,6 +196,26 @@ class OrderController extends Controller
     return $orderItem;
   }
 
+  public function updateShippingRate($id, Request $request)
+  {
+    $order = Order::where('id', $id)->first();
+
+    if (!empty($order)) {
+        $order->update([
+            'shipping_rate' => $request->shipping_rate
+        ]);
+
+        $items = OrderItem::where('order_id', $order->id)->get();
+        foreach ($items as $item) {
+            $item->update([
+                'shipping_rate' => $request->shipping_rate
+            ]);
+        }
+    }
+
+    return redirect()->back()->with('success', 'Shipping rate updated succcessfully!');
+  }
+
 
   /**
    * Display the specified resource.

@@ -21,8 +21,6 @@
             <div class="col-md-8">
               {{html()->text('base_currency', get_setting('base_currency'))
                       ->class('form-control')
-                      ->placeholder('CNY')
-                      ->disabled(true)
                       ->attribute('aria-describedby', 'baseCurrency')}}
               <small id="baseCurrency" class="form-text text-muted">This is the base currency of
                 OTC.</small>

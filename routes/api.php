@@ -96,6 +96,7 @@ Route::group(['prefix' => 'v1', 'as' => 'v1.'], function () {
     Route::post('/confirm-order', [OrderController::class, 'confirmOrders']);
     Route::post('/cancel-order/{id}', [OrderController::class, 'cancelOrders']);
     Route::post('/update-order/{id}', [OrderController::class, 'updateOrders']);
+    Route::post('/refund-order/{id}', [OrderController::class, 'refundOrders']);
     Route::post('/payment-confirm', [OrderController::class, 'confirmOrderPayment']);
 
     Route::get('/orders', [OrderController::class, 'orders']);
@@ -112,7 +113,7 @@ Route::group(['prefix' => 'v1', 'as' => 'v1.'], function () {
 
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 
-    });
+});
 
-    Route::get('/validate-coupon/{code}', [OrderController::class, 'validateCoupon']);
+Route::get('/validate-coupon/{code}', [OrderController::class, 'validateCoupon']);
 });

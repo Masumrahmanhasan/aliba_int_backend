@@ -22,316 +22,333 @@ use Illuminate\Support\Str;
 class OrderController extends Controller
 {
 
-  use ApiResponser;
+    use ApiResponser;
 
-  public function confirmOrders()
-  {
-    $cart = json_decode(request('cart'), true);
-    $address = json_decode(request('address'), true);
-    $summary = json_decode(request('summary'), true);
+    public function confirmOrders()
+    {
+        $cart = json_decode(request('cart'), true);
+        $address = json_decode(request('address'), true);
+        $summary = json_decode(request('summary'), true);
 
-    $tran_id = generate_transaction_id();
-    $pay_method = request('paymentMethod');
+        $tran_id = generate_transaction_id();
+        $pay_method = request('paymentMethod');
 
-    try {
-      DB::transaction(function () use ($tran_id, $pay_method, $cart, $summary, $address) {
-        $status = 'waiting-for-payment';
-        $order = $this->orderStore($tran_id, $pay_method, $summary, $address, $status);
-        foreach ($cart as $product) {
-          $itemVariations = $product['ConfiguredItems'];
-          $OrderItemData = [
-            'name' => $product['Title'],
-            'link' => "/product/{$product['Id']}",
-            'shipped_by' => 'Air',
-            'shipping_rate' => $product['shippingRate'] ?? 800,
-            'approxWeight' => $product['ApproxWeight'],
-            'chinaLocalDelivery' => $product['DeliveryCost'],
-            'status' => $status,
-          ];
+        try {
+            DB::transaction(function () use ($tran_id, $pay_method, $cart, $summary, $address) {
+                $status = 'waiting-for-payment';
+                $order = $this->orderStore($tran_id, $pay_method, $summary, $address, $status);
+                foreach ($cart as $product) {
+                    $itemVariations = $product['ConfiguredItems'];
+                    $OrderItemData = [
+                        'name' => $product['Title'],
+                        'link' => "/product/{$product['Id']}",
+                        'shipped_by' => 'Air',
+                        'shipping_rate' => $product['shippingRate'] ?? 800,
+                        'approxWeight' => $product['ApproxWeight'],
+                        'chinaLocalDelivery' => $product['DeliveryCost'],
+                        'status' => $status,
+                    ];
 
-          $this->storeOrderItems($order, $product, $itemVariations, $OrderItemData);
+                    $this->storeOrderItems($order, $product, $itemVariations, $OrderItemData);
+                }
+
+                $auth_id = auth()->id();
+                CustomerCart::where('user_id', $auth_id)->whereNull('buy_status')->update([
+                    'buy_status' => Carbon::now()->toDateTimeString()
+                ]);
+            }, 3);
+        } catch (\Exception $ex) {
+            return $this->error($ex, 417);
         }
 
+        if ($pay_method === "sManager") {
+            $sManager =  new  SManagerPaymentController();
+            $feedback = $sManager->initial_payment($tran_id);
+            if (is_array($feedback)) {
+                return $this->success($feedback);
+            }
+        } else if ($pay_method === "nagad_payment" || $pay_method === "bkash_payment" || $pay_method === "bank_payment") {
+
+            $order = Order::where('user_id', auth()->id())->latest()->first();
+            return $this->success([
+                'status' => 'success',
+                'message' => 'Your order placed successfully',
+                'redirect' => '/payment/' . $order->id
+            ]);
+        }
+
+        return $this->error('Your order has not placed', 417);
+    }
+
+    public function cancelOrders($order_id)
+    {
+        $order = Order::where('user_id', auth()->user()->id)->where('id', $order_id)->first();
+
+        if (!empty($order)) {
+
+            $order->update([
+                'status' => 'cancelled',
+                'cancellation_reason' => request('reason', 'No reason')
+            ]);
+
+            return $this->success([
+                'status' => 'success',
+                'message' => 'Your order has been canceled successfully',
+                'redirect' => '/dashboard/orders'
+            ]);
+        }
+
+        return $this->error('Order not found!', 417);
+    }
+
+    public function updateOrders($order_id)
+    {
+        $order = Order::where('user_id', auth()->user()->id)->where('id', $order_id)->first();
+
+        $summary = json_decode(request('summary'), true);
+        $trxId = $summary['trxId'] ?? null;
+
+        if (!empty($order)) {
+            $order->update([
+                'trxId' => $trxId
+            ]);
+
+            return $this->success([
+                'status' => 'success',
+                'message' => 'Your payment has been updated successfully',
+                'redirect' => '/dashboard/orders'
+            ]);
+        }
+
+        return $this->error('Order not found!', 417);
+    }
+
+    public function refundOrders($id)
+    {
+        $order = Order::where('user_id', auth()->user()->id)->where('id', $id)->first();
+
+        if (!empty($order)) {
+            $order->update([
+                'status' => 'requested-refund'
+            ]);
+
+            return $this->success([
+                'status' => 'success',
+                'message' => 'Refund on your order has been requested successfully',
+                'redirect' => '/dashboard/orders'
+            ]);
+        }
+
+        return $this->error('Order not found!', 417);
+    }
+
+    public function orderStore($tran_id, $pay_method, $summary, $address, $status)
+    {
+        //order_number
+        $user = auth()->user();
+        $couponCode = $summary['couponCode'] ?? null;
+        $couponDiscount = $summary['couponDiscount'] ?? null;
+        $cartTotal = $summary['cartTotal'] ?? null;
+        $advanced = $summary['advanced'] ?? null;
+        $dueAmount = $summary['dueAmount'] ?? null;
+        $refNumber = $summary['refNumber'] ?? null;
+        $trxId = $summary['trxId'] ?? null;
+
+        $order = Order::create([
+            'name' => $user->full_name ?? $user->name ?? $user->first_name ?? 'No Name',
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'phone' => $user->phone ?? '',
+            'amount' => $cartTotal,
+            'coupon_code' => '',
+            'coupon_victory' => '',
+            'needToPay' => $advanced,
+            'dueForProducts' => $dueAmount,
+            'status' => $status,
+            'address' => json_encode($address),
+            'transaction_id' => $tran_id,
+            'refNumber' => $refNumber,
+            'trxId' => $trxId,
+            'currency' => 'BDT',
+            'pay_method' => $pay_method,
+        ]);
+        $order_number = generate_order_number($order->id);
+        $order->update(['order_number' => $order_number]);
+
+        if ($couponCode) {
+            $findCoupon = Coupon::where('coupon_code', $couponCode)->first();
+            CouponUser::create([
+                'coupon_id' => $findCoupon->id,
+                'coupon_code' => $couponCode,
+                'coupon_details' => '',
+                'win_amount' => $couponDiscount,
+                'order_id' => $order->id,
+                'user_id' => $user->id,
+            ]);
+        }
+
+        return $order;
+    }
+
+
+    public function storeOrderItems($order, $productItem, $itemVariations, $OrderItemData)
+    {
+        $order_id = $order->id;
+        $Id = $productItem['Id'];
+        $product = Product::where('ItemId', $Id)->first();
+
+        $product_id = $product->id ?? null;
+        $mainImage = $product->MainPictureUrl ?? $productItem['MainPictureUrl'] ?? null;
         $auth_id = auth()->id();
-        CustomerCart::where('user_id', $auth_id)->whereNull('buy_status')->update([
-          'buy_status' => Carbon::now()->toDateTimeString()
-        ]);
-      }, 3);
-    } catch (\Exception $ex) {
-      return $this->error($ex, 417);
+        $OrderItemData['image'] = $mainImage;
+        $OrderItemData['order_id'] = $order_id;
+        $OrderItemData['product_id'] = $product_id;
+        $OrderItemData['user_id'] = $auth_id;
+
+        $orderItem = OrderItem::create($OrderItemData);
+        $order_item_id = $orderItem->id;
+        $itemTotalQuantity = 0;
+        $itemTotalPrice = 0;
+        $itemImage = '';
+        foreach ($itemVariations as $item) {
+            $itemTotalQuantity += $item['Quantity'];
+            $itemTotalPrice += $item['Price'] * $item['Quantity'];
+            $Attributes = $item['Attributes'] ?? [];
+            $itemImage = check_attribute_image($Attributes, $mainImage);
+            $variations = [
+                'itemCode' => $item['Id'],
+                'order_item_id' => $order_item_id,
+                'product_id' => $product_id,
+                'attributes' => json_encode($Attributes),
+                'image' => $itemImage,
+                'price' => $item['Price'],
+                'quantity' => $item['Quantity'],
+                'subTotal' => $item['Price'] * $item['Quantity'],
+                'user_id' => $auth_id,
+            ];
+            OrderItemVariation::create($variations);
+        }
+        $order_item_number = generate_order_number($order_item_id);
+        $approxWeight = $orderItem->approxWeight ? $itemTotalQuantity * $orderItem->approxWeight : 0;
+        $coupon_victory = $order->coupon_victory ? $order->coupon_victory : 0;
+        $order_amount = $order->amount;
+
+        if ($orderItem) {
+            $order_item_number = generate_order_number($orderItem->id);
+            $itemTotal = $itemTotalPrice + $orderItem->chinaLocalDelivery;
+            $contribution = coupon_contribution($order_amount, $itemTotal, $coupon_victory);
+            $half_payment = ($itemTotal - $contribution) * 0.50;
+            $orderItem->update([
+                'order_item_number' => $order_item_number,
+                'quantity' => $itemTotalQuantity,
+                'product_value' => $itemTotalPrice,
+                'first_payment' => $half_payment,
+                'due_payment' => $half_payment,
+                'approxWeight' => floating($approxWeight, 3),
+                'coupon_contribution' => $contribution,
+            ]);
+        } // end condition
+
     }
 
-    if ($pay_method === "sManager") {
-      $sManager =  new  SManagerPaymentController();
-      $feedback = $sManager->initial_payment($tran_id);
-      if (is_array($feedback)) {
-        return $this->success($feedback);
-      }
-    } else if ($pay_method === "nagad_payment" || $pay_method === "bkash_payment" || $pay_method === "bank_payment") {
 
-    $order = Order::where('user_id', auth()->id())->latest()->first();
-      return $this->success([
-        'status' => 'success',
-        'message' => 'Your order placed successfully',
-        'redirect' => '/payment/' . $order->id
-      ]);
+
+    public function confirmOrderPayment()
+    {
+        $status = request('status');
+        $tran_id = request('tran_id');
+
+        if ($status == 'success') {
+            $sManager =  new  SManagerPaymentController();
+            $feedback = $sManager->success($tran_id);
+            return $this->success([], 'Payment status mark as success');
+        }
+
+        if ($status == 'failed') {
+            $sManager =  new  SManagerPaymentController();
+            $feedback = $sManager->fail($tran_id);
+            return $this->success([], 'Payment is invalid');
+        }
+
+        return $this->error('You have no orders', 417);
     }
 
-    return $this->error('Your order has not placed', 417);
-  }
-
-  public function cancelOrders($order_id)
-  {
-    $order = Order::where('user_id', auth()->user()->id)->where('id', $order_id)->first();
-
-    if (!empty($order)) {
-      $order_items = OrderItem::where('order_id', $order->id)->get();
-
-      foreach ($order_items as $order_item) {
-        $order_item->delete();
-      }
-
-      $order->delete();
-
-      return $this->success([
-        'status' => 'success',
-        'message' => 'Your order has been canceled successfully',
-        'redirect' => '/dashboard/orders'
-      ]);
+    public function orders()
+    {
+        $user_id = auth()->id();
+        $orders = Order::with('orderItems.itemVariations')->where('user_id', $user_id)->where('status', '!=', 'cancelled')->latest()->get();
+        if (!empty($orders)) {
+            return $this->success([
+                'orders' => $orders
+            ]);
+        }
+        return $this->error('You have no orders', 417);
     }
 
-    return $this->error('Order not found!', 417);
-  }
+    public function orderDetails($id)
+    {
+        $user_id = auth()->id();
+        $order = Order::with('orderItems.itemVariations')->where('id', $id)->where('user_id', $user_id)->first();
 
-  public function updateOrders($order_id)
-  {
-    $order = Order::where('user_id', auth()->user()->id)->where('id', $order_id)->first();
+        if ($order) {
+            return $this->success([
+                'order' => $order
+            ]);
+        }
 
-    $summary = json_decode(request('summary'), true);
-    $trxId = $summary['trxId'] ?? null;
-
-    if (!empty($order)) {
-      $order->update([
-        'trxId' => $trxId
-      ]);
-
-      return $this->success([
-        'status' => 'success',
-        'message' => 'Your payment has been updated successfully',
-        'redirect' => '/dashboard/orders'
-      ]);
+        return $this->error('Order not found!', 417);
     }
 
-    return $this->error('Order not found!', 417);
-  }
-
-  public function orderStore($tran_id, $pay_method, $summary, $address, $status)
-  {
-    //order_number
-    $user = auth()->user();
-    $couponCode = $summary['couponCode'] ?? null;
-    $couponDiscount = $summary['couponDiscount'] ?? null;
-    $cartTotal = $summary['cartTotal'] ?? null;
-    $advanced = $summary['advanced'] ?? null;
-    $dueAmount = $summary['dueAmount'] ?? null;
-    $refNumber = $summary['refNumber'] ?? null;
-    $trxId = $summary['trxId'] ?? null;
-
-    $order = Order::create([
-      'name' => $user->full_name ?? $user->name ?? $user->first_name ?? 'No Name',
-      'user_id' => $user->id,
-      'email' => $user->email,
-      'phone' => $user->phone ?? '',
-      'amount' => $cartTotal,
-      'coupon_code' => '',
-      'coupon_victory' => '',
-      'needToPay' => $advanced,
-      'dueForProducts' => $dueAmount,
-      'status' => $status,
-      'address' => json_encode($address),
-      'transaction_id' => $tran_id,
-      'refNumber' => $refNumber,
-      'trxId' => $trxId,
-      'currency' => 'BDT',
-      'pay_method' => $pay_method,
-    ]);
-    $order_number = generate_order_number($order->id);
-    $order->update(['order_number' => $order_number]);
-
-    if ($couponCode) {
-      $findCoupon = Coupon::where('coupon_code', $couponCode)->first();
-      CouponUser::create([
-        'coupon_id' => $findCoupon->id,
-        'coupon_code' => $couponCode,
-        'coupon_details' => '',
-        'win_amount' => $couponDiscount,
-        'order_id' => $order->id,
-        'user_id' => $user->id,
-      ]);
+    public function invoices()
+    {
+        $user_id = auth()->id();
+        $invoices = Invoice::with('invoiceItems')->where('user_id', $user_id)->latest()->get();
+        if (!empty($invoices)) {
+            return $this->success([
+                'invoices' => $invoices
+            ]);
+        }
+        return $this->error('You have no orders', 417);
     }
 
-    return $order;
-  }
+    public function invoiceDetails($id)
+    {
+        $user_id = auth()->id();
+        $invoice = Invoice::with('invoiceItems')->where('id', $id)->where('user_id', $user_id)->first();
 
+        if ($invoice) {
+            return $this->success([
+                'invoice' => $invoice
+            ]);
+        }
 
-  public function storeOrderItems($order, $productItem, $itemVariations, $OrderItemData)
-  {
-    $order_id = $order->id;
-    $Id = $productItem['Id'];
-    $product = Product::where('ItemId', $Id)->first();
-
-    $product_id = $product->id ?? null;
-    $mainImage = $product->MainPictureUrl ?? $productItem['MainPictureUrl'] ?? null;
-    $auth_id = auth()->id();
-    $OrderItemData['image'] = $mainImage;
-    $OrderItemData['order_id'] = $order_id;
-    $OrderItemData['product_id'] = $product_id;
-    $OrderItemData['user_id'] = $auth_id;
-
-    $orderItem = OrderItem::create($OrderItemData);
-    $order_item_id = $orderItem->id;
-    $itemTotalQuantity = 0;
-    $itemTotalPrice = 0;
-    $itemImage = '';
-    foreach ($itemVariations as $item) {
-      $itemTotalQuantity += $item['Quantity'];
-      $itemTotalPrice += $item['Price'] * $item['Quantity'];
-      $Attributes = $item['Attributes'] ?? [];
-      $itemImage = check_attribute_image($Attributes, $mainImage);
-      $variations = [
-        'itemCode' => $item['Id'],
-        'order_item_id' => $order_item_id,
-        'product_id' => $product_id,
-        'attributes' => json_encode($Attributes),
-        'image' => $itemImage,
-        'price' => $item['Price'],
-        'quantity' => $item['Quantity'],
-        'subTotal' => $item['Price'] * $item['Quantity'],
-        'user_id' => $auth_id,
-      ];
-      OrderItemVariation::create($variations);
-    }
-    $order_item_number = generate_order_number($order_item_id);
-    $approxWeight = $orderItem->approxWeight ? $itemTotalQuantity * $orderItem->approxWeight : 0;
-    $coupon_victory = $order->coupon_victory ? $order->coupon_victory : 0;
-    $order_amount = $order->amount;
-
-    if ($orderItem) {
-      $order_item_number = generate_order_number($orderItem->id);
-      $itemTotal = $itemTotalPrice + $orderItem->chinaLocalDelivery;
-      $contribution = coupon_contribution($order_amount, $itemTotal, $coupon_victory);
-      $half_payment = ($itemTotal - $contribution) * 0.50;
-      $orderItem->update([
-        'order_item_number' => $order_item_number,
-        'quantity' => $itemTotalQuantity,
-        'product_value' => $itemTotalPrice,
-        'first_payment' => $half_payment,
-        'due_payment' => $half_payment,
-        'approxWeight' => floating($approxWeight, 3),
-        'coupon_contribution' => $contribution,
-      ]);
-    } // end condition
-
-  }
-
-
-
-  public function confirmOrderPayment()
-  {
-    $status = request('status');
-    $tran_id = request('tran_id');
-
-    if ($status == 'success') {
-      $sManager =  new  SManagerPaymentController();
-      $feedback = $sManager->success($tran_id);
-      return $this->success([], 'Payment status mark as success');
+        return $this->error('Invoice not found!', 417);
     }
 
-    if ($status == 'failed') {
-      $sManager =  new  SManagerPaymentController();
-      $feedback = $sManager->fail($tran_id);
-      return $this->success([], 'Payment is invalid');
-    }
+    public function validateCoupon($code)
+    {
+        $coupon = Coupon::where('coupon_code', $code)->first();
 
-    return $this->error('You have no orders', 417);
-  }
+        if (!empty($coupon)) {
+            $redeemed = CouponUser::where('user_id', auth()->id())->where('coupon_code', $code)->first();
 
-  public function orders()
-  {
-    $user_id = auth()->id();
-    $orders = Order::with('orderItems')->where('user_id', $user_id)->latest()->get();
-    if (!empty($orders)) {
-      return $this->success([
-        'orders' => $orders
-      ]);
-    }
-    return $this->error('You have no orders', 417);
-  }
+            if (!empty($redeemed)) {
+                // return $this->error('Coupon has already been redeemed!', 417);
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Coupon has already been redeemed!'
+                ]);
+            }
 
-  public function orderDetails($id)
-  {
-    $user_id = auth()->id();
-    $order = Order::with('orderItems')->where('id', $id)->where('user_id', $user_id)->first();
+            return $this->success([
+                'coupon' => $coupon
+            ]);
+        }
 
-    if ($order) {
-      return $this->success([
-        'order' => $order
-      ]);
-    }
-
-    return $this->error('Order not found!', 417);
-  }
-
-  public function invoices()
-  {
-    $user_id = auth()->id();
-    $invoices = Invoice::with('invoiceItems')->where('user_id', $user_id)->latest()->get();
-    if (!empty($invoices)) {
-      return $this->success([
-        'invoices' => $invoices
-      ]);
-    }
-    return $this->error('You have no orders', 417);
-  }
-
-  public function invoiceDetails($id)
-  {
-    $user_id = auth()->id();
-    $invoice = Invoice::with('invoiceItems')->where('id', $id)->where('user_id', $user_id)->first();
-
-    if ($invoice) {
-      return $this->success([
-        'invoice' => $invoice
-      ]);
-    }
-
-    return $this->error('Invoice not found!', 417);
-  }
-
-  public function validateCoupon($code)
-  {
-    $coupon = Coupon::where('coupon_code', $code)->first();
-
-    if (!empty($coupon)) {
-      $redeemed = CouponUser::where('user_id', auth()->id())->where('coupon_code', $code)->first();
-
-      if (!empty($redeemed)) {
-        // return $this->error('Coupon has already been redeemed!', 417);
+        // return $this->error('Not found! Invalid Coupon!', 417);
         return response()->json([
-          'status' => 'success',
-          'message' => 'Coupon has already been redeemed!'
+            'status' => 'success',
+            'message' => 'Not found! Invalid Coupon!'
         ]);
-      }
-
-      return $this->success([
-        'coupon' => $coupon
-      ]);
     }
-
-    // return $this->error('Not found! Invalid Coupon!', 417);
-    return response()->json([
-      'status' => 'success',
-      'message' => 'Not found! Invalid Coupon!'
-    ]);
-  }
 }

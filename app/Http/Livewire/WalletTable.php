@@ -108,9 +108,9 @@ class WalletTable extends TableComponent
         ->format(function (OrderItem $model) {
           return $this->html('<span class="product_name" data-product-id="' . $model->product_id . '">' . strip_tags($model->name) . '</span>');
         }),
-      Column::make('ShippedBy', 'shipped_by')
+      Column::make('ShippingRate', 'shipped_by')
         ->format(function (OrderItem $model) {
-          return $this->html('<span>' . $model->shipped_by . '</span> <br> <span class="text-danger">' . $model->shipping_rate . '</span>');
+          return $this->html('<span class="text-danger">' . $model->shipping_rate . '</span>');
         }),
       Column::make('1688cartLink', '1688_link')
         ->format(function (OrderItem $model) {
@@ -136,6 +136,11 @@ class WalletTable extends TableComponent
         ->format(function (OrderItem $model) {
           return $this->html('<span class="first_payment">' . $model->first_payment . '</span>');
         }),
+      Column::make('Status', 'status')
+        ->searchable()
+        ->format(function (OrderItem $model) {
+          return $this->html('<span class="status" data-status="' . $model->status . '">' . $model->status . '</span>');
+      }),
       Column::make('Outofstock', 'out_of_stock')
         ->format(function (OrderItem $model) {
           return $this->html('<span class="out_of_stock">' . $model->out_of_stock . '</span>');
@@ -175,11 +180,6 @@ class WalletTable extends TableComponent
       Column::make('Ref.Invoice', 'invoice_no')
         ->format(function (OrderItem $model) {
           return $this->html('<span class="invoice_no">' . $model->invoice_no . '</span>');
-        }),
-      Column::make('Status', 'status')
-        ->searchable()
-        ->format(function (OrderItem $model) {
-          return $this->html('<span class="status" data-status="' . $model->status . '">' . $model->status . '</span>');
         }),
       Column::make(__('Action'), 'action')
         ->format(function (OrderItem $model) {
