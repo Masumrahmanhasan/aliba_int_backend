@@ -32,8 +32,12 @@
                             {{ html()->text('checkout_payment_second', get_setting('checkout_payment_second'))->placeholder('Payment %')->class('form-control') }}
                         </div> <!-- col-->
                         {{ html()->label('Level #3 (%)')->class('col-md-4 form-control-label text-right')->for('checkout_payment_third') }}
-                        <div class="col-md-8">
+                        <div class="col-md-8 mb-2">
                             {{ html()->text('checkout_payment_third', get_setting('checkout_payment_third'))->placeholder('Payment %')->class('form-control') }}
+                        </div> <!-- col-->
+                        {{ html()->label('Level #4 (%)')->class('col-md-4 form-control-label text-right')->for('checkout_payment_fourth') }}
+                        <div class="col-md-8">
+                            {{ html()->text('checkout_payment_fourth', get_setting('checkout_payment_fourth'))->placeholder('Payment %')->class('form-control') }}
                         </div> <!-- col-->
                     </div> <!-- form-group-->
 
@@ -54,8 +58,12 @@
                             {{ html()->text('checkout_bkash_discount_second', get_setting('checkout_bkash_discount_second'))->placeholder('Discount %')->class('form-control') }}
                         </div> <!-- col-->
                         {{ html()->label('Discount at Level #3 (%)')->class('col-md-4 form-control-label text-right')->for('checkout_bkash_discount_third') }}
-                        <div class="col-md-8">
+                        <div class="col-md-8 mb-2">
                             {{ html()->text('checkout_bkash_discount_third', get_setting('checkout_bkash_discount_third'))->placeholder('Discount %')->class('form-control') }}
+                        </div> <!-- col-->
+                        {{ html()->label('Discount at Level #4 (%)')->class('col-md-4 form-control-label text-right')->for('checkout_bkash_discount_third') }}
+                        <div class="col-md-8">
+                            {{ html()->text('checkout_bkash_discount_fourth', get_setting('checkout_bkash_discount_fourth'))->placeholder('Discount %')->class('form-control') }}
                         </div> <!-- col-->
                     </div> <!-- form-group-->
 
@@ -76,8 +84,12 @@
                             {{ html()->text('checkout_nagad_discount_second', get_setting('checkout_nagad_discount_second'))->placeholder('Discount %')->class('form-control') }}
                         </div> <!-- col-->
                         {{ html()->label('Discount at Level #3 (%)')->class('col-md-4 form-control-label text-right')->for('checkout_nagad_discount_third') }}
-                        <div class="col-md-8">
+                        <div class="col-md-8 mb-2">
                             {{ html()->text('checkout_nagad_discount_third', get_setting('checkout_nagad_discount_third'))->placeholder('Discount %')->class('form-control') }}
+                        </div> <!-- col-->
+                        {{ html()->label('Discount at Level #4 (%)')->class('col-md-4 form-control-label text-right')->for('checkout_nagad_discount_third') }}
+                        <div class="col-md-8">
+                            {{ html()->text('checkout_nagad_discount_fourth', get_setting('checkout_nagad_discount_fourth'))->placeholder('Discount %')->class('form-control') }}
                         </div> <!-- col-->
                     </div> <!-- form-group-->
 
@@ -98,8 +110,12 @@
                             {{ html()->text('checkout_bank_discount_second', get_setting('checkout_bank_discount_second'))->placeholder('Discount %')->class('form-control') }}
                         </div> <!-- col-->
                         {{ html()->label('Discount at Level #3 (%)')->class('col-md-4 form-control-label text-right')->for('checkout_bank_discount_third') }}
-                        <div class="col-md-8">
+                        <div class="col-md-8 mb-2">
                             {{ html()->text('checkout_bank_discount_third', get_setting('checkout_bank_discount_third'))->placeholder('Discount %')->class('form-control') }}
+                        </div> <!-- col-->
+                        {{ html()->label('Discount at Level #4 (%)')->class('col-md-4 form-control-label text-right')->for('checkout_bank_discount_third') }}
+                        <div class="col-md-8">
+                            {{ html()->text('checkout_bank_discount_fourth', get_setting('checkout_bank_discount_fourth'))->placeholder('Discount %')->class('form-control') }}
                         </div> <!-- col-->
                     </div> <!-- form-group-->
 

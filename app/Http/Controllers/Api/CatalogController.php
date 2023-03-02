@@ -39,8 +39,16 @@ class CatalogController extends Controller
             ->select('id', 'post_title', 'post_slug', 'post_content', 'post_excerpt', 'post_thumb', 'thumb_directory', 'thumb_status')
             ->get();
 
+            $banners_mobile = Post::where('post_type', 'banner')
+            ->where('post_status', 'publish_mobile')
+            ->limit(5)
+            ->latest()
+            ->select('id', 'post_title', 'post_slug', 'post_content', 'post_excerpt', 'post_thumb', 'thumb_directory', 'thumb_status')
+            ->get();
+
         return $this->success([
-            'banners' => $banners
+            'banners' => $banners,
+            'mobileBanners' => $banners_mobile
         ]);
     }
 
@@ -108,14 +116,16 @@ class CatalogController extends Controller
     {
         $offset = request('offset', 0);
         $limit = request('limit', 36);
+        $rate = request('rate', get_setting('increase_rate', 20));
 
         $SearchLog = SearchLog::where('search_id', $search_id)->where('search_type', 'picture')->first();
         if ($SearchLog) {
             // $products = get_category_browsing_items($SearchLog->query_data, 'picture',  $offset, $limit);
-            $products = otc_image_search_items(getSiteUrl() . '/' .  $SearchLog->query_data, $offset, $limit);
+            $products = otc_image_search_items(getSiteUrl() . '/' .  $SearchLog->query_data, $offset, $limit, $rate);
 
             return $this->success([
-                'products' => json_encode($products)
+                'products' => json_encode($products),
+                'picture' => getSiteUrl() . '/' .  $SearchLog->query_data
             ]);
         }
 
@@ -168,8 +178,10 @@ class CatalogController extends Controller
 
     public function productDetails($item_id)
     {
+        $rate = request('rate', get_setting('increase_rate', 20));
+
         $item = GetItemFullInfoWithDeliveryCosts($item_id);
-        $bulkPrices = product_bulk_prices($item_id);
+        $bulkPrices = product_bulk_prices($item_id, $rate);
 
         $item['BulkPrices'] = $bulkPrices;
 
@@ -257,8 +269,9 @@ class CatalogController extends Controller
     {
         $offset = request('offset', 0);
         $limit = request('limit', 36);
+        $rate = request('rate', get_setting('increase_rate', 20));
 
-        $VendorProducts = products_from_same_vendor($VendorId, $offset, $limit);
+        $VendorProducts = products_from_same_vendor($VendorId, $offset, $limit, $rate);
         if (!empty($VendorProducts)) {
             return $this->success([
                 'VendorProducts' => json_encode($VendorProducts)
@@ -269,7 +282,7 @@ class CatalogController extends Controller
 
     public function productBulkPrices($itemId)
     {
-        $bulkPrices = product_bulk_prices($itemId);
+        $bulkPrices = product_bulk_prices($itemId, 0);
         if (!empty($bulkPrices)) {
             return $this->success([
                 'bulkPrices' => $bulkPrices
@@ -355,7 +368,8 @@ class CatalogController extends Controller
         $image = request('image', null);
         $offset = request('offset', 0);
         $limit = request('limit', 36);
+        $rate = request('rate', get_setting('increase_rate', 20));
 
-        return otc_image_search_items($image, $offset, $limit);
+        return otc_image_search_items($image, $offset, $limit, $rate);
     }
 }

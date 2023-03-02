@@ -39,7 +39,7 @@ class DashboardController extends Controller
 
   public function orderDetails($order_id)
   {
-    $order = OrderItem::with('order', 'itemVariations')->where('id', $order_id)->where('user_id', auth()->id())->firstOrFail();
+    $order = Order::with('orderItems.itemVariations')->where('id', $order_id)->where('user_id', auth()->id())->firstOrFail();
 
     return view('frontend.user.order.orderDetails', compact('order'));
   }

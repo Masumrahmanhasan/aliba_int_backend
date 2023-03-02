@@ -5,24 +5,24 @@ use App\Http\Controllers\Frontend\HomeController;
 use GuzzleHttp\Client;
 
 Route::get('/dump', function () {
-    // $query = [
-    //     'instanceKey' => '7367999f-de6f-4e88-9d36-1642cff1746b',
-    //     'language' => 'en',
-        // 'itemId' => 'abb-639225839350'
+    $query = [
+        'instanceKey' => '7367999f-de6f-4e88-9d36-1642cff1746b',
+        'language' => 'en',
+        'itemId' => 'abb-38617121088'
         // 'vendorId' => 'abb-b2b-1833723532'
-    //     'xmlParameters' => '<SearchItemsParameters>
-    //                         <ItemTitle>Water Bottle</ItemTitle>
-    //                         <Features>
-    //                         <Feature Name="Discount">true</Feature>
-    //                         </Features>
-    //                         </SearchItemsParameters>',
-    //     'framePosition' => 0,
-    //     'frameSize' => 10,
-    //     'blockList' => '',
-    // ];
+        // 'xmlParameters' => '<SearchItemsParameters>
+        //                     <ItemTitle>Water Bottle</ItemTitle>
+        //                     <Features>
+        //                     <Feature Name="Discount">true</Feature>
+        //                     </Features>
+        //                     </SearchItemsParameters>',
+        // 'framePosition' => 0,
+        // 'frameSize' => 10,
+        // 'blockList' => '',
+    ];
 
-    // $client = new Client();
-    // $response = $client->request('GET', 'http://otapi.net/service-json/BatchSearchItemsFrame', ['query' => $query]);
+    $client = new Client();
+    $response = $client->request('GET', load_otc_api() . 'GetItemFullInfoWithDeliveryCosts', ['query' => $query]);
 
     // if ($response->getStatusCode() == 200) {
     //     $content = json_decode($response->getBody(), true);
@@ -71,7 +71,7 @@ Route::get('/dump', function () {
         // ];
     // }
     // return [];
-    return getSaleOfferProducts('abb-44513639680');
+    return $response;
 });
 
 /*

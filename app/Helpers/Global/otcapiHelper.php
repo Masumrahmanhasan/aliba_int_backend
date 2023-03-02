@@ -210,7 +210,7 @@ if (!function_exists('getSellerInformation')) {
 }
 
 if (!function_exists('products_from_same_vendor')) {
-    function products_from_same_vendor($vendorId, $offset = 1, $limit = 24)
+    function products_from_same_vendor($vendorId, $offset = 1, $limit = 24, $rate)
     {
         $query = [
             'instanceKey' => setOtcParams(),
@@ -233,7 +233,6 @@ if (!function_exists('products_from_same_vendor')) {
             $contents = getArrayKeyData($items, 'Content', []);
 
             $data = [];
-            $rate = get_setting('increase_rate', 20);
             foreach ($contents as $content) {
                 $img = getArrayKeyData($content, 'MainPictureUrl', []);
                 $name = getArrayKeyData($content, 'Title', []);
@@ -289,7 +288,7 @@ if (!function_exists('products_from_same_vendor')) {
 }
 
 if (!function_exists('product_bulk_prices')) {
-    function product_bulk_prices($itemId)
+    function product_bulk_prices($itemId, $rate)
     {
         $query = [
             'instanceKey' => setOtcParams(),
@@ -307,11 +306,13 @@ if (!function_exists('product_bulk_prices')) {
             $body = json_decode($response->getBody(), true);
             $result = getArrayKeyData($body, 'Result', []);
 
-            $rate = get_setting('increase_rate', 20);
             $data = [];
-            foreach ($result['Configuration']['QuantityRanges'] as $item) {
-                $item['Price']['Base'] *= $rate;
-                array_push($data, $item);
+
+            if (isset($result['Configuration']['QuantityRanges'])) {
+                foreach ($result['Configuration']['QuantityRanges'] as $item) {
+                    $item['Price']['Base'] *= $rate;
+                    array_push($data, $item);
+                }
             }
             // $result['Configuration']['QuantityRanges'] = $data;
 
@@ -321,7 +322,7 @@ if (!function_exists('product_bulk_prices')) {
 }
 
 if (!function_exists('otc_image_search_items')) {
-    function otc_image_search_items($search, $offset = 0, $limit = 36)
+    function otc_image_search_items($search, $offset = 0, $limit = 36, $rate)
     {
         // otc_search_items('bag', 'text', 0, 5)
         $query = [
@@ -344,7 +345,6 @@ if (!function_exists('otc_image_search_items')) {
             $TotalCount = getArrayKeyData($Items, 'TotalCount', 0);
 
             $data = [];
-            $rate = get_setting('increase_rate', 20);
             foreach ($Content as $content) {
                 $img = getArrayKeyData($content, 'MainPictureUrl', []);
                 $name = getArrayKeyData($content, 'Title', []);
@@ -395,7 +395,7 @@ if (!function_exists('otc_image_search_items')) {
 }
 
 if (!function_exists('getSaleOfferProducts')) {
-    function getSaleOfferProducts($item_id)
+    function getSaleOfferProducts($item_id, $rate)
     {
         $query = [
             'instanceKey' => setOtcParams(),
@@ -408,8 +408,6 @@ if (!function_exists('getSaleOfferProducts')) {
 
         $body = json_decode($response->getBody(), true);
         if (is_array($body)) {
-            $rate = get_setting('increase_rate', 20);
-            $rate = (float)$rate;
 
             $OtapiItemFullInfo = array_key_exists('OtapiItemFullInfo', $body) ? $body['OtapiItemFullInfo'] : [];
             $MainPictureUrl = array_key_exists('MainPictureUrl', $OtapiItemFullInfo) ? $OtapiItemFullInfo['MainPictureUrl'] : [];
@@ -429,7 +427,7 @@ if (!function_exists('getSaleOfferProducts')) {
 }
 
 if (!function_exists('getSuperDealProducts')) {
-    function getSuperDealProducts($search, $offset = 0, $limit = 6) {
+    function getSuperDealProducts($search, $offset = 0, $limit = 6, $rate = 0) {
         $query = [
             'instanceKey' => setOtcParams(),
             'language' => 'en',
@@ -456,7 +454,6 @@ if (!function_exists('getSuperDealProducts')) {
                 $Content = getArrayKeyData($Items, 'Content', []);
 
                 $data = [];
-                $rate = get_setting('increase_rate', 20);
                 foreach ($Content as $content) {
                     $product_code = getArrayKeyData($content, 'Id', []);
                     $img = getArrayKeyData($content, 'MainPictureUrl', []);

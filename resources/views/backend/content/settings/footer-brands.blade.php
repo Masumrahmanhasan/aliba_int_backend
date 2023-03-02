@@ -24,6 +24,17 @@
 
                     <p class="mb-4 text-center text-danger">Click the Image for updating Process</p>
 
+                    <div class="form-group ml-5">
+                        <div class="form-check form-check-inline">
+                            {{ html()->radio('popup_banner_active', get_setting('popup_banner_active') === 'enable', 'enable')->id('popup_banner_enable')->class('form-check-input') }}
+                            {{ html()->label('Banner Enable')->class('form-check-label')->for('popup_banner_enable') }}
+                        </div>
+                        <div class="form-check form-check-inline">
+                            {{ html()->radio('popup_banner_active', get_setting('popup_banner_active') === 'disable', 'disable')->id('popup_banner_disable')->class('form-check-input') }}
+                            {{ html()->label('Banner Disable')->class('form-check-label')->for('popup_banner_disable') }}
+                        </div>
+                    </div> <!-- form-group-->
+
                     <div class="form-group row mb-4">
                         {{ html()->label('Pop-up Banner')->class('col-md-4 form-control-label text-right')->for('popup_banner') }}
                         <div class="col-md-8">

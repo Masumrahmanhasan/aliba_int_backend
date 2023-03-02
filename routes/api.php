@@ -96,6 +96,7 @@ Route::group(['prefix' => 'v1', 'as' => 'v1.'], function () {
     Route::post('/confirm-order', [OrderController::class, 'confirmOrders']);
     Route::post('/cancel-order/{id}', [OrderController::class, 'cancelOrders']);
     Route::post('/update-order/{id}', [OrderController::class, 'updateOrders']);
+    Route::post('/update-order-item/{id}', [OrderController::class, 'updateOrderItems']);
     Route::post('/refund-order/{id}', [OrderController::class, 'refundOrders']);
     Route::post('/payment-confirm', [OrderController::class, 'confirmOrderPayment']);
 
@@ -103,6 +104,9 @@ Route::group(['prefix' => 'v1', 'as' => 'v1.'], function () {
     Route::post('/order/{id}', [OrderController::class, 'orderDetails']);
     Route::post('/invoices', [OrderController::class, 'invoices']);
     Route::post('/invoice/{id}', [OrderController::class, 'invoiceDetails']);
+
+    Route::put('/cart/update', [OrderController::class, 'updateCart']);
+    Route::get('/cart/get', [OrderController::class, 'getCart']);
 
     Route::post('/add-to-wishlist', [WishlistController::class, 'AddToWishList']);
     Route::post('/remove-wishlist', [WishlistController::class, 'removeCustomerWishList']);

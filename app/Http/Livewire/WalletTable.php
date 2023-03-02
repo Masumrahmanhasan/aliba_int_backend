@@ -136,6 +136,10 @@ class WalletTable extends TableComponent
         ->format(function (OrderItem $model) {
           return $this->html('<span class="first_payment">' . $model->first_payment . '</span>');
         }),
+      Column::make('2ndPayment TrxID', 'full_payment')
+        ->format(function (OrderItem $model) {
+          return $this->html('<span class="full_payment">' . $model->full_payment . '</span>');
+        }),
       Column::make('Status', 'status')
         ->searchable()
         ->format(function (OrderItem $model) {

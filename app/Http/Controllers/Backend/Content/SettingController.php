@@ -316,7 +316,14 @@ class SettingController extends Controller
     public function manageHomepageCardsStore()
     {
         $data = \request()->all();
+
+        if (request()->has('rate')) {
+            $rate = request('rate');
+            unset($data['rate']);
+        }
+
         unset($data['_token']);
+        $rate = get_setting('increase_rate', 20);
 
         if (\request()->hasFile('hp_card_one_image')) {
             $data['hp_card_one_image'] = store_picture(\request()->file('hp_card_one_image'), 'setting');
@@ -340,7 +347,7 @@ class SettingController extends Controller
 
         if (isset($data['hp_card_five_product_one_id'])) {
             if ($data['hp_card_five_product_one_id'] != null) {
-                $exclusive_data = getSaleOfferProducts($data['hp_card_five_product_one_id']);
+                $exclusive_data = getSaleOfferProducts($data['hp_card_five_product_one_id'], $rate);
                 $data['hp_card_five_product_one_image'] = $exclusive_data['image'];
                 $data['hp_card_five_product_one_price'] = $exclusive_data['price'];
             }
@@ -348,7 +355,7 @@ class SettingController extends Controller
 
         if (isset($data['hp_card_five_product_two_id'])) {
             if ($data['hp_card_five_product_two_id'] != null) {
-                $exclusive_data = getSaleOfferProducts($data['hp_card_five_product_two_id']);
+                $exclusive_data = getSaleOfferProducts($data['hp_card_five_product_two_id'], $rate);
                 $data['hp_card_five_product_two_image'] = $exclusive_data['image'];
                 $data['hp_card_five_product_two_price'] = $exclusive_data['price'];
             }
@@ -356,7 +363,7 @@ class SettingController extends Controller
 
         if (isset($data['hp_card_five_product_three_id'])) {
             if ($data['hp_card_five_product_three_id'] != null) {
-                $exclusive_data = getSaleOfferProducts($data['hp_card_five_product_three_id']);
+                $exclusive_data = getSaleOfferProducts($data['hp_card_five_product_three_id'], $rate);
                 $data['hp_card_five_product_three_image'] = $exclusive_data['image'];
                 $data['hp_card_five_product_three_price'] = $exclusive_data['price'];
             }
@@ -364,7 +371,7 @@ class SettingController extends Controller
 
         if (isset($data['hp_card_five_product_four_id'])) {
             if ($data['hp_card_five_product_four_id'] != null) {
-                $exclusive_data = getSaleOfferProducts($data['hp_card_five_product_four_id']);
+                $exclusive_data = getSaleOfferProducts($data['hp_card_five_product_four_id'], $rate);
                 $data['hp_card_five_product_four_image'] = $exclusive_data['image'];
                 $data['hp_card_five_product_four_price'] = $exclusive_data['price'];
             }
@@ -372,7 +379,7 @@ class SettingController extends Controller
 
         if (isset($data['hp_card_five_product_five_id'])) {
             if ($data['hp_card_five_product_five_id'] != null) {
-                $exclusive_data = getSaleOfferProducts($data['hp_card_five_product_five_id']);
+                $exclusive_data = getSaleOfferProducts($data['hp_card_five_product_five_id'], $rate);
                 $data['hp_card_five_product_five_image'] = $exclusive_data['image'];
                 $data['hp_card_five_product_five_price'] = $exclusive_data['price'];
             }
@@ -380,7 +387,7 @@ class SettingController extends Controller
 
         if (isset($data['hp_card_five_product_six_id'])) {
             if ($data['hp_card_five_product_six_id'] != null) {
-                $exclusive_data = getSaleOfferProducts($data['hp_card_five_product_six_id']);
+                $exclusive_data = getSaleOfferProducts($data['hp_card_five_product_six_id'], $rate);
                 $data['hp_card_five_product_six_image'] = $exclusive_data['image'];
                 $data['hp_card_five_product_six_price'] = $exclusive_data['price'];
             }

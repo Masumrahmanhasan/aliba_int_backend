@@ -37,17 +37,24 @@
                                         <td style="width: 50%">Invoice Id#</td>
                                         <td>{{ $order->order_number }}</td>
                                     </tr>
+                                    @php
+                                        $trxId = json_decode($order->trxId);
+                                        $discount = json_decode($order->pay_discount);
+                                    @endphp
                                     <tr>
-                                        <td>Transaction Id#</td>
-                                        <td>{{ $order->transaction_id }}</td>
+                                        <td>Trx ID#</td>
+                                        <td>
+                                            1st Payment: {{ $trxId->payment_1st }} <br>
+                                            2nd Payment: {{ $trxId->payment_2nd }}
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>Customer Name</td>
                                         <td>{{ $order->user->name ?? 'N/A' }}</td>
                                     </tr>
                                     <tr>
-                                        <td>Customer Phone</td>
-                                        <td>{{ $order->user->phone ?? 'N/A' }}</td>
+                                        <td>Payment Method</td>
+                                        <td>{{ $order->pay_method ?? 'N/A' }}</td>
                                     </tr>
                                 </table>
                             </div>
@@ -65,11 +72,11 @@
                                     </tr>
                                     <tr>
                                         <td>Phone</td>
-                                        <td>{{ $address->phone ?? 'N/A' }}</td>
+                                        <td>{{ $address->phone_one ?? 'N/A' }}</td>
                                     </tr>
                                     <tr>
                                         <td>District</td>
-                                        <td>{{ $address->district ?? 'N/A' }}</td>
+                                        <td>{{ $address->phone_three ?? 'N/A' }}</td>
                                     </tr>
                                     <tr>
                                         <td>Address</td>
@@ -88,7 +95,7 @@
                                         <th class="text-center" colspan="2">Details</th>
                                         <th class="text-center" style="width:80px">Quantity</th>
                                         <th class="text-center" style="width:100px">Total</th>
-                                        <th class="text-center" style="width:100px">Taobao</th>
+                                        <th class="text-center" style="width:100px">1688.com</th>
                                         <th class="text-center" style="width:100px">Order Date</th>
                                         <th class="text-center" style="width:100px">Status</th>
                                     </tr>
@@ -148,11 +155,12 @@
                                                                 rowspan="{{ $LengthTotal }}">
                                                                 @php
                                                                     $product_id = $item->product ? $item->product->ItemId : '';
+                                                                    $product = explode('-', $product_id);
+                                                                    $p = $product[1];
                                                                 @endphp
-                                                                <a href="https://item.taobao.com/item.htm?id={{ $product_id }}"
+                                                                <a href="https://detail.1688.com/offer/{{ $p }}.html"
                                                                     class="btn btn-sm btn-secondary"
                                                                     target="_blank">Click</a>
-
                                                             </td>
                                                             <td class="align-middle text-center"
                                                                 rowspan="{{ $LengthTotal }}">
@@ -195,8 +203,10 @@
                                                     <td class="align-middle text-center" rowspan="5">
                                                         @php
                                                             $product_id = $item->product ? $item->product->ItemId : '';
+                                                            $product = explode('-', $product_id);
+                                                            $p = $product[1];
                                                         @endphp
-                                                        <a href="https://item.taobao.com/item.htm?id={{ $product_id }}"
+                                                        <a href="https://detail.1688.com/offer/{{ $p }}.html"
                                                             class="btn btn-sm btn-secondary" target="_blank">Click</a>
                                                     </td>
                                                     <td class="align-middle text-center" rowspan="5">
@@ -212,6 +222,49 @@
                                                 </td>
                                             </tr>
                                         @endforeach
+
+                                        @if ($itemTotalPrice == 0)
+                                            <tr>
+                                                <td class="align-middle text-center" rowspan="2">
+                                                    <img src="{{ asset($item->image) }}" class="img-fluid">
+                                                </td>
+                                                <td colspan="2" class="align-middle text-center">No Attributes
+                                                </td>
+                                                <td class="align-middle text-center" rowspan="2">
+                                                    {{ $item->quantity }}</td>
+                                                <td class="align-middle text-right" rowspan="2">
+                                                    <span class="SingleTotal">{{ $item->product_value }}</span>
+                                                </td>
+                                                <td class="align-middle text-center" rowspan="5">
+                                                    @php
+                                                        $product_id = $item->link;
+                                                        $product = explode('-', $product_id);
+                                                        $p = $product[1];
+                                                    @endphp
+                                                    <a href="https://detail.1688.com/offer/{{ $p }}.html"
+                                                        class="btn btn-sm btn-secondary" target="_blank">Click</a>
+                                                </td>
+                                                <td class="align-middle text-center" rowspan="5">
+                                                    {{ date('d M, Y', strtotime($item->created_at)) }}
+                                                </td>
+                                                <td rowspan="5"></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-right">Per unit Price</td>
+                                                <td class="text-right">
+                                                    <span
+                                                        class="unitPrice">{{ floating($item->product_value / $item->quantity) }}</span>
+                                                </td>
+                                                <td class="align-middle text-center" rowspan="1">
+                                                    <span
+                                                        class="singleStatus text-capitalize">{{ $item->status }}</span>
+                                                </td>
+                                            </tr>
+                                            @php
+                                                $itemTotalPrice += $item->product_value;
+                                            @endphp
+                                        @endif
+
                                         @php
                                             $chinaLocalDelivery = $item->chinaLocalDelivery;
                                         @endphp
@@ -237,25 +290,45 @@
 
                                         <tr>
                                             <td class="text-right" colspan="3"> Shipping Rate (Per KG)
-                                                <form action="{{ route('admin.order.shipping-rate', $order->id) }}" method="POST">
+                                                <form action="{{ route('admin.order.shipping-rate', $item->id) }}"
+                                                    method="POST" id="">
                                                     @method('PUT')
                                                     @csrf
-                                                    <input class="col-md-4 offset-md-8 form-control mt-2" type="number" name="shipping_rate" value="{{ $order->shipping_rate }}">
+                                                    <input class="col-md-4 offset-md-8 form-control mt-2"
+                                                        type="number" name="shipping_rate"
+                                                        value="{{ $item->shipping_rate }}" id="rate">
+                                                    <input type="text" name="item_id" value="{{ $item->id }}"
+                                                        hidden>
                                                     <button class="btn btn-md btn-success mt-2">Update</button>
                                                 </form>
                                                 {{-- <p class="m-0 text-danger">Shipping Method {{ $item->shipped_by . ' - ' . floating($item->shipping_rate) }} Per KG</p> --}}
                                                 {{-- <p class="m-0 text-danger">Approx weight - {{ $item->actual_weight ? $item->actual_weight : 0 }} KG</p> --}}
                                             </td>
-                                            <td class="text-center align-middle">-</td>
+                                            <td class="text-center align-middle">KG: {{ $item->actual_weight }}</td>
                                             <td class="text-right align-middle">
-                                                <span>{{ $order->shipping_rate }}</span>
+                                                <span>Shipping Cost {{ $item->shipping_rate * $item->actual_weight }}</span>
                                             </td>
                                         </tr>
                                         @php
-                                            $itemTotalPrice = $itemTotalPrice + $chinaLocalDelivery + $order->shipping_rate - $coupon_contribution;
+                                            if ($discount->percent != 0) {
+                                                $amount = $discount->amount / $discount->product_count;
+                                            } else {
+                                                $amount = 0;
+                                            }
+
+                                            $itemTotalPrice = $itemTotalPrice + $chinaLocalDelivery + $item->shipping_charge - $amount;
                                             $invoiceTotal += $itemTotalPrice;
                                         @endphp
 
+                                        @if ($discount->percent != 0)
+                                            <tr>
+                                                <td class="text-right" colspan="3">Discount</td>
+                                                <td class="text-center">-</td>
+                                                <td class="text-right"><span
+                                                    class="totalItemPrice">{{ $discount->amount / $discount->product_count }}</span>
+                                                </td>
+                                            </tr>
+                                        @endif
                                         <tr>
                                             <td class="text-right" colspan="3">Sub Total</td>
                                             <td class="text-center">{{ $item->quantity }}</td>
@@ -269,7 +342,18 @@
 
                             <table class="table table-bordered table-striped">
                                 <tr>
-                                    <td class="text-right" colspan="5">Products Price</td>
+                                    <td class="text-right" colspan="5">Products Price (Before discount)</td>
+                                    <td class="text-right">{{ $order->amount + $discount->amount }}</td>
+                                </tr>
+                                @if ($order->pay_discount)
+                                    <tr>
+                                        <td class="text-right" colspan="5">Discount ({{ $discount->percent }}%)</td>
+                                        <td class="text-right">{{ $discount->amount }}</td>
+                                    </tr>
+                                @endif
+
+                                <tr>
+                                    <td class="text-right" colspan="5">Products Price (After discount)</td>
                                     <td class="text-right">{{ $order->amount }}</td>
                                 </tr>
                                 @if ($order->coupon_victory)
@@ -278,8 +362,10 @@
                                         <td class="text-right">{{ floating($order->coupon_victory) }}</td>
                                     </tr>
                                 @endif
+
                                 <tr>
-                                    <td class="text-right" colspan="5">Initial Payment</td>
+                                    <td class="text-right" colspan="5">Initial Payment
+                                        ({{ $order->pay_percent }}%)</td>
                                     <td class="text-right">{{ $order->needToPay }}</td>
                                 </tr>
                                 <tr>
@@ -288,7 +374,21 @@
                                 </tr>
                             </table>
 
+                            @if ($order->status == 'waiting-for-payment')
+                                <form action="{{ route('admin.order.makeAsPayment', $order) }}" method="POST" id="approve_initial">
+                                    @csrf
+                                    @method('GET')
+                                    <button class="btn btn-info float-right">Approve Initial Payment</button>
+                                </form>
+                            @endif
 
+                            @if ($order->status == 'partial-paid')
+                                <form action="{{ route('admin.order.makeAsFullPayment', $order) }}" method="POST" id="approve_full">
+                                    @csrf
+                                    @method('GET')
+                                    <button class="btn btn-info float-right">Approve Full Payment</button>
+                                </form>
+                            @endif
                         </div>
                     </div> <!-- card-body -->
                 </div> <!-- card -->
@@ -296,7 +396,75 @@
         </div>
     </main>
 
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"
+        integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+    <script>
+        $('form').submit(function(e) {
+            e.preventDefault();
+            let rate = $(this).children('input[name=shipping_rate]').val();
+            let item = $(this).children('input[name=item_id]').val();
 
+            $.ajax({
+                type: "PUT",
+                url: "{{ route('admin.order.shipping-rate', ' . item . ') }}",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    shipping_rate: rate,
+                    item_id: item
+                },
+                dataType: "dataType",
+                success: function(response) {
+                    console.log('hi');
+                }
+            });
+        });
+
+        $('#approve_initial').submit(function(e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: 'Are you sure you want to approve Initial Payment??',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#218838',
+                cancelButtonColor: '#5a6268',
+                confirmButtonText: 'Yes, approve!'
+            })
+            .then((result) => {
+                if (result.value) {
+                    Swal.fire(
+                        'Approved!',
+                        'Initial payment approved!',
+                        'success'
+                        )
+                    $(this).submit();
+                }
+            })
+        });
+
+        $('#approve_full').submit(function(e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: 'Are you sure you want to approve Full Payment??',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#218838',
+                cancelButtonColor: '#5a6268',
+                confirmButtonText: 'Yes, approve!'
+            })
+            .then((result) => {
+                if (result.value) {
+                    Swal.fire(
+                        'Approved!',
+                        'Full payment approved!',
+                        'success'
+                        )
+                    $(this).submit();
+                }
+            })
+        });
+    </script>
 </body>
 
 </html>

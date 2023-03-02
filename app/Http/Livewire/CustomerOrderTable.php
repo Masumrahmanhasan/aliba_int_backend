@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\Content\OrderItem;
+use App\Models\Content\Order;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\TableComponent;
 use Rappasoft\LaravelLivewireTables\Traits\HtmlComponents;
@@ -39,8 +40,7 @@ class CustomerOrderTable extends TableComponent
     public function query(): Builder
     {
         $user_id = auth()->id();
-        return OrderItem::with('user', 'order', 'product')
-            ->whereNotIn('status', ['Delivered', 'Waiting For Payment'])
+        return Order::with('user', 'orderItems')
             ->where('user_id', $user_id);
     }
 
@@ -49,35 +49,55 @@ class CustomerOrderTable extends TableComponent
         return [
             Column::make('Date', 'created_at')
                 ->searchable()
-                ->format(function (OrderItem $model) {
+                ->format(function (Order $model) {
                     return date('d-M-Y', strtotime($model->created_at));
                 }),
-            Column::make('OrderItemID', 'order_item_number')
+            Column::make('Day Count', 'created_at')
+                ->format(function (Order $model) {
+                    $count = strtotime(now()) - strtotime($model->created_at);
+                    return ceil($count / (60 * 60 * 24));
+                }),
+            Column::make('Invoice', 'order_number')
                 ->searchable()
                 ->sortable()
-                ->format(function (OrderItem $model) {
-                    return $model->order_item_number;
+                ->format(function (Order $model) {
+                    return $model->order_number;
                 }),
-            Column::make('Amount', 'product_value')
+            Column::make('TotalAmount', 'amount')
                 ->searchable(),
-            Column::make('ExpressFee', 'chinaLocalDelivery')
-                ->searchable(),
-            Column::make('1stPayment', 'first_payment')
-                ->format(function (OrderItem $model) {
-                    return $model->first_payment + ($model->chinaLocalDelivery / 2);
+            Column::make('1stPayment', 'needToPay')
+                ->format(function (Order $model) {
+                    return $model->needToPay;
                 }),
-            Column::make('Due', 'due_payment')
-                ->format(function (OrderItem $model) {
-                    return $this->html('<span class="due_payment">' . $model->due_payment . '</span>');
+            Column::make('Due', 'dueForProducts')
+                ->format(function (Order $model) {
+                    return $this->html('<span class="dueForProducts">' . $model->dueForProducts . '</span>');
+                }),
+            Column::make('TrxId', 'trxId')
+                ->format(function (Order $model) {
+                    $trxId = json_decode($model->trxId);
+                    if (isset($trxId->payment_1st)) {
+                        return $this->html('<div class="trxId">Initial: ' . $trxId->payment_1st . '</div><div class="trxId">Final: ' . $trxId->payment_2nd . '</div>');
+                    } else {
+                        return $this->html('<div class="trxId">Initial: ' . $model->trxId . '</div>');
+                    }
+                }),
+            Column::make('Ref', 'refNumber')
+                ->format(function (Order $model) {
+                    return $this->html('<div class="trxId">' . $model->refNumber . '</div>');
                 }),
             Column::make('Status', 'status')
                 ->searchable()
-                ->format(function (OrderItem $model) {
+                ->format(function (Order $model) {
                     $status = str_replace('-', ' ', $model->status);
                     return ucwords($status);
                 }),
+            Column::make('Order Numbers', 'orderItems.order_item_number')
+                ->hide()
+                ->searchable()
+                ->format(function (Order $model) {}),
             Column::make(__('Action'), 'action')
-                ->format(function (OrderItem $model) {
+                ->format(function (Order $model) {
                     $tan_id = $model->order->transaction_id ?? '';
                     $details = '<a href="' . route('frontend.user.order-details', $model) . '" class="btn btn-sm btn-success">Details</a>';
                     $payNow = '<a href="' . route('frontend.user.failedOrderPayNow', $tan_id) . '" class="btn btn-fill-line btn-sm">Pay Now</a>';
@@ -90,7 +110,7 @@ class CustomerOrderTable extends TableComponent
 
     public function setTableHeadClass($attribute): ?string
     {
-        $array = ['created_at', 'order_item_number', 'product_value', 'chinaLocalDelivery', 'first_payment', 'due_payment', 'status', 'action'];
+        $array = ['created_at', 'order_number', 'amount', 'needToPay', 'dueForProducts', 'due_payment', 'status', 'action'];
         if (in_array($attribute, $array)) {
             return $attribute . ' text-center';
         }

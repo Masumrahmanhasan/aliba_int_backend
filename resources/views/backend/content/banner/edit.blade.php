@@ -48,7 +48,12 @@
           <div class="form-check form-check-inline">
             <input type="radio" class="form-check-input" name="post_status" value="publish" id="publish"
               class="checking" checked>
-            <label class="form-check-label" for="publish">Publish</label>
+            <label class="form-check-label" for="publish">Desktop</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input type="radio" class="form-check-input" name="post_status" value="publish_mobile" id="publish_mobile" class="checking"
+              @if($status==='publish_mobile' ) checked @endif>
+            <label class="form-check-label" for="publish_mobile">Mobile</label>
           </div>
           <div class="form-check form-check-inline">
             <input type="radio" class="form-check-input" name="post_status" value="draft" id="draft" class="checking"

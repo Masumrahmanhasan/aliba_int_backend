@@ -4,10 +4,14 @@ use App\Models\Content\SearchLog;
 use App\Models\Content\Taxonomy;
 
 if (!function_exists('generate_common_params')) {
-  function generate_common_params($Contents)
+  function generate_common_params($Contents, $rate = 0)
   {
     $generated = [];
-    $rate = get_setting('increase_rate', 20);
+
+    if ($rate == 0) {
+        $rate = get_setting('increase_rate', 20);
+    }
+
     foreach ($Contents as $product) {
       $item = [
         'img' => get_product_picture($product) ?? '',
@@ -129,28 +133,30 @@ if (!function_exists('store_browsing_data')) {
 }
 
 if (!function_exists('get_category_browsing_items')) {
-  function get_category_browsing_items($keyword, $type,  $offset, $limit)
+  function get_category_browsing_items($keyword, $type,  $offset, $limit, $rate = 0)
   {
-    $key = generate_browsing_key($keyword);
-    $path = "browsing/{$key}.json";
-    $existsFile = Storage::exists($path);
-    $browsing = [];
-    $browsingContents = [];
-    if ($existsFile) {
-      $browsing =  json_decode(Storage::get($path), true);
-    }
+    if ($rate == 0) {
+      $key = generate_browsing_key($keyword);
+      $path = "browsing/{$key}.json";
+      $existsFile = Storage::exists($path);
+      $browsing = [];
+      $browsingContents = [];
+      if ($existsFile) {
+        $browsing =  json_decode(Storage::get($path), true);
+      }
 
-    $browsing = is_array($browsing) ? $browsing : [];
+      $browsing = is_array($browsing) ? $browsing : [];
 
-    if (!empty($browsing) && is_array($browsing)) {
-      $TotalCount = getArrayKeyData($browsing, 'TotalCount', 0);
-      $browsingContents = getArrayKeyData($browsing, 'Content', []);
-      $Contents = array_slice($browsingContents, $offset, $limit);
-      if (!empty($Contents) && is_array($Contents)) {
-        return [
-          'TotalCount' => $TotalCount,
-          'Content' => $Contents
-        ];
+      if (!empty($browsing) && is_array($browsing)) {
+        $TotalCount = getArrayKeyData($browsing, 'TotalCount', 0);
+        $browsingContents = getArrayKeyData($browsing, 'Content', []);
+        $Contents = array_slice($browsingContents, $offset, $limit);
+        if (!empty($Contents) && is_array($Contents)) {
+          return [
+            'TotalCount' => $TotalCount,
+            'Content' => $Contents
+          ];
+        }
       }
     }
 
@@ -166,10 +172,13 @@ if (!function_exists('get_category_browsing_items')) {
       $TotalCount = getArrayKeyData($products, 'TotalCount', 0);
       $Contents = getArrayKeyData($products, 'Content', []);
       if (!empty($Contents) && is_array($Contents)) {
-        $Contents = generate_common_params($Contents);
+        $Contents = generate_common_params($Contents, $rate);
         if (!empty($Contents) && is_array($Contents)) {
-          $products['Content'] = array_merge($browsingContents, $Contents);
-          store_browsing_data($key, $products);
+          if ($rate == 0) {
+            $products['Content'] = array_merge($browsingContents, $Contents);
+            store_browsing_data($key, $products);
+          }
+
           return [
             'TotalCount' => $TotalCount,
             'Content' => $Contents
@@ -214,7 +223,7 @@ if (!function_exists('sectionGetCategoryProducts')) {
 }
 
 if (!function_exists('sectionGetSearchProducts')) {
-  function sectionGetSearchProducts($url, $limit = 50, $offset = 0)
+  function sectionGetSearchProducts($url, $limit = 50, $offset = 0, $rate = 0)
   {
     $cat = explode('?', $url);
     $slug_name = str_replace('/', '', $cat[0]);
@@ -233,7 +242,7 @@ if (!function_exists('sectionGetSearchProducts')) {
         $keyword = $log->query_data;
         $type = 'picture';
       }
-      $products = get_category_browsing_items($keyword, $type, rand(1,21), $limit);
+      $products = get_category_browsing_items($keyword, $type, rand(1,21), $limit, $rate);
     }
     return $products;
   }

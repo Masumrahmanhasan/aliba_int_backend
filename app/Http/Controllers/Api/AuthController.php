@@ -43,19 +43,21 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'string'],
+            'fName' => ['required', 'string'],
+            'lName' => ['required', 'string'],
             'email' => ['required', 'string', 'email', Rule::unique('users')],
-            'password' => ['required', 'string', 'Min:8'],
+            'password' => ['required', 'string', 'Min:6'],
             'g-recaptcha-response' => ['required_if:captcha_status,true', 'captcha'],
         ]);
 
         if ($validator->fails()) {
-            return $this->error('Validation fail', 422, [
+            return $this->success([
                 'errors' => $validator->errors()
             ]);
         }
 
         abort_unless(config('access.registration'), 404);
-        $name = $request->only('name', 'email', 'password');
+        $name = $request->only('name', 'email', 'password', 'fName', 'lName');
         $user = $this->userRepository->create($name, false);
 
         if (config('access.users.confirm_email') || config('access.users.requires_approval')) {
@@ -259,23 +261,45 @@ class AuthController extends Controller
 
     public function updateMe()
     {
-        Artisan::call('cache:clear');
-        Artisan::call('route:clear');
-        Artisan::call('config:clear');
-
-        $request = request()->all();
-        $params = $request['params'];
+        $params = request('params');
 
         $user = User::where('id', auth()->id())->first();
-        $user->update([
-            'name' => $params['name'],
-            'email' => $params['email'],
-            'phone' => $params['phone'],
-            'refund_credentials' => $params['refund_credentials']
-        ]);
+
+        if ($params['phone'] != $user->phone) {
+            $phone = User::where('phone', $params['phone'])->first();
+        }
+
+        if ($params['email'] != $user->email) {
+            $email = User::where('email', $params['email'])->first();
+        }
+
+        if (!isset($phone) && !isset($email)) {
+            $user->update([
+                'first_name' => $params['fName'],
+                'last_name' => $params['lName'],
+                'name' => $params['fName'] . " " . $params['lName'],
+                'email' => $params['email'],
+                'phone' => $params['phone'],
+                'refund_method' => isset($params['refund_method']) ? $params['refund_method'] : '',
+                'refund_credentials' => $params['refund_credentials'] ? $params['refund_credentials'] : ''
+            ]);
+
+            return $this->success([
+                'status' => 'success',
+                'message' => 'Information updated successfully!',
+            ]);
+        }
+
+        if (isset($phone)) {
+            return $this->success([
+                'status' => 'error',
+                'message' => 'Provided phone is not unique and already exists!',
+            ]);
+        }
 
         return $this->success([
-            'message' => 'Information updated successfully!',
+            'status' => 'error',
+            'message' => 'Provided email is not unique and already exists!',
         ]);
     }
 

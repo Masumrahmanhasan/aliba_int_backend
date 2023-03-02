@@ -30,6 +30,7 @@ Route::namespace('Content')->group(function () {
   Route::post('order/wallet/{id}', [OrderController::class, 'walletDetails'])->name('order.wallet.details');
   Route::post('order/show/{id}', [OrderController::class, 'show'])->name('order.show');
   Route::put('order-update-shipping-rate/{id}', [OrderController::class, 'updateShippingRate'])->name('order.shipping-rate');
+  Route::get('ajax-getOrderItems', [OrderController::class, 'getOrderItems'])->name('ajax.getOrderItems');
   Route::resource('order', 'OrderController')->except('edit', 'update', 'show');
   Route::get('invoice/trashed', 'InvoiceController@trashed')->name('invoice.trashed');
   Route::get('invoice/restore/{invoice}', 'InvoiceController@restore')->name('invoice.restore');

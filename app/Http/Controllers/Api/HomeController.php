@@ -12,6 +12,7 @@ use App\Models\Content\Product;
 use App\Models\Content\Taxonomy;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class HomeController extends Controller
 {
@@ -43,9 +44,11 @@ class HomeController extends Controller
     public function banners()
     {
         $banners = Post::where('post_type', 'banner')->where('post_status', 'publish')->limit(5)->latest()->get();
+        $banners_mobile = Post::where('post_type', 'banner')->where('post_status', 'publish_desktop')->limit(5)->latest()->get();
 
         return $this->success([
-            'banners' => $banners
+            'banners' => $banners,
+            'mobileBanners' => $banners_mobile
         ]);
     }
 
@@ -594,13 +597,24 @@ class HomeController extends Controller
         // if (get_setting('section_super_deals_active') == 'enable') {
             $offset = request('offset', 0);
             $limit = request('limit', 6);
+            $rate = request('rate', get_setting('increase_rate', 20));
 
             $searchLocal = get_setting('section_super_deals_search');
             $search = request('search', $searchLocal);
 
             $section_super_deals_timer = get_setting('section_super_deals_timer');
 
-            $SuperDealProducts = getSuperDealProducts($search, $offset, $limit);
+            $key = generate_browsing_key('sale_' . $search);
+            $path = "browsing/{$key}.json";
+            $existsFile = Storage::exists($path);
+
+            if ($existsFile) {
+                $SuperDealProducts =  json_decode(Storage::get($path), true);
+            } else {
+                $SuperDealProducts = getSuperDealProducts($search, $offset, $limit, $rate);
+                store_browsing_data($key, $SuperDealProducts);
+            }
+
             if (!empty($SuperDealProducts)) {
                 return $this->success([
                     'SuperDealProducts' => $SuperDealProducts,
@@ -616,11 +630,22 @@ class HomeController extends Controller
         // if (get_setting('section_super_deals_active') == 'enable') {
             $offset = request('offset', 0);
             $limit = request('limit', 6);
+            $rate = request('rate', get_setting('increase_rate', 20));
 
             $searchLocal = get_setting('section_seven_search');
             $search = request('search', $searchLocal);
 
-            $SuperDealProducts = getSuperDealProducts($search, $offset, $limit);
+            $key = generate_browsing_key('sale_' . $search);
+            $path = "browsing/{$key}.json";
+            $existsFile = Storage::exists($path);
+
+            if ($existsFile) {
+                $SuperDealProducts =  json_decode(Storage::get($path), true);
+            } else {
+                $SuperDealProducts = getSuperDealProducts($search, $offset, $limit, $rate);
+                store_browsing_data($key, $SuperDealProducts);
+            }
+
             if (!empty($SuperDealProducts)) {
                 return $this->success([
                     'SuperDealProducts' => $SuperDealProducts
@@ -634,6 +659,7 @@ class HomeController extends Controller
     {
         $url = request('url', null);
         $limit = request('limit', 36);
+        $offset = request('offset', 0);
 
         return sectionGetCategoryProducts($url, $limit);
     }
@@ -642,14 +668,17 @@ class HomeController extends Controller
     {
         $url = request('url', null);
         $limit = request('limit', 36);
+        $offset = request('offset', 0);
+        $rate = request('rate', 0);
 
-        return sectionGetSearchProducts($url, $limit);
+        return sectionGetSearchProducts($url, $limit, $offset, $rate);
     }
 
     public function sectionSaleOfferProducts()
     {
         $item_id = request('item_id', null);
+        $rate = request('rate', get_setting('increase_rate', 20));
 
-        return getSaleOfferProducts($item_id);
+        return getSaleOfferProducts($item_id, $rate);
     }
 }

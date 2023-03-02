@@ -12,6 +12,8 @@ use App\Models\Content\Order;
 use App\Models\Content\OrderItem;
 use App\Models\Content\OrderItemVariation;
 use App\Models\Content\Product;
+use App\Models\Auth\User;
+use App\Models\Content\Cart;
 use App\Traits\ApiResponser;
 use Auth;
 use Illuminate\Http\Request;
@@ -29,27 +31,28 @@ class OrderController extends Controller
         $cart = json_decode(request('cart'), true);
         $address = json_decode(request('address'), true);
         $summary = json_decode(request('summary'), true);
+        $pwgDiscount = json_decode(request('pwgDiscount'), true);
 
         $tran_id = generate_transaction_id();
         $pay_method = request('paymentMethod');
+        $percent = request('advancePercent');
 
         try {
-            DB::transaction(function () use ($tran_id, $pay_method, $cart, $summary, $address) {
+            DB::transaction(function () use ($tran_id, $pay_method, $cart, $summary, $address, $percent, $pwgDiscount) {
                 $status = 'waiting-for-payment';
-                $order = $this->orderStore($tran_id, $pay_method, $summary, $address, $status);
+                $order = $this->orderStore($tran_id, $pay_method, $summary, $address, $status, $percent, $pwgDiscount);
                 foreach ($cart as $product) {
                     $itemVariations = $product['ConfiguredItems'];
                     $OrderItemData = [
                         'name' => $product['Title'],
                         'link' => "/product/{$product['Id']}",
                         'shipped_by' => 'Air',
-                        'shipping_rate' => $product['shippingRate'] ?? 800,
+                        'shipping_rate' => $product['shippingRate'] ?? 0,
                         'approxWeight' => $product['ApproxWeight'],
-                        'chinaLocalDelivery' => $product['DeliveryCost'],
                         'status' => $status,
                     ];
 
-                    $this->storeOrderItems($order, $product, $itemVariations, $OrderItemData);
+                    $this->storeOrderItems($order, $product, $itemVariations, $OrderItemData, $percent, $pwgDiscount);
                 }
 
                 $auth_id = auth()->id();
@@ -68,6 +71,11 @@ class OrderController extends Controller
                 return $this->success($feedback);
             }
         } else if ($pay_method === "nagad_payment" || $pay_method === "bkash_payment" || $pay_method === "bank_payment") {
+            $user = User::where('email', 'rayhan@lskit.com')->first();
+            $subject = "Order placed | 1688cart.com";
+            $generateText = "An order on your site 1688cart.com has been placed. Please visit https://admin.1688cart.com to check in detail.";
+
+            send_status_email($generateText, $subject, $user);
 
             $order = Order::where('user_id', auth()->id())->latest()->first();
             return $this->success([
@@ -106,11 +114,33 @@ class OrderController extends Controller
         $order = Order::where('user_id', auth()->user()->id)->where('id', $order_id)->first();
 
         $summary = json_decode(request('summary'), true);
-        $trxId = $summary['trxId'] ?? null;
+
+        $data = json_decode($order->trxId);
+        if ($data->payment_1st == '') {
+            $trxId = [
+                'payment_1st' => $summary['trxId'],
+                'payment_2nd' => ''
+            ];
+        } else {
+            $trxId = [
+                'payment_1st' => $data->payment_1st,
+                'payment_2nd' => $summary['trxId']
+            ];
+
+            $orderItems = OrderItem::where('order_id', $order->id)->get();
+
+            foreach ($orderItems as $orderItem) {
+                if ($orderItem->full_payment == NULL) {
+                    $orderItem->update([
+                        'full_payment' => $summary['trxId']
+                    ]);
+                }
+            }
+        }
 
         if (!empty($order)) {
             $order->update([
-                'trxId' => $trxId
+                'trxId' => json_encode($trxId),
             ]);
 
             return $this->success([
@@ -121,6 +151,27 @@ class OrderController extends Controller
         }
 
         return $this->error('Order not found!', 417);
+    }
+
+    public function updateOrderItems($item_id)
+    {
+        $orderItem = OrderItem::where('user_id', auth()->user()->id)->where('id', $item_id)->first();
+
+        $summary = json_decode(request('summary'), true);
+
+        if (!empty($orderItem)) {
+            $orderItem->update([
+                'full_payment' => $summary['trxId'],
+            ]);
+
+            return $this->success([
+                'status' => 'success',
+                'message' => 'Your payment has been updated successfully',
+                'redirect' => '/details/' . $orderItem->order_id
+            ]);
+        }
+
+        return $this->error('Order item not found!', 417);
     }
 
     public function refundOrders($id)
@@ -142,7 +193,7 @@ class OrderController extends Controller
         return $this->error('Order not found!', 417);
     }
 
-    public function orderStore($tran_id, $pay_method, $summary, $address, $status)
+    public function orderStore($tran_id, $pay_method, $summary, $address, $status, $percent, $pwgDiscount)
     {
         //order_number
         $user = auth()->user();
@@ -152,25 +203,37 @@ class OrderController extends Controller
         $advanced = $summary['advanced'] ?? null;
         $dueAmount = $summary['dueAmount'] ?? null;
         $refNumber = $summary['refNumber'] ?? null;
-        $trxId = $summary['trxId'] ?? null;
+
+        $discount = [
+            'percent' => $pwgDiscount['discountPercent'],
+            'amount' => $pwgDiscount['discountAmount'],
+            'product_count' => $pwgDiscount['totalProduct'],
+        ];
+        // $trxId = $summary['trxId'] ?? null;
+        $trxId = [
+            'payment_1st' => '',
+            'payment_2nd' => ''
+        ];
 
         $order = Order::create([
-            'name' => $user->full_name ?? $user->name ?? $user->first_name ?? 'No Name',
+            'name' => $user->name ?? $user->full_name ?? $user->first_name ?? 'No Name',
             'user_id' => $user->id,
             'email' => $user->email,
             'phone' => $user->phone ?? '',
             'amount' => $cartTotal,
-            'coupon_code' => '',
-            'coupon_victory' => '',
-            'needToPay' => $advanced,
+            'coupon_code' => $couponCode,
+            'coupon_victory' => $couponDiscount,
+            'needToPay' => $advanced - $couponDiscount,
             'dueForProducts' => $dueAmount,
             'status' => $status,
             'address' => json_encode($address),
             'transaction_id' => $tran_id,
             'refNumber' => $refNumber,
-            'trxId' => $trxId,
+            'trxId' => json_encode($trxId),
             'currency' => 'BDT',
             'pay_method' => $pay_method,
+            'pay_percent' => $percent,
+            'pay_discount' => json_encode($discount),
         ]);
         $order_number = generate_order_number($order->id);
         $order->update(['order_number' => $order_number]);
@@ -191,7 +254,7 @@ class OrderController extends Controller
     }
 
 
-    public function storeOrderItems($order, $productItem, $itemVariations, $OrderItemData)
+    public function storeOrderItems($order, $productItem, $itemVariations, $OrderItemData, $percent, $pwgDiscount)
     {
         $order_id = $order->id;
         $Id = $productItem['Id'];
@@ -228,6 +291,15 @@ class OrderController extends Controller
             ];
             OrderItemVariation::create($variations);
         }
+
+        if ($itemTotalQuantity == 0) {
+            $itemTotalQuantity = $productItem['Quantity'];
+        }
+
+        if ($itemTotalPrice == 0) {
+            $itemTotalPrice = $productItem['Price'] * $productItem['Quantity'];
+        }
+
         $order_item_number = generate_order_number($order_item_id);
         $approxWeight = $orderItem->approxWeight ? $itemTotalQuantity * $orderItem->approxWeight : 0;
         $coupon_victory = $order->coupon_victory ? $order->coupon_victory : 0;
@@ -235,23 +307,23 @@ class OrderController extends Controller
 
         if ($orderItem) {
             $order_item_number = generate_order_number($orderItem->id);
-            $itemTotal = $itemTotalPrice + $orderItem->chinaLocalDelivery;
-            $contribution = coupon_contribution($order_amount, $itemTotal, $coupon_victory);
-            $half_payment = ($itemTotal - $contribution) * 0.50;
+            $itemTotal = $itemTotalPrice + $orderItem->chinaLocalDelivery - ($pwgDiscount['discountAmount'] / $pwgDiscount['totalProduct']);
+            $contribution = ($coupon_victory != 0) ? $coupon_victory / $pwgDiscount['totalProduct'] : 0;
+            $first_payment = ($itemTotal - $contribution) * ($percent / 100);
             $orderItem->update([
                 'order_item_number' => $order_item_number,
                 'quantity' => $itemTotalQuantity,
-                'product_value' => $itemTotalPrice,
-                'first_payment' => $half_payment,
-                'due_payment' => $half_payment,
+                'product_value' => $itemTotalPrice - ($pwgDiscount['discountAmount'] / $pwgDiscount['totalProduct']),
+                'first_payment' => $first_payment,
+                'due_payment' => $itemTotalPrice - $first_payment,
                 'approxWeight' => floating($approxWeight, 3),
                 'coupon_contribution' => $contribution,
+                'chinaLocalDelivery' => ($itemTotalPrice < 3000) ? get_setting('china_local_delivery_charge') : 0,
+                'discount' => $pwgDiscount['discountAmount'] / $pwgDiscount['totalProduct']
             ]);
         } // end condition
 
     }
-
-
 
     public function confirmOrderPayment()
     {
@@ -349,6 +421,40 @@ class OrderController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Not found! Invalid Coupon!'
+        ]);
+    }
+
+    public function updateCart()
+    {
+        $params = request('params');
+
+        $cart = Cart::updateOrCreate(
+            ['user_id' => auth()->id()],
+            ['cart' => $params['cart']]
+        );
+
+        if ($cart) {
+            return $this->success([
+                'status' => 'success',
+                'cart' => $cart->cart
+            ]);
+        }
+    }
+
+    public function getCart()
+    {
+        $cart = Cart::where('user_id', auth()->id())->first();
+
+        if ($cart) {
+            return $this->success([
+                'status' => 'success',
+                'cart' => $cart->cart
+            ]);
+        }
+
+        return $this->success([
+            'status' => 'error',
+            'message' => 'Cart not found!'
         ]);
     }
 }

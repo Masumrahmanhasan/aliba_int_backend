@@ -149,23 +149,23 @@ $options = [
         <table class="table table-bordered text-center">
           <thead>
             <tr>
-              <th scope="col">SL</th>
-              <th scope="col">Item No.</th>
-              <th scope="col" class="text-left">Product</th>
-              <th scope="col">Status</th>
-              <th scope="col">Weight</th>
-              <th scope="col">Due</th>
+              <th class="align-middle" scope="col">SL</th>
+              <th class="align-middle" scope="col">Item No.</th>
+              <th class="align-middle" colspan="3" scope="col" class="text-left">Product</th>
+              <th class="align-middle" scope="col">Status</th>
+              {{-- <th class="align-middle" scope="col">Weight</th> --}}
+              <th class="text-right align-middle" scope="col">Due</th>
             </tr>
           </thead>
           <tbody id="invoiceItem"></tbody>
           <tfoot id="invoiceFooter">
-            <tr>
-              <td colspan="4" class="text-right">Total Due</td>
+            {{-- <tr>
+              <td colspan="3" class="text-right">Total Due</td>
               <td class="text-right"><span class="total_weight">0.000</span></td>
               <td class="text-right"><span class="total_due">0.00</span></td>
-            </tr>
+            </tr> --}}
             <tr>
-              <td colspan="4" class="align-middle text-right">
+              <td colspan="6" class="align-middle text-right">
                 <div class="row">
                   <div class="col">
                     @php
@@ -216,12 +216,12 @@ $options = [
                   </div>
                 </div> <!-- row -->
               </td>
-              <td class="text-center">-</td>
+              {{-- <td class="text-center">-</td> --}}
               <td class="text-right"><span class="courier_bill">0.00</span></td>
             </tr>
             <tr>
-              <td colspan="4" class="text-right">Total Payable</td>
-              <td class="text-center">-</td>
+              <td colspan="6" class="text-right"><b>Total Payable</b></td>
+              {{-- <td class="text-center">-</td> --}}
               <td class="text-right"><span class="total_payable">0.00</span></td>
             </tr>
           </tfoot>

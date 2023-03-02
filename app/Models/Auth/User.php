@@ -36,6 +36,7 @@ class User extends BaseUser
     'first_name',
     'last_name',
     'phone',
+    'refund_method',
     'refund_credentials',
     'shipping_id',
     'billing_id',

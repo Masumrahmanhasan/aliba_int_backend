@@ -1,6 +1,6 @@
 <div class="btn-group btn-group-sm" role="group" aria-label="@lang('labels.backend.access.users.user_actions')">
 
-    @if ($order->status == 'partial-paid')
+    {{-- @if ($order->status == 'partial-paid')
         <a href="{{ route('admin.order.makeAsFullPayment', $order) }}" class="btn btn-info" data-toggle="tooltip"
             data-placement="top" title="Make Full Paid">
             Make Full Paid
@@ -12,7 +12,7 @@
             data-placement="top" title="Make Partial">
             Make Partial
         </a>
-    @endif
+    @endif --}}
         <a href="{{ route('admin.order.show', $order) }}" class="btn btn-secondary" data-method="show" data-toggle="tooltip"
             data-placement="top" title="order details">
             <i class="fa fa-file-o"></i>

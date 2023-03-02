@@ -73,7 +73,7 @@
 
 </head>
 
-<body class="loginPageBody">
+<body class="">
 
   @include('includes.partials.fb-chat')
 
