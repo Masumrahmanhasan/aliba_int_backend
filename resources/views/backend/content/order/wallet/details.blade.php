@@ -41,13 +41,7 @@
     </div>
 
     <div class="card-body">
-        <a href="{{ url($order->link) }}">{{ $order->name }}</a> <button
-            class="btn btn-sm btn-warning ml-2">Change</button>
-        <form action="">
-            <label for="product_id">Product ID</label>
-            <input class="form-control col-md-3" type="text" name="product_id">
-            <button class="btn btn-sm btn-secondary mt-3">Replace</button>
-        </form>
+        <a href="{{ url($order->link) }}">{{ $order->name }}</a>
         <div class="table-responsive mt-3">
             <table class="table table-bordered">
                 <thead>

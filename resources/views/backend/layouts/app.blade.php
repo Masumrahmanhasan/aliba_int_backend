@@ -33,6 +33,9 @@
     {{ style(mix('css/backend.css')) }}
 
     @stack('after-styles')
+
+    @yield('styles')
+
   </head>
 
   <body class="layout-fixed sidebar-mini text-sm sidebar-collapse">
