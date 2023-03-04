@@ -44,8 +44,12 @@
                                     <tr>
                                         <td>Trx ID#</td>
                                         <td>
-                                            1st Payment: {{ $trxId->payment_1st }} <br>
-                                            2nd Payment: {{ $trxId->payment_2nd }}
+                                            @if (isset($trxId->payment_1st))
+                                                1st Payment: {{ $trxId->payment_1st }} <br>
+                                                2nd Payment: {{ $trxId->payment_2nd }}
+                                            @else
+                                                {{ $order->trxId }}
+                                            @endif
                                         </td>
                                     </tr>
                                     <tr>
@@ -306,7 +310,8 @@
                                             </td>
                                             <td class="text-center align-middle">KG: {{ $item->actual_weight }}</td>
                                             <td class="text-right align-middle">
-                                                <span>Shipping Cost {{ $item->shipping_rate * $item->actual_weight }}</span>
+                                                <span>Shipping Cost
+                                                    {{ $item->shipping_rate * $item->actual_weight }}</span>
                                             </td>
                                         </tr>
                                         @php
@@ -325,7 +330,7 @@
                                                 <td class="text-right" colspan="3">Discount</td>
                                                 <td class="text-center">-</td>
                                                 <td class="text-right"><span
-                                                    class="totalItemPrice">{{ $discount->amount / $discount->product_count }}</span>
+                                                        class="totalItemPrice">{{ $discount->amount / $discount->product_count }}</span>
                                                 </td>
                                             </tr>
                                         @endif
@@ -347,7 +352,8 @@
                                 </tr>
                                 @if ($order->pay_discount)
                                     <tr>
-                                        <td class="text-right" colspan="5">Discount ({{ $discount->percent }}%)</td>
+                                        <td class="text-right" colspan="5">Discount ({{ $discount->percent }}%)
+                                        </td>
                                         <td class="text-right">{{ $discount->amount }}</td>
                                     </tr>
                                 @endif
@@ -375,7 +381,8 @@
                             </table>
 
                             @if ($order->status == 'waiting-for-payment')
-                                <form action="{{ route('admin.order.makeAsPayment', $order) }}" method="POST" id="approve_initial">
+                                <form action="{{ route('admin.order.makeAsPayment', $order) }}" method="POST"
+                                    id="approve_initial">
                                     @csrf
                                     @method('GET')
                                     <button class="btn btn-info float-right">Approve Initial Payment</button>
@@ -383,7 +390,8 @@
                             @endif
 
                             @if ($order->status == 'partial-paid')
-                                <form action="{{ route('admin.order.makeAsFullPayment', $order) }}" method="POST" id="approve_full">
+                                <form action="{{ route('admin.order.makeAsFullPayment', $order) }}" method="POST"
+                                    id="approve_full">
                                     @csrf
                                     @method('GET')
                                     <button class="btn btn-info float-right">Approve Full Payment</button>
@@ -423,46 +431,46 @@
             e.preventDefault();
 
             Swal.fire({
-                title: 'Are you sure you want to approve Initial Payment??',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#218838',
-                cancelButtonColor: '#5a6268',
-                confirmButtonText: 'Yes, approve!'
-            })
-            .then((result) => {
-                if (result.value) {
-                    Swal.fire(
-                        'Approved!',
-                        'Initial payment approved!',
-                        'success'
+                    title: 'Are you sure you want to approve Initial Payment??',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#218838',
+                    cancelButtonColor: '#5a6268',
+                    confirmButtonText: 'Yes, approve!'
+                })
+                .then((result) => {
+                    if (result.value) {
+                        Swal.fire(
+                            'Approved!',
+                            'Initial payment approved!',
+                            'success'
                         )
-                    $(this).submit();
-                }
-            })
+                        $(this).submit();
+                    }
+                })
         });
 
         $('#approve_full').submit(function(e) {
             e.preventDefault();
 
             Swal.fire({
-                title: 'Are you sure you want to approve Full Payment??',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#218838',
-                cancelButtonColor: '#5a6268',
-                confirmButtonText: 'Yes, approve!'
-            })
-            .then((result) => {
-                if (result.value) {
-                    Swal.fire(
-                        'Approved!',
-                        'Full payment approved!',
-                        'success'
+                    title: 'Are you sure you want to approve Full Payment??',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#218838',
+                    cancelButtonColor: '#5a6268',
+                    confirmButtonText: 'Yes, approve!'
+                })
+                .then((result) => {
+                    if (result.value) {
+                        Swal.fire(
+                            'Approved!',
+                            'Full payment approved!',
+                            'success'
                         )
-                    $(this).submit();
-                }
-            })
+                        $(this).submit();
+                    }
+                })
         });
     </script>
 </body>
