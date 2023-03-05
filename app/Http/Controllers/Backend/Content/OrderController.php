@@ -190,14 +190,14 @@ class OrderController extends Controller
             $first_payment = (int)$orderItem->first_payment;
 
             $out_of_stock = (int)$orderItem->out_of_stock;
-            $adjustment = (int)$orderItem->adjustment;
+            $adjustment = $orderItem->adjustment;
             $refunded = (int)$orderItem->refunded;
             $shipping_charge = (int)$orderItem->shipping_charge;
             $courier_bill = (int)$orderItem->courier_bill;
             $last_payment = (int)$orderItem->last_payment;
             $missing = (int)$orderItem->missing;
 
-            $due_payment = (int)$orderItem->due_payment;
+            $due_payment = $orderItem->due_payment;
 
             $due_payment = $adjustment > 0 ? $due_payment + abs($adjustment) : $due_payment - abs($adjustment);
 
