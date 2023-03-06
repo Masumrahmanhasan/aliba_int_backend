@@ -347,8 +347,8 @@
 
                             <table class="table table-bordered table-striped">
                                 <tr>
-                                    <td class="text-right" colspan="5">Products Price (Before discount)</td>
-                                    <td class="text-right">{{ $order->amount + $discount->amount }}</td>
+                                    <td class="text-right" colspan="5">Products Price</td>
+                                    <td class="text-right">{{ $order->amount }}</td>
                                 </tr>
                                 @if ($order->pay_discount)
                                     <tr>
@@ -357,11 +357,6 @@
                                         <td class="text-right">{{ $discount->amount }}</td>
                                     </tr>
                                 @endif
-
-                                <tr>
-                                    <td class="text-right" colspan="5">Products Price (After discount)</td>
-                                    <td class="text-right">{{ $order->amount }}</td>
-                                </tr>
                                 @if ($order->coupon_victory)
                                     <tr>
                                         <td class="text-right" colspan="5">Coupon</td>
@@ -370,7 +365,7 @@
                                 @endif
 
                                 <tr>
-                                    <td class="text-right" colspan="5">Initial Payment
+                                    <td class="text-right" colspan="5">Initial Payment (After Discount)
                                         ({{ $order->pay_percent }}%)</td>
                                     <td class="text-right">{{ $order->needToPay }}</td>
                                 </tr>
