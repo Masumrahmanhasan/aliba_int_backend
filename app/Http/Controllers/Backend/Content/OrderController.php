@@ -155,6 +155,11 @@ class OrderController extends Controller
         } elseif ($status === 'received-in-BD-warehouse') {
             $data = $request->only('actual_weight', 'status');
             $data['shipping_charge'] = $orderItem->shipping_rate * $data['actual_weight'];
+            $data['ready_to_deliver_at'] = date('Y-m-d H:i:s' ,time());
+        } elseif ($status === 'ready-to-deliver') {
+            $data = $request->only('status');
+        } elseif ($status === 'BD-customs') {
+            $data = $request->only('status');
         } elseif ($status === 'on-transit-to-customer') {
             $data = $request->only('status');
         } elseif ($status === 'delivered') {
@@ -263,7 +268,7 @@ class OrderController extends Controller
 
     public function walletOrders()
     {
-        $customers = User::role('user')->withCount('orders')->orderBy('first_name')->get();
+        $customers = User::withCount('orders')->role('user')->orderBy('first_name')->get();
 
         $findable[''] = ' - Select Customer - ';
         foreach ($customers as $customer) {

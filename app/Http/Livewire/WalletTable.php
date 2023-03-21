@@ -203,7 +203,7 @@ class WalletTable extends TableComponent
         } elseif ($attribute == 'name') {
             return ['style' => 'min-width:260px;'];
         } elseif ($attribute == 'order_item_number') {
-            return ['style' => 'min-width: 100px'];
+            return ['style' => 'min-width: 120px'];
         } elseif ($attribute == 'transaction_id') {
             return ['style' => 'min-width: 130px'];
         } elseif ($attribute == 'order_number') {

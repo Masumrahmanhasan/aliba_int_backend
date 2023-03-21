@@ -106,9 +106,11 @@ class AuthController extends Controller
             Auth::logoutOtherDevices($request->password);
         }
 
+        $user2 = $user->roles;
         return $this->success([
             'token' => Auth::user()->createToken('API Token')->plainTextToken,
-            'user' => $user
+            'user' => $user,
+            'role' => $user2[0]['name']
         ]);
     }
 
@@ -253,7 +255,12 @@ class AuthController extends Controller
 
     public function me()
     {
-        $user =  auth()->user();
+        if (request('shopAsCustomer') == true) {
+            $user =  User::where('id', request('id'))->first();
+        } else {
+            $user =  auth()->user();
+        }
+
         return $this->success([
             'user' => $user
         ]);
@@ -263,7 +270,11 @@ class AuthController extends Controller
     {
         $params = request('params');
 
-        $user = User::where('id', auth()->id())->first();
+        if ($params['shopAsCustomer'] == true) {
+            $user =  User::where('id', $params['id'])->first();
+        } else {
+            $user = User::where('id', auth()->id())->first();
+        }
 
         if ($params['phone'] != $user->phone) {
             $phone = User::where('phone', $params['phone'])->first();
@@ -375,10 +386,12 @@ class AuthController extends Controller
                     $user->update();
                 }
 
+                $user2 = $user->roles;
                 if ($user) {
                     return $this->success([
                         'token' => $user->createToken('API Token')->plainTextToken,
-                        'user' => $user
+                        'user' => $user,
+                        'role' => $user2[0]['name']
                     ]);
                 }
             } else {
@@ -459,7 +472,13 @@ class AuthController extends Controller
 
     public function AllAddress()
     {
-        $addresses = Address::where('user_id', auth()->id())->latest()->get();
+        if (request('shopAsCustomer') == true) {
+            $auth_id = request('id');
+        } else {
+            $auth_id = auth()->id();
+        }
+
+        $addresses = Address::where('user_id', $auth_id)->latest()->get();
 
         return $this->success([
             'addresses' => $addresses,
@@ -509,6 +528,13 @@ class AuthController extends Controller
         return $this->success([
             'status' => true,
             'msg' => 'Address deleted successfully'
+        ]);
+    }
+
+    public function customers()
+    {
+        return $this->success([
+            'customers' => User::get(),
         ]);
     }
 }

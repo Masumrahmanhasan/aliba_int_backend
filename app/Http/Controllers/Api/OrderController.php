@@ -40,7 +40,14 @@ class OrderController extends Controller
         try {
             DB::transaction(function () use ($tran_id, $pay_method, $cart, $summary, $address, $percent, $pwgDiscount) {
                 $status = 'waiting-for-payment';
-                $order = $this->orderStore($tran_id, $pay_method, $summary, $address, $status, $percent, $pwgDiscount);
+
+                if (request('shopAsCustomer') == true) {
+                    $auth_id = request('id');
+                } else {
+                    $auth_id = auth()->id();
+                }
+
+                $order = $this->orderStore($tran_id, $pay_method, $summary, $address, $status, $percent, $pwgDiscount, $auth_id);
                 foreach ($cart as $product) {
                     $itemVariations = $product['ConfiguredItems'];
                     $OrderItemData = [
@@ -52,10 +59,9 @@ class OrderController extends Controller
                         'status' => $status,
                     ];
 
-                    $this->storeOrderItems($order, $product, $itemVariations, $OrderItemData, $percent, $pwgDiscount);
+                    $this->storeOrderItems($order, $product, $itemVariations, $OrderItemData, $percent, $pwgDiscount, $auth_id);
                 }
 
-                $auth_id = auth()->id();
                 CustomerCart::where('user_id', $auth_id)->whereNull('buy_status')->update([
                     'buy_status' => Carbon::now()->toDateTimeString()
                 ]);
@@ -90,7 +96,13 @@ class OrderController extends Controller
 
     public function cancelOrders($order_id)
     {
-        $order = Order::where('user_id', auth()->user()->id)->where('id', $order_id)->first();
+        if (request('shopAsCustomer') == true) {
+            $user_id = request('id');
+        } else {
+            $user_id = auth()->id();
+        }
+
+        $order = Order::where('user_id', $user_id)->where('id', $order_id)->first();
 
         if (!empty($order)) {
 
@@ -111,7 +123,13 @@ class OrderController extends Controller
 
     public function updateOrders($order_id)
     {
-        $order = Order::where('user_id', auth()->user()->id)->where('id', $order_id)->first();
+        if (request('shopAsCustomer') == true) {
+            $user_id = request('id');
+        } else {
+            $user_id = auth()->id();
+        }
+
+        $order = Order::where('user_id', $user_id)->where('id', $order_id)->first();
 
         $summary = json_decode(request('summary'), true);
 
@@ -155,7 +173,13 @@ class OrderController extends Controller
 
     public function updateOrderItems($item_id)
     {
-        $orderItem = OrderItem::where('user_id', auth()->user()->id)->where('id', $item_id)->first();
+        if (request('shopAsCustomer') == true) {
+            $user_id = request('id');
+        } else {
+            $user_id = auth()->id();
+        }
+
+        $orderItem = OrderItem::where('user_id', $user_id)->where('id', $item_id)->first();
 
         $summary = json_decode(request('summary'), true);
 
@@ -176,7 +200,13 @@ class OrderController extends Controller
 
     public function refundOrders($id)
     {
-        $order = Order::where('user_id', auth()->user()->id)->where('id', $id)->first();
+        if (request('shopAsCustomer') == true) {
+            $user_id = request('id');
+        } else {
+            $user_id = auth()->id();
+        }
+
+        $order = Order::where('user_id', $user_id)->where('id', $id)->first();
 
         if (!empty($order)) {
             $order->update([
@@ -193,10 +223,10 @@ class OrderController extends Controller
         return $this->error('Order not found!', 417);
     }
 
-    public function orderStore($tran_id, $pay_method, $summary, $address, $status, $percent, $pwgDiscount)
+    public function orderStore($tran_id, $pay_method, $summary, $address, $status, $percent, $pwgDiscount, $auth_id)
     {
         //order_number
-        $user = auth()->user();
+        $user = User::where('id', $auth_id)->first();
         $couponCode = $summary['couponCode'] ?? null;
         $couponDiscount = $summary['couponDiscount'] ?? null;
         $cartTotal = $summary['cartTotal'] ?? null;
@@ -223,7 +253,7 @@ class OrderController extends Controller
             'amount' => $cartTotal,
             'coupon_code' => $couponCode,
             'coupon_victory' => $couponDiscount,
-            'needToPay' => $advanced - $couponDiscount,
+            'needToPay' => $advanced - $pwgDiscount['discountAmount'] - $couponDiscount,
             'dueForProducts' => $dueAmount,
             'status' => $status,
             'address' => json_encode($address),
@@ -254,7 +284,7 @@ class OrderController extends Controller
     }
 
 
-    public function storeOrderItems($order, $productItem, $itemVariations, $OrderItemData, $percent, $pwgDiscount)
+    public function storeOrderItems($order, $productItem, $itemVariations, $OrderItemData, $percent, $pwgDiscount, $auth_id)
     {
         $order_id = $order->id;
         $Id = $productItem['Id'];
@@ -262,7 +292,7 @@ class OrderController extends Controller
 
         $product_id = $product->id ?? null;
         $mainImage = $product->MainPictureUrl ?? $productItem['MainPictureUrl'] ?? null;
-        $auth_id = auth()->id();
+        $auth_id = $auth_id;
         $OrderItemData['image'] = $mainImage;
         $OrderItemData['order_id'] = $order_id;
         $OrderItemData['product_id'] = $product_id;
@@ -307,19 +337,24 @@ class OrderController extends Controller
 
         if ($orderItem) {
             $order_item_number = generate_order_number($orderItem->id);
-            $itemTotal = $itemTotalPrice + $orderItem->chinaLocalDelivery - ($pwgDiscount['discountAmount'] / $pwgDiscount['totalProduct']);
+            $itemTotal = $itemTotalPrice + (($itemTotalPrice < 3000) ? get_setting('china_local_delivery_charge') : 0);
+
+            // APPLICABLE FOR FIRST PAYMENT ONLY
+            $discount = $pwgDiscount['discountAmount'] / $pwgDiscount['totalProduct'];
             $contribution = ($coupon_victory != 0) ? $coupon_victory / $pwgDiscount['totalProduct'] : 0;
-            $first_payment = ($itemTotal - $contribution) * ($percent / 100);
+            // APPLICABLE FOR FIRST PAYMENT ONLY
+
+            $first_payment = $itemTotal * ($percent / 100);
             $orderItem->update([
                 'order_item_number' => $order_item_number,
                 'quantity' => $itemTotalQuantity,
-                'product_value' => $itemTotalPrice - ($pwgDiscount['discountAmount'] / $pwgDiscount['totalProduct']),
-                'first_payment' => $first_payment,
-                'due_payment' => $itemTotalPrice - $first_payment,
+                'product_value' => $itemTotal,
+                'first_payment' => $first_payment - $discount - $contribution,
+                'due_payment' => $itemTotal - $first_payment,
                 'approxWeight' => floating($approxWeight, 3),
                 'coupon_contribution' => $contribution,
                 'chinaLocalDelivery' => ($itemTotalPrice < 3000) ? get_setting('china_local_delivery_charge') : 0,
-                'discount' => $pwgDiscount['discountAmount'] / $pwgDiscount['totalProduct']
+                'discount' => $discount
             ]);
         } // end condition
 
@@ -347,7 +382,12 @@ class OrderController extends Controller
 
     public function orders()
     {
-        $user_id = auth()->id();
+        if (request('shopAsCustomer') == true) {
+            $user_id = request('id');
+        } else {
+            $user_id = auth()->id();
+        }
+
         $orders = Order::with('orderItems.itemVariations')->where('user_id', $user_id)->where('status', '!=', 'cancelled')->latest()->get();
         if (!empty($orders)) {
             return $this->success([
@@ -357,9 +397,34 @@ class OrderController extends Controller
         return $this->error('You have no orders', 417);
     }
 
+    public function orderItems()
+    {
+        if (request('shopAsCustomer') == true) {
+            $user_id = request('id');
+        } else {
+            $user_id = auth()->id();
+        }
+
+        $items = OrderItem::with('itemVariations', 'order')->where('user_id', $user_id)->where('status', '!=', 'waiting-for-payment')->latest()->get();
+        if (!empty($items)) {
+            return $this->success([
+                'items' => $items
+            ]);
+        }
+
+        return $this->error('You have no order items', 417);
+    }
+
     public function orderDetails($id)
     {
-        $user_id = auth()->id();
+        $params = request('params');
+
+        if ($params['shopAsCustomer'] == true) {
+            $user_id = $params['id'];
+        } else {
+            $user_id = auth()->id();
+        }
+
         $order = Order::with('orderItems.itemVariations')->where('id', $id)->where('user_id', $user_id)->first();
 
         if ($order) {
@@ -373,7 +438,12 @@ class OrderController extends Controller
 
     public function invoices()
     {
-        $user_id = auth()->id();
+        if (request('shopAsCustomer') == true) {
+            $user_id = request('id');
+        } else {
+            $user_id = auth()->id();
+        }
+
         $invoices = Invoice::with('invoiceItems')->where('user_id', $user_id)->latest()->get();
         if (!empty($invoices)) {
             return $this->success([
@@ -385,7 +455,12 @@ class OrderController extends Controller
 
     public function invoiceDetails($id)
     {
-        $user_id = auth()->id();
+        if (request('shopAsCustomer') == true) {
+            $user_id = request('id');
+        } else {
+            $user_id = auth()->id();
+        }
+
         $invoice = Invoice::with('invoiceItems')->where('id', $id)->where('user_id', $user_id)->first();
 
         if ($invoice) {
@@ -395,6 +470,29 @@ class OrderController extends Controller
         }
 
         return $this->error('Invoice not found!', 417);
+    }
+
+    public function invoicePay($id)
+    {
+        if (request('shopAsCustomer') == true) {
+            $user_id = request('id');
+        } else {
+            $user_id = auth()->id();
+        }
+
+        $invoice = Invoice::where('id', $id)->where('user_id', $user_id)->first();
+
+        if ($invoice->update([
+            'trxId' => request('trxId'),
+            'refNumber' => request('refNumber'),
+            'payment_method' => request('payMethod'),
+        ])) {
+            return $this->success([
+                'status' => 'success',
+                'message' => 'Your payment has been updated successfully',
+                'redirect' => '/invoice/' . $invoice->id
+            ]);
+        }
     }
 
     public function validateCoupon($code)
@@ -428,27 +526,39 @@ class OrderController extends Controller
     {
         $params = request('params');
 
+        if ($params['shopAsCustomer'] == true) {
+            $auth_id = $params['id'];
+        } else {
+            $auth_id = auth()->id();
+        }
+
         $cart = Cart::updateOrCreate(
-            ['user_id' => auth()->id()],
+            ['user_id' => $auth_id],
             ['cart' => $params['cart']]
         );
 
         if ($cart) {
             return $this->success([
                 'status' => 'success',
-                'cart' => $cart->cart
+                'cart' => $cart->cart,
             ]);
         }
     }
 
     public function getCart()
     {
-        $cart = Cart::where('user_id', auth()->id())->first();
+        if (request('shopAsCustomer') == true) {
+            $auth_id = request('id');
+        } else {
+            $auth_id = auth()->id();
+        }
+
+        $cart = Cart::where('user_id', $auth_id)->first();
 
         if ($cart) {
             return $this->success([
                 'status' => 'success',
-                'cart' => $cart->cart
+                'cart' => $cart->cart,
             ]);
         }
 

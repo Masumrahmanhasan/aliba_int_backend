@@ -54,8 +54,35 @@ class CustomerOrderTable extends TableComponent
                 }),
             Column::make('Day Count', 'created_at')
                 ->format(function (Order $model) {
-                    $count = strtotime(now()) - strtotime($model->created_at);
-                    return ceil($count / (60 * 60 * 24));
+                    $current_date = date('d-M-Y', strtotime($model->created_at));
+                    $current_day = date('l', strtotime($current_date));
+                    $end_date = date('d-M-Y', strtotime(now()));
+                    $end_day = date('l', strtotime(now()));
+                    $holidays = ['21-Feb', '08-Mar', '26-Mar', '19-Apr', '23-Apr', '01-May', '04-May', '28-Jun',
+                                '29-Jun', '15-Aug', '06-Sep', '28-Sep', '24-Oct', '16-Dec', '25-Dec'];
+
+                    if ($end_day != "Friday" && $end_day != "Saturday") {
+                        if (in_array(date('d-M', strtotime($end_date)), $holidays)) {
+                            $days = 0;
+                        } else {
+                            $days = 1;
+                        }
+                    } else {
+                        $days = 0;
+                    }
+
+                    while($current_date != $end_date) {
+                        if ($current_day != "Friday" && $current_day != "Saturday") {
+                            if (!in_array(date('d-M', strtotime($current_date)), $holidays)) {
+                                $days++;
+                            }
+                        }
+
+                        $current_date = date('d-M-Y', strtotime($current_date . "+ 1 day"));
+                        $current_day = date('l', strtotime($current_date));
+                    }
+
+                    return $days;
                 }),
             Column::make('Invoice', 'order_number')
                 ->searchable()

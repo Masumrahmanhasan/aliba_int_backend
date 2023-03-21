@@ -24,7 +24,13 @@ class WishlistController extends Controller
   public function AddToWishList()
   {
     $product = request('product');
-    $auth_id = auth()->id();
+
+    if (request('shopAsCustomer') == true) {
+        $auth_id = request('id');
+    } else {
+        $auth_id = auth()->id();
+    }
+
     $wishlists = [];
     if ($product && $auth_id) {
       $product = json_decode($product, true);
@@ -64,7 +70,12 @@ class WishlistController extends Controller
 
   public function getCustomerWishList()
   {
-    $auth_id = auth()->id();
+    if (request('shopAsCustomer') == true) {
+        $auth_id = request('id');
+    } else {
+        $auth_id = auth()->id();
+    }
+
     $wishlists = [];
     if ($auth_id) {
       $wishlists = Wishlist::where('user_id', $auth_id)->get();
@@ -77,7 +88,12 @@ class WishlistController extends Controller
 
   public function removeCustomerWishList()
   {
-    $auth_id = auth()->id();
+    if (request('shopAsCustomer') == true) {
+        $auth_id = request('id');
+    } else {
+        $auth_id = auth()->id();
+    }
+
     $item_id = request('item_id');
     $wishlists = [];
     if ($auth_id && $item_id) {

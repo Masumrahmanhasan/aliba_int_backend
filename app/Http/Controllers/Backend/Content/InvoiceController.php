@@ -50,12 +50,12 @@ class InvoiceController extends Controller
       $courier_bill = $related['courier_bill'];
       $payment_method = $related['payment_method'];
       $delivery_method = $related['delivery_method'];
-      $user = User::with('shipping')->find($user_id);
+      $user = User::with('address')->find($user_id);
       $invoice = Invoice::create([
         // 'transaction_id' => uniqid('SSL'),
         'customer_name' => $user->full_name,
         'customer_phone' => $user->phone,
-        'customer_address' => json_encode($user->shipping),
+        'customer_address' => $user->address[0]->address,
         'total_payable' => $related['total_payable'],
         'total_courier' => $courier_bill,
         'payment_method' => $payment_method,

@@ -98,7 +98,7 @@ function remove_space(stringData) {
     body.on('click', 'tbody>tr', function (event) {
         let doubleClick = 2;
         let trippleClick = 3;
-        if (event.detail === doubleClick) {
+        if (event.detail === trippleClick) {
             event.preventDefault();
             var changeStatusButton = $('#changeStatusButton');
             var hiddenField = changeStatusButton.find('.hiddenField');
@@ -272,7 +272,7 @@ function remove_space(stringData) {
             if (userTrack !== 0 && userTrack !== user_id) {
                 is_generate = false;
             }
-            var status_allow = ['received-in-BD-warehouse', 'out-of-stock', 'adjustment', 'refunded'];
+            var status_allow = ['ready-to-deliver', 'out-of-stock', 'adjustment', 'refunded'];
             if (!status_allow.includes(status)) {
                 is_generate = false;
             }
@@ -349,7 +349,7 @@ function remove_space(stringData) {
         // changeStatusModal.modal('show');
     }).on('click', '.applyCourierBtn', function () {
         var courier_bill = $(this).closest('.input-group').find('.form-control').val();
-        var total_due = $('#invoiceFooter').find('.total_due').text();
+        var total_due = $('#invoiceFooter').find('.total_payable').text();
         var total_payable = Number(courier_bill) + Number(total_due);
         $('#invoiceFooter').find('.courier_bill').text(Number(courier_bill).toFixed(2));
         $('#invoiceFooter').find('.total_payable').text(Number(total_payable).toFixed(2));
@@ -359,9 +359,11 @@ function remove_space(stringData) {
 
     }).on('click', '.removeCourierBtn', function () {
         $(this).closest('div').find('.form-control').val('');
-        var total_due = $('#invoiceFooter').find('.total_due').text();
+        var courier_bill = $('#invoiceFooter').find('.courier_bill').text();
+        var total_due = $('#invoiceFooter').find('.total_payable').text();
+        var total_payable = Number(total_due) - Number(courier_bill);
         $('#invoiceFooter').find('.courier_bill').text(0.00);
-        $('#invoiceFooter').find('.total_payable').text(Number(total_due).toFixed(2));
+        $('#invoiceFooter').find('.total_payable').text(Number(total_payable).toFixed(2));
         $('.courier_bill_text').hide();
         $('.courierSubmitForm').show();
 

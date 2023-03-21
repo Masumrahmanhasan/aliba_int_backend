@@ -34,8 +34,12 @@
                                         <th colspan="2" class="text-center">Customer Details</th>
                                     </tr>
                                     <tr>
-                                        <td style="width: 50%">Invoice Id#</td>
-                                        <td>{{ $order->order_number }}</td>
+                                        <td>Customer Name</td>
+                                        <td>{{ $order->user->name ?? 'N/A' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 50%">Customer Email</td>
+                                        <td>{{ $order->user->email }}</td>
                                     </tr>
                                     @php
                                         $trxId = json_decode($order->trxId);
@@ -52,10 +56,7 @@
                                             @endif
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <td>Customer Name</td>
-                                        <td>{{ $order->user->name ?? 'N/A' }}</td>
-                                    </tr>
+
                                     <tr>
                                         <td>Payment Method</td>
                                         <td>{{ $order->pay_method ?? 'N/A' }}</td>

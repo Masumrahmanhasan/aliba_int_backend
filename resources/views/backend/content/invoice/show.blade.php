@@ -29,14 +29,14 @@
           <table class="width_100_p">
             <tr>
               <td style="width: 20% !important;">
-                <img class="width_75_p" src="{{asset("img/frontend/brand/logo.svg")}}">
+                <img class="width_75_p" src="{{asset("storage/setting/logo/600x600 international.png")}}">
               </td>
               <td>
                 <h1 class="p_txt_1">{{app_name()}}</h1>
                 <h3 class="p_txt_3">Fair Plaza, Shop- 28 & 29, 3rd Floor</h3>
                 <h3 class="p_txt_3">Mirpur-1, Dhaka-1216</h3>
-                <h4 class="p_txt_2">01933-778855</h4>
-                <h3 class="p_txt_3">Email: support@mybdstore.com</h3>
+                <h4 class="p_txt_2">01999-577318</h4>
+                <h3 class="p_txt_3">Email: admin@alibainternational.com</h3>
                 <p class="inv_black">Invoice</p>
               </td>
               <td style="width: 20% !important;"></td>
@@ -78,7 +78,7 @@
                 <td class="p_txt_5">
                   <b>Address:</b>
                 </td>
-                <td class="p_txt_6">{{$address}}</td>
+                <td class="p_txt_6">{{$invoice->customer_address}}</td>
               </tr>
             </table>
           </div>
@@ -167,7 +167,7 @@
     <span class="pull-right col-xs-12">
         <button onclick="window.print();" class="btn btn-block btn-primary">Print</button> </span>
     <div class="clear_both"></div>
-    <div class="p_txt_17">
+    {{-- <div class="p_txt_17">
       <div class="p_txt_18">
         Please follow these steps before you print for first tiem:
       </div>
@@ -184,7 +184,7 @@
         0.5<br>
         For Chrome: Menu &gt; Print &gt; Set Margins to Default
       </p>
-    </div>
+    </div> --}}
     <div class="clear_both"></div>
   </div>
 </div>

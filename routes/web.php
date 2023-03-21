@@ -3,12 +3,22 @@
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\Frontend\HomeController;
 use GuzzleHttp\Client;
+use App\Models\Auth\User;
+use App\Models\Content\OrderItem;
+
+Route::get('clear-all', function () {
+    Artisan::call('config:clear');
+    Artisan::call('cache:clear');
+    Artisan::call('view:clear');
+    Artisan::call('route:clear');
+    echo "<h1 style='color: green;'>Cache Cleaned!</h1>";
+});
 
 Route::get('/dump', function () {
-    $query = [
-        'instanceKey' => '7367999f-de6f-4e88-9d36-1642cff1746b',
-        'language' => 'en',
-        'itemId' => 'abb-38617121088'
+    // $query = [
+    //     'instanceKey' => '7367999f-de6f-4e88-9d36-1642cff1746b',
+    //     'language' => 'en',
+    //     'itemId' => 'abb-38617121088'
         // 'vendorId' => 'abb-b2b-1833723532'
         // 'xmlParameters' => '<SearchItemsParameters>
         //                     <ItemTitle>Water Bottle</ItemTitle>
@@ -19,10 +29,10 @@ Route::get('/dump', function () {
         // 'framePosition' => 0,
         // 'frameSize' => 10,
         // 'blockList' => '',
-    ];
+    // ];
 
-    $client = new Client();
-    $response = $client->request('GET', load_otc_api() . 'GetItemFullInfoWithDeliveryCosts', ['query' => $query]);
+    // $client = new Client();
+    // $response = $client->request('GET', load_otc_api() . 'GetItemFullInfoWithDeliveryCosts', ['query' => $query]);
 
     // if ($response->getStatusCode() == 200) {
     //     $content = json_decode($response->getBody(), true);
@@ -71,7 +81,11 @@ Route::get('/dump', function () {
         // ];
     // }
     // return [];
-    return $response;
+    // return $response;
+
+    $orders = OrderItem::where('user_id', 7)->orderBy('id', 'DESC')->get();
+    dd($orders);
+
 });
 
 /*

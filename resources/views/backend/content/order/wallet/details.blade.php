@@ -141,6 +141,10 @@
                         <td class="text-center"><b>Total Quantity: </b>{{ $order->quantity }}</td>
                         <td colspan="2"></td>
                     </tr>
+                    @php
+                        $totalItemPrice = $totalItemPrice + $order->chinaLocalDelivery;
+                        $discount = json_decode($order->order->pay_discount);
+                    @endphp
                     <tr>
                         <td class="text-right" colspan="2"><b>China Local Delivery (+)</b></td>
                         <td class="text-left">{{ $currency }}
@@ -151,11 +155,6 @@
                                 class="totalItemPrice">{{ floating($totalItemPrice) }}</span>
                         </td>
                     </tr>
-
-                    @php
-                        $totalItemPrice = $totalItemPrice + $order->chinaLocalDelivery;
-                        $discount = json_decode($order->order->pay_discount);
-                    @endphp
                     <tr>
                         <td class="text-right" colspan="2"><b>Payment Method</b></td>
                         <td class="text-left">{{ $order->order->pay_method }}</td>
@@ -240,8 +239,9 @@
                                     <span class="col-md-7">
                                         {{ $order->actual_weight ? $order->actual_weight : 0 }} KG &nbsp; x
                                     </span>
-                                    <input class="col-md-5" style="border: 1px solid orange; border-radius: 2px;" type="number"
-                                        name="shipping_rate" value="{{ $order->shipping_rate }}" id="rate">
+                                    <input class="col-md-5" style="border: 1px solid orange; border-radius: 2px;"
+                                        type="number" name="shipping_rate" value="{{ $order->shipping_rate }}"
+                                        id="rate">
                                     <input type="text" name="item_id" value="{{ $order->id }}" hidden>
                                     <button class="btn btn-sm btn-success mt-2">Update</button>
                                 </form>
