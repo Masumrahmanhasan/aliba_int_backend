@@ -75,7 +75,7 @@ class InvoiceController extends Controller
         foreach ($invoices as $item) {
           array_push($item_ids, $item['id']);
 
-          if ($item['status'] == 'received-in-BD-warehouse') {
+          if ($item['status'] == 'ready-to-deliver') {
             $invoice_status = 'on-transit-to-customer';
           } else {
             $invoice_status = $item['status'];
@@ -103,7 +103,7 @@ class InvoiceController extends Controller
       foreach ($item_ids as $item_id) {
         $orderItem = OrderItem::find($item_id);
         if ($orderItem) {
-          if ($orderItem->status == 'received-in-BD-warehouse') {
+          if ($orderItem->status == 'ready-to-deliver') {
             $order_item_status = 'on-transit-to-customer';
           } else {
             $order_item_status = $orderItem->status;

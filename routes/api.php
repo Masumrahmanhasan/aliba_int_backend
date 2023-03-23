@@ -26,7 +26,8 @@ use Illuminate\Http\Request;
 Route::group(['prefix' => 'v1', 'as' => 'v1.'], function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
-
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('/password-reset/{token}', [AuthController::class, 'passwordReset']);
 
     Route::post('/social-login', [AuthController::class, 'socialLogin']);
 
@@ -44,7 +45,6 @@ Route::group(['prefix' => 'v1', 'as' => 'v1.'], function () {
     Route::get('/section-search-products', [HomeController::class, 'sectionSearchProducts']);
     Route::get('/section-sale-offer-products', [HomeController::class, 'sectionSaleOfferProducts']);
 
-    Route::get('/loving-products', [HomeController::class, 'lovingProducts']);
     Route::post('/buying-products', [HomeController::class, 'buyingProducts']);
     Route::get('/recent-products', [HomeController::class, 'recentProducts']);
 
@@ -123,6 +123,7 @@ Route::group(['prefix' => 'v1', 'as' => 'v1.'], function () {
             Route::get('/customers', [AuthController::class, 'customers']);
         });
 
+        Route::get('/loving-products', [HomeController::class, 'lovingProducts']);
     });
 
     Route::get('/validate-coupon/{code}', [OrderController::class, 'validateCoupon']);

@@ -17,6 +17,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Artisan;
+use Carbon\Carbon;
+use DB;
+use Hash;
+use Str;
 
 class AuthController extends Controller
 {
@@ -344,7 +348,7 @@ class AuthController extends Controller
                     ->first();
 
                 $trims = explode(" ", $fullName);
-                if(count($trims) > 2) {
+                if (count($trims) > 2) {
                     $firstName = $trims[0] . $trims[1];
                     $lastName = $trims[2];
                 } else {
@@ -535,6 +539,67 @@ class AuthController extends Controller
     {
         return $this->success([
             'customers' => User::get(),
+        ]);
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        $user = User::where('email', $request->email)->first();
+
+        if ($user) {
+
+            $token = DB::table('password_resets')->where('email', $user->email)->first();
+
+            if (!$token) {
+
+                $token = Str::random(64);
+
+                DB::table('password_resets')->insert([
+                    'email' => $user->email,
+                    'token' => $token,
+                    'created_at' => Carbon::now()
+                ]);
+
+                $subject = "Password Reset | Alibainternational.com";
+                $generateText = "A request have been made to reset your password. Please click the link to set a new password: https://alibainternational.com/password-reset/" . $token;
+
+                send_status_email($generateText, $subject, $user);
+
+                return $this->success([
+                    'status' => 'success',
+                    'message' => 'We have sent you an email with a password reset link.'
+                ]);
+            }
+
+            return $this->success([
+                'status' => 'error',
+                'message' => 'We have already sent you an email with a password reset link.'
+            ]);
+        }
+
+        return $this->success([
+            'status' => 'error',
+            'message' => 'No such user the this email exists'
+        ]);
+    }
+
+    public function passwordReset(Request $request, $token)
+    {
+        $reset = DB::table('password_resets')->where('token', $token)->first();
+
+        if ($reset) {
+            $user = User::where('email', $reset->email)->update(['password' => Hash::make($request->password)]);
+            DB::table('password_resets')->where(['token' => $token])->delete();
+
+            return $this->success([
+                'status' => 'success',
+                'message' => 'Your password has been changed successfully!'
+            ]);
+        }
+
+        return $this->success([
+            'status' => 'error',
+            'message' => 'Invalid request token. Please request a new password reset link.'
         ]);
     }
 }
