@@ -80,7 +80,14 @@ class HomeController extends Controller
 
     public function lovingProducts()
     {
+        if (request('shopAsCustomer') == true) {
+            $auth_id = request('id');
+        } else {
+            $auth_id = auth()->id();
+        }
+
         $lists = Wishlist::with('product')
+            ->where('user_id', $auth_id)
             ->latest()
             ->limit(40)
             ->get();
