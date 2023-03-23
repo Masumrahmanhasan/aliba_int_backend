@@ -74,7 +74,7 @@
                         $totalItemQty = 0;
                         $totalItemPrice = 0;
                     @endphp
-                    @foreach ($order->itemVariations as $variation)
+                    @forelse ($order->itemVariations as $variation)
                         @php
                             $attributes = json_decode($variation->attributes);
                             $attrLength = count($attributes);
@@ -135,7 +135,20 @@
                                 </td>
                             </tr>
                         @endforelse
-                    @endforeach
+                    @empty
+                        @php
+                            $totalItemPrice = $order->product_value;
+                        @endphp
+                        <tr>
+                            <td class="align-middle text-center">
+                                <img class="img-fluid b2bLoading" style="width: 50px;" src="{{ asset($order->image) }}">
+                            </td>
+                            <td colspan="2" class="align-middle text-center">No data</td>
+                            <td class="align-middle text-center">{{ $order->quantity }}</td>
+                            <td class="align-middle text-center">{{ $currency }} {{ $order->product_value / $order->quantity }}</td>
+                            <td class="align-middle text-center">{{ $currency }} {{ $order->product_value }}</td>
+                        </tr>
+                    @endforelse
                     <tr>
                         <td colspan="3"></td>
                         <td class="text-center"><b>Total Quantity: </b>{{ $order->quantity }}</td>
