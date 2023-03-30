@@ -117,7 +117,7 @@ function remove_space(stringData) {
             changeStatusButton.find('.orderId').text('#' + $(this).find('.order_item_number').text());
             body.find('option[value=' + remove_space(status) + ']').attr('selected', 'selected');
 
-            let statusGroup = ["shipped-from-suppliers", "received-in-BD-warehouse", "out-of-stock", "adjustment", "refunded"];
+            let statusGroup = ["shipped-from-suppliers", "ready-to-deliver", "out-of-stock", "adjustment", "refunded"];
             if (statusGroup.includes(status)) {
                 statusChargeForm.find('#status').trigger('change');
             }
@@ -149,7 +149,7 @@ function remove_space(stringData) {
         } else if (status === 'shipped-from-suppliers') {
             var tracking_number = itemRow.find('.tracking_number').text();
             inputData = `<input type="text" name="tracking_number" value="${tracking_number}" placeholder="Tracking Number" class="form-control" required="true">`;
-        } else if (status === 'received-in-BD-warehouse') {
+        } else if (status === 'ready-to-deliver') {
             var actual_weight = itemRow.find('.actual_weight').text();
             inputData = `<input type="text" name="actual_weight" value="${actual_weight}" placeholder="Actual Weight" class="form-control" required="true">`;
         } else if (status === 'out-of-stock') {

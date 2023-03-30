@@ -497,17 +497,46 @@ class OrderController extends Controller
 
     public function validateCoupon($code)
     {
-        $coupon = Coupon::where('coupon_code', $code)->first();
+        if (request('shopAsCustomer') == true) {
+            $user_id = request('id');
+        } else {
+            $user_id = auth()->id();
+        }
+
+        $coupon = Coupon::where('coupon_code', $code)->where('expiry_date', '>', Carbon::now())->first();
 
         if (!empty($coupon)) {
-            $redeemed = CouponUser::where('user_id', auth()->id())->where('coupon_code', $code)->first();
+            // CHECKING COUPON USAGE LIMIT
+            if ($coupon->limit_per_coupon != null) {
+                $coupon_redeem_count = CouponUser::where('coupon_code', $code)->count();
+                if (!($coupon_redeem_count < $coupon->limit_per_coupon)) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Coupon usage limit reached!'
+                    ]);
+                }
+            }
 
-            if (!empty($redeemed)) {
-                // return $this->error('Coupon has already been redeemed!', 417);
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'Coupon has already been redeemed!'
-                ]);
+            // CHECKING USER USAGE LIMIT
+            if ($coupon->limit_per_user != null) {
+                $user_redeem_count = CouponUser::where('user_id', $user_id)->where('coupon_code', $code)->count();
+                if (!($user_redeem_count < $coupon->limit_per_user)) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Coupon has already been redeemed!'
+                    ]);
+                }
+            }
+
+            // CHECKING MINIMUM SPENGING LIMIT
+            if ($coupon->minimum_spend != null) {
+                $spending_amount = request('amount');
+                if ($spending_amount < $coupon->minimum_spend) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => "Your expenditure amount doesn't meet the coupon's minimum spending limit Tk" . $coupon->minimum_spend . "!"
+                    ]);
+                }
             }
 
             return $this->success([
@@ -515,7 +544,6 @@ class OrderController extends Controller
             ]);
         }
 
-        // return $this->error('Not found! Invalid Coupon!', 417);
         return response()->json([
             'status' => 'success',
             'message' => 'Not found! Invalid Coupon!'

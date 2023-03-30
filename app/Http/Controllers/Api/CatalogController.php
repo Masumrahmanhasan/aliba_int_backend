@@ -56,6 +56,11 @@ class CatalogController extends Controller
     {
         $offset = request('offset', 0);
         $limit = request('limit', 36);
+        $rate = request('rate', get_setting('increase_rate', 20));
+        $min = request('minPrice', null);
+        $max = request('maxPrice', null);
+        $orderBy = request('orderBy', null);
+
         $taxonomy = Taxonomy::where('slug', $cat_slug)->whereNotNull('active')->first();
 
         if (!$taxonomy) {
@@ -64,12 +69,12 @@ class CatalogController extends Controller
 
         if ($taxonomy->ProviderType === 'Taobao') {
             $otc_id = $taxonomy->otc_id;
-            $products = get_category_browsing_items($otc_id, 'category',  $offset, $limit);
+            $products = get_category_browsing_items($otc_id, 'category',  $offset, $limit, $rate, $min, $max, $orderBy);
             // $keyword = $taxonomy->keyword ? $taxonomy->keyword : $taxonomy->name;
             // $products = get_category_browsing_items($keyword, 'text',  $offset, $limit);
         } else {
             $otc_id = $taxonomy->otc_id;
-            $products = get_category_browsing_items($otc_id, 'category',  $offset, $limit);
+            $products = get_category_browsing_items($otc_id, 'category',  $offset, $limit, $rate, $min, $max, $orderBy);
             // $keyword = $taxonomy->keyword ? $taxonomy->keyword : $taxonomy->name;
             // $products = get_category_browsing_items($keyword, 'text',  $offset, $limit);
         }
@@ -105,7 +110,13 @@ class CatalogController extends Controller
     {
         $offset = request('offset', 0);
         $limit = request('limit', 36);
-        $products = get_category_browsing_items($searchKey, 'text',  $offset, $limit);
+        $min = request('minPrice', null);
+        $max = request('maxPrice', null);
+        $orderBy = request('orderBy', null);
+        $rate = request('rate', get_setting('increase_rate', 20));
+        $offer = request('offer', false);
+
+        $products = get_category_browsing_items($searchKey, 'text',  $offset, $limit, $rate, $min, $max, $orderBy, $offer);
 
         return $this->success([
             'products' => json_encode($products)
@@ -116,12 +127,15 @@ class CatalogController extends Controller
     {
         $offset = request('offset', 0);
         $limit = request('limit', 36);
+        $min = request('minPrice', null);
+        $max = request('maxPrice', null);
+        $orderBy = request('orderBy', null);
         $rate = request('rate', get_setting('increase_rate', 20));
 
         $SearchLog = SearchLog::where('search_id', $search_id)->where('search_type', 'picture')->first();
         if ($SearchLog) {
             // $products = get_category_browsing_items($SearchLog->query_data, 'picture',  $offset, $limit);
-            $products = otc_image_search_items(getSiteUrl() . '/' .  $SearchLog->query_data, $offset, $limit, $rate);
+            $products = otc_image_search_items(getSiteUrl() . '/' .  $SearchLog->query_data, $offset, $limit, $rate, $min, $max, $orderBy);
 
             return $this->success([
                 'products' => json_encode($products),
@@ -270,8 +284,12 @@ class CatalogController extends Controller
         $offset = request('offset', 0);
         $limit = request('limit', 36);
         $rate = request('rate', get_setting('increase_rate', 20));
+        $min = request('minPrice', null);
+        $max = request('maxPrice', null);
+        $orderBy = request('orderBy', null);
+        $offer = request('offer', false);
 
-        $VendorProducts = products_from_same_vendor($VendorId, $offset, $limit, $rate);
+        $VendorProducts = products_from_same_vendor($VendorId, $offset, $limit, $rate, $min, $max, $orderBy, $offer);
         if (!empty($VendorProducts)) {
             return $this->success([
                 'VendorProducts' => json_encode($VendorProducts)
@@ -369,7 +387,10 @@ class CatalogController extends Controller
         $offset = request('offset', 0);
         $limit = request('limit', 36);
         $rate = request('rate', get_setting('increase_rate', 20));
+        $min = request('minPrice', null);
+        $max = request('maxPrice', null);
+        $orderBy = request('orderBy', null);
 
-        return otc_image_search_items($image, $offset, $limit, $rate);
+        return otc_image_search_items($image, $offset, $limit, $rate, $min, $max, $orderBy);
     }
 }

@@ -133,7 +133,7 @@ if (!function_exists('store_browsing_data')) {
 }
 
 if (!function_exists('get_category_browsing_items')) {
-  function get_category_browsing_items($keyword, $type,  $offset, $limit, $rate = 0)
+  function get_category_browsing_items($keyword, $type,  $offset, $limit, $rate = 0, $min = null, $max = null, $orderBy = null, $offer = false)
   {
     if ($rate == 0) {
       $key = generate_browsing_key($keyword);
@@ -161,11 +161,11 @@ if (!function_exists('get_category_browsing_items')) {
     }
 
     if ($type == 'category') {
-      $products = otc_category_items($keyword,  $offset, $limit);
+      $products = otc_category_items($keyword, $offset, $limit);
     } elseif ($type == 'text') {
-      $products = otc_search_items($keyword, "text",  $offset, $limit);
+      $products = otc_search_items($keyword, "text",  $offset, $limit, $min, $max, $orderBy, $offer);
     } elseif ($type == 'picture') {
-      $products = otc_search_items($keyword, "picture",  $offset, $limit);
+      $products = otc_search_items($keyword, "picture",  $offset, $limit, $min, $max, $orderBy, $offer);
     }
 
     if (!empty($products) && is_array($products)) {
@@ -198,7 +198,7 @@ if (!function_exists('get_category_browsing_items')) {
 
 
 if (!function_exists('sectionGetCategoryProducts')) {
-  function sectionGetCategoryProducts($url, $limit = 50,  $offset = 0)
+  function sectionGetCategoryProducts($url, $limit = 50,  $offset = 0, $rate = 0)
   {
     $cat = explode('?', $url);
     $slug_name = str_replace('/', '', $cat[0]);
@@ -211,10 +211,10 @@ if (!function_exists('sectionGetCategoryProducts')) {
       $category = Taxonomy::where('slug', $slug_name)->first();
       if ($category) {
         if ($category->ProviderType == 'Taobao') {
-          $products = get_category_browsing_items($category->otc_id, 'category',  $offset, $limit);
+          $products = get_category_browsing_items($category->otc_id, 'category',  $offset, $limit, $rate);
         } else {
           $keyword = $category->keyword ? $category->keyword : $category->name;
-          $products = get_category_browsing_items($keyword, 'text',  $offset, $limit);
+          $products = get_category_browsing_items($keyword, 'text',  $offset, $limit, $rate);
         }
       }
     }

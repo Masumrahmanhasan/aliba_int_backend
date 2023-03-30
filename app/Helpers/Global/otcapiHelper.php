@@ -84,20 +84,46 @@ if (!function_exists('otc_category_items')) {
 }
 
 if (!function_exists('otc_search_items')) {
-    function otc_search_items($search, $type, $offset = 1, $limit = 24)
+    function otc_search_items($search, $type, $offset = 1, $limit = 24, $min = null, $max = null, $orderBy = null, $offer = false)
     {
         // otc_search_items('bag', 'text', 0, 5)
         parse_str(parse_url($search, PHP_URL_QUERY), $search_array);
         $data_id = key_exists('id', $search_array) ? $search_array['id'] : null;
         $search = $data_id ? "https://item.taobao.com/item.htm?id={$data_id}" : $search;
 
-        $query = [
-            'instanceKey' => setOtcParams(),
-            'language' => 'en',
-            'xmlParameters' => '<SearchItemsParameters><ItemTitle>' . $search . '</ItemTitle><SearchMethod>' . $type . '</SearchMethod></SearchItemsParameters>',
-            'framePosition' => $offset,
-            'frameSize' => $limit
-        ];
+        if ($min != null || $max != null) {
+            $query = [
+                'instanceKey' => setOtcParams(),
+                'language' => 'en',
+                'xmlParameters' => '<SearchItemsParameters><ItemTitle>' . $search . '</ItemTitle><MinPrice>' . $min . '</MinPrice><MaxPrice>' . $max . '</MaxPrice><SearchMethod>' . $type . '</SearchMethod></SearchItemsParameters>',
+                'framePosition' => $offset,
+                'frameSize' => $limit
+            ];
+        } elseif ($orderBy != 'Price:null') {
+            $query = [
+                'instanceKey' => setOtcParams(),
+                'language' => 'en',
+                'xmlParameters' => '<SearchItemsParameters><ItemTitle>' . $search . '</ItemTitle><OrderBy>' . $orderBy . '</OrderBy><MinPrice>0.02</MinPrice><SearchMethod>' . $type . '</SearchMethod></SearchItemsParameters>',
+                'framePosition' => $offset,
+                'frameSize' => $limit
+            ];
+        } elseif ($offer == true) {
+            $query = [
+                'instanceKey' => setOtcParams(),
+                'language' => 'en',
+                'xmlParameters' => '<SearchItemsParameters><ItemTitle>' . $search . '</ItemTitle><Features><Feature Name="Discount">true</Feature></Features><MinPrice>0.02</MinPrice><SearchMethod>' . $type . '</SearchMethod></SearchItemsParameters>',
+                'framePosition' => $offset,
+                'frameSize' => $limit
+            ];
+        } else {
+            $query = [
+                'instanceKey' => setOtcParams(),
+                'language' => 'en',
+                'xmlParameters' => '<SearchItemsParameters><ItemTitle>' . $search . '</ItemTitle><OrderBy>Price:Asc</OrderBy><MinPrice>0.02</MinPrice><SearchMethod>' . $type . '</SearchMethod></SearchItemsParameters>',
+                'framePosition' => $offset,
+                'frameSize' => $limit
+            ];
+        }
 
         $client = new Client();
         $response = $client->request('GET', load_otc_api() . 'SearchItemsFrame', ['query' => $query]);
@@ -210,16 +236,45 @@ if (!function_exists('getSellerInformation')) {
 }
 
 if (!function_exists('products_from_same_vendor')) {
-    function products_from_same_vendor($vendorId, $offset = 1, $limit = 24, $rate)
+    function products_from_same_vendor($vendorId, $offset = 1, $limit = 24, $rate, $min = null, $max = null, $orderBy = null, $offer = false)
     {
-        $query = [
-            'instanceKey' => setOtcParams(),
-            'language' => 'en',
-            'xmlParameters' => '<SearchItemsParameters><VendorId>' . $vendorId . '</VendorId></SearchItemsParameters>',
-            'framePosition' => $offset,
-            'frameSize' => $limit,
-            'blockList' => '',
-        ];
+        if ($min != null || $max != null) {
+            $query = [
+                'instanceKey' => setOtcParams(),
+                'language' => 'en',
+                'xmlParameters' => '<SearchItemsParameters><VendorId>' . $vendorId . '</VendorId><MinPrice>' . $min . '</MinPrice><MaxPrice>' . $max . '</MaxPrice></SearchItemsParameters>',
+                'framePosition' => $offset,
+                'frameSize' => $limit,
+                'blockList' => '',
+            ];
+        } elseif ($orderBy != 'Price:null') {
+            $query = [
+                'instanceKey' => setOtcParams(),
+                'language' => 'en',
+                'xmlParameters' => '<SearchItemsParameters><VendorId>' . $vendorId . '</VendorId><OrderBy>' . $orderBy . '</OrderBy><MinPrice>0.02</MinPrice></SearchItemsParameters>',
+                'framePosition' => $offset,
+                'frameSize' => $limit,
+                'blockList' => '',
+            ];
+        } elseif ($offer == true) {
+            $query = [
+                'instanceKey' => setOtcParams(),
+                'language' => 'en',
+                'xmlParameters' => '<SearchItemsParameters><VendorId>' . $vendorId . '</VendorId><Features><Feature Name="Discount">true</Feature></Features><MinPrice>0.02</MinPrice></SearchItemsParameters>',
+                'framePosition' => $offset,
+                'frameSize' => $limit,
+                'blockList' => '',
+            ];
+        } else {
+            $query = [
+                'instanceKey' => setOtcParams(),
+                'language' => 'en',
+                'xmlParameters' => '<SearchItemsParameters><VendorId>' . $vendorId . '</VendorId><OrderBy>Price:Asc</OrderBy><MinPrice>0.02</MinPrice></SearchItemsParameters>',
+                'framePosition' => $offset,
+                'frameSize' => $limit,
+                'blockList' => '',
+            ];
+        }
 
         $client = new Client();
         $response = $client->request('GET', load_otc_api() . 'BatchSearchItemsFrame', ['query' => $query]);
@@ -322,16 +377,35 @@ if (!function_exists('product_bulk_prices')) {
 }
 
 if (!function_exists('otc_image_search_items')) {
-    function otc_image_search_items($search, $offset = 0, $limit = 36, $rate)
+    function otc_image_search_items($search, $offset = 0, $limit = 36, $rate, $min = null, $max = null, $orderBy = null)
     {
         // otc_search_items('bag', 'text', 0, 5)
-        $query = [
-            'instanceKey' => setOtcParams(),
-            'language' => 'en',
-            'xmlParameters' => '<SearchItemsParameters><ImageUrl>' . $search . '</ImageUrl></SearchItemsParameters>',
-            'framePosition' => $offset,
-            'frameSize' => $limit
-        ];
+        if ($min != null || $max != null) {
+            $query = [
+                'instanceKey' => setOtcParams(),
+                'language' => 'en',
+                'xmlParameters' => '<SearchItemsParameters><ImageUrl>' . $search . '</ImageUrl><MinPrice>' . $min . '</MinPrice><MaxPrice>' . $max . '</MaxPrice></SearchItemsParameters>',
+                'framePosition' => $offset,
+                'frameSize' => $limit
+            ];
+        } elseif ($orderBy != 'Price:null') {
+            $query = [
+                'instanceKey' => setOtcParams(),
+                'language' => 'en',
+                'xmlParameters' => '<SearchItemsParameters><ImageUrl>' . $search . '</ImageUrl><OrderBy>' . $orderBy . '</OrderBy></SearchItemsParameters>',
+                'framePosition' => $offset,
+                'frameSize' => $limit
+            ];
+        } else {
+            $query = [
+                'instanceKey' => setOtcParams(),
+                'language' => 'en',
+                'xmlParameters' => '<SearchItemsParameters><ImageUrl>' . $search . '</ImageUrl></SearchItemsParameters>',
+                'framePosition' => $offset,
+                'frameSize' => $limit
+            ];
+        }
+
 
         $client = new Client();
         $response = $client->request('GET', load_otc_api() . 'SearchItemsFrame', ['query' => $query]);
@@ -427,7 +501,8 @@ if (!function_exists('getSaleOfferProducts')) {
 }
 
 if (!function_exists('getSuperDealProducts')) {
-    function getSuperDealProducts($search, $offset = 0, $limit = 6, $rate = 0) {
+    function getSuperDealProducts($search, $offset = 0, $limit = 6, $rate = 0)
+    {
         $query = [
             'instanceKey' => setOtcParams(),
             'language' => 'en',

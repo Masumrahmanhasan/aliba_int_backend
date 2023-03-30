@@ -124,7 +124,7 @@ Route::group(['prefix' => 'v1', 'as' => 'v1.'], function () {
         });
 
         Route::get('/loving-products', [HomeController::class, 'lovingProducts']);
+        Route::get('/validate-coupon/{code}', [OrderController::class, 'validateCoupon']);
     });
-
-    Route::get('/validate-coupon/{code}', [OrderController::class, 'validateCoupon']);
+    Route::get('/login-as', [AuthController::class, 'loginAs']);
 });

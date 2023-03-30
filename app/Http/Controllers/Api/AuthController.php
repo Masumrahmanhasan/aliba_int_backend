@@ -493,13 +493,19 @@ class AuthController extends Controller
     {
         $id  = request('id');
 
+        if (request('shopAsCustomer') == true) {
+            $auth_id = request('authId');
+        } else {
+            $auth_id = auth()->id();
+        }
+
         $data = [
             'name' => request('name'),
             'phone_one' => request('phone'),
             'phone_two' => '',
             'phone_three' => request('district'),
             'address' => request('address'),
-            'user_id' => auth()->id(),
+            'user_id' => $auth_id,
         ];
 
 

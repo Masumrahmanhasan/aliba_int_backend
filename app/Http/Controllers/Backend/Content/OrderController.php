@@ -152,7 +152,7 @@ class OrderController extends Controller
             $data = $request->only('status');
         } elseif ($status === 'shipped-from-china-warehouse') {
             $data = $request->only('status');
-        } elseif ($status === 'received-in-BD-warehouse') {
+        } elseif ($status === 'ready-to-deliver') {
             $data = $request->only('actual_weight', 'status');
             $data['shipping_charge'] = $orderItem->shipping_rate * $data['actual_weight'];
             $data['ready_to_deliver_at'] = date('Y-m-d H:i:s' ,time());
