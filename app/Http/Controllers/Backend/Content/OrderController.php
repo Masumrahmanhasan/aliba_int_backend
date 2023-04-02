@@ -7,6 +7,7 @@ use App\Models\Auth\User;
 use App\Models\Content\Order;
 use App\Models\Content\OrderItem;
 use App\Models\Content\OrderItemVariation;
+use Carbon\Carbon;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -40,7 +41,8 @@ class OrderController extends Controller
         if ($order) {
             DB::transaction(function () use ($order, $order_id, $order_user_id) {
                 $order->update([
-                    'status' => 'partial-paid'
+                    'status' => 'partial-paid',
+                    'order_approved_at' => Carbon::now()
                 ]);
 
                 OrderItem::where('order_id', $order_id)
