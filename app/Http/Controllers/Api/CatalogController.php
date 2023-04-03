@@ -127,19 +127,16 @@ class CatalogController extends Controller
     {
         $offset = request('offset', 0);
         $limit = request('limit', 36);
-        $min = request('minPrice', null);
-        $max = request('maxPrice', null);
-        $orderBy = request('orderBy', null);
         $rate = request('rate', get_setting('increase_rate', 20));
 
         $SearchLog = SearchLog::where('search_id', $search_id)->where('search_type', 'picture')->first();
         if ($SearchLog) {
             // $products = get_category_browsing_items($SearchLog->query_data, 'picture',  $offset, $limit);
-            $products = otc_image_search_items(getSiteUrl() . '/' .  $SearchLog->query_data, $offset, $limit, $rate, $min, $max, $orderBy);
+            $products = otc_image_search_items('https://admin.1688cart.com/' .  $SearchLog->query_data, $offset, $limit, $rate);
 
             return $this->success([
                 'products' => json_encode($products),
-                'picture' => getSiteUrl() . '/' .  $SearchLog->query_data
+                'picture' => 'https://admin.1688cart.com/' .  $SearchLog->query_data
             ]);
         }
 
@@ -387,10 +384,7 @@ class CatalogController extends Controller
         $offset = request('offset', 0);
         $limit = request('limit', 36);
         $rate = request('rate', get_setting('increase_rate', 20));
-        $min = request('minPrice', null);
-        $max = request('maxPrice', null);
-        $orderBy = request('orderBy', null);
 
-        return otc_image_search_items($image, $offset, $limit, $rate, $min, $max, $orderBy);
+        return otc_image_search_items($image, $offset, $limit, $rate);
     }
 }

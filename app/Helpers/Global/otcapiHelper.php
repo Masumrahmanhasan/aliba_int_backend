@@ -377,35 +377,16 @@ if (!function_exists('product_bulk_prices')) {
 }
 
 if (!function_exists('otc_image_search_items')) {
-    function otc_image_search_items($search, $offset = 0, $limit = 36, $rate, $min = null, $max = null, $orderBy = null)
+    function otc_image_search_items($search, $offset = 0, $limit = 36, $rate)
     {
         // otc_search_items('bag', 'text', 0, 5)
-        if ($min != null || $max != null) {
-            $query = [
-                'instanceKey' => setOtcParams(),
-                'language' => 'en',
-                'xmlParameters' => '<SearchItemsParameters><ImageUrl>' . $search . '</ImageUrl><MinPrice>' . $min . '</MinPrice><MaxPrice>' . $max . '</MaxPrice></SearchItemsParameters>',
-                'framePosition' => $offset,
-                'frameSize' => $limit
-            ];
-        } elseif ($orderBy != 'Price:null') {
-            $query = [
-                'instanceKey' => setOtcParams(),
-                'language' => 'en',
-                'xmlParameters' => '<SearchItemsParameters><ImageUrl>' . $search . '</ImageUrl><OrderBy>' . $orderBy . '</OrderBy></SearchItemsParameters>',
-                'framePosition' => $offset,
-                'frameSize' => $limit
-            ];
-        } else {
-            $query = [
-                'instanceKey' => setOtcParams(),
-                'language' => 'en',
-                'xmlParameters' => '<SearchItemsParameters><ImageUrl>' . $search . '</ImageUrl></SearchItemsParameters>',
-                'framePosition' => $offset,
-                'frameSize' => $limit
-            ];
-        }
-
+        $query = [
+            'instanceKey' => setOtcParams(),
+            'language' => 'en',
+            'xmlParameters' => '<SearchItemsParameters><ImageUrl>' . $search . '</ImageUrl></SearchItemsParameters>',
+            'framePosition' => $offset,
+            'frameSize' => $limit
+        ];
 
         $client = new Client();
         $response = $client->request('GET', load_otc_api() . 'SearchItemsFrame', ['query' => $query]);
