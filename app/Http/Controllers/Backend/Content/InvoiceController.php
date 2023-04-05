@@ -76,7 +76,7 @@ class InvoiceController extends Controller
           array_push($item_ids, $item['id']);
 
           if ($item['status'] == 'ready-to-deliver') {
-            $invoice_status = 'on-transit-to-customer';
+            $invoice_status = 'ready-to-deliver';
           } else {
             $invoice_status = $item['status'];
           }
@@ -93,7 +93,7 @@ class InvoiceController extends Controller
             'user_id' => $user_id,
           ]);
           if ($isNotify) {
-            generate_customer_notifications('on-transit-to-customer', $user, $item['order_item_number'], $item['due_payment'], "");
+            generate_customer_notifications('ready-to-deliver', $user, $item['order_item_number'], $item['due_payment'], "");
           }
         }
       }
@@ -104,7 +104,7 @@ class InvoiceController extends Controller
         $orderItem = OrderItem::find($item_id);
         if ($orderItem) {
           if ($orderItem->status == 'ready-to-deliver') {
-            $order_item_status = 'on-transit-to-customer';
+            $order_item_status = 'ready-to-deliver';
           } else {
             $order_item_status = $orderItem->status;
           }
@@ -207,7 +207,7 @@ class InvoiceController extends Controller
       $order_item_id = $invoice_item->order_item_id;
       $OrderItem = OrderItem::find($order_item_id);
 
-      if ($OrderItem->status == 'on-transit-to-customer') {
+      if ($OrderItem->status == 'ready-to-deliver') {
         $OrderItem->update([
           'invoice_no' => $invoice->invoice_no,
           'last_payment' => $invoice_item->total_due,
