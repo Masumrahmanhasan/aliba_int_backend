@@ -161,9 +161,8 @@
                                                                 @php
                                                                     $product_id = $item->product ? $item->product->ItemId : '';
                                                                     $product = explode('-', $product_id);
-                                                                    $p = $product[1];
                                                                 @endphp
-                                                                <a href="https://detail.1688.com/offer/{{ $p }}.html"
+                                                                <a href="https://detail.1688.com/offer/{{ end($product) }}.html"
                                                                     class="btn btn-sm btn-secondary"
                                                                     target="_blank">Click</a>
                                                             </td>

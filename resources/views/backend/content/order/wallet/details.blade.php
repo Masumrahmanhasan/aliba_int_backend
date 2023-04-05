@@ -49,12 +49,11 @@
                 <h5>{{ $order->name }}</h5>
                 @php
                     $product = explode('-', $order->link);
-                    $p = $product[1];
                 @endphp
                 <a href="https://alibainternational.com{{ $order->link }}" target="_blank" class="btn"
                     style="background-color: orange; color: white;">Alibainternational.com<i
                         class="fa fa-external-link ml-2"></i></a>
-                <a href="https://detail.1688.com/offer/{{ $p }}.html" target="_blank" class="btn ml-2"
+                <a href="https://detail.1688.com/offer/{{ end($product) }}.html" target="_blank" class="btn ml-2"
                     style="background-color: orange; color: white;">1688.com<i class="fa fa-external-link ml-2"></i></a>
             </div>
         </div>
