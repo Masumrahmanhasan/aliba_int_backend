@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\CatalogController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\WishlistController;
+use App\Http\Controllers\Backend\Content\SubApiOrderTrackingController;
 use Illuminate\Http\Request;
 
 /*
@@ -127,4 +128,6 @@ Route::group(['prefix' => 'v1', 'as' => 'v1.'], function () {
         Route::get('/validate-coupon/{code}', [OrderController::class, 'validateCoupon']);
     });
     Route::get('/login-as', [AuthController::class, 'loginAs']);
+
+    Route::post('/update-order-tracker', [SubApiOrderTrackingController::class, 'update']);
 });

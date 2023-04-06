@@ -5,6 +5,7 @@ use App\Http\Controllers\Frontend\HomeController;
 use GuzzleHttp\Client;
 use App\Models\Auth\User;
 use App\Models\Content\OrderItem;
+use App\Models\Content\SubApiOrder;
 
 Route::get('clear-all', function () {
     Artisan::call('config:clear');
@@ -83,9 +84,17 @@ Route::get('/dump', function () {
     // return [];
     // return $response;
 
-    $orders = OrderItem::where('user_id', 7)->orderBy('id', 'DESC')->get();
-    dd($orders);
-
+    // update_order_tracker();
+    SubApiOrder::updateOrCreate(
+        [
+            'domain' => 'asd'
+        ],
+        [
+            'total_invoices' => 2,
+            'total_orders' => 3
+        ]
+    );
+    // echo "done!";
 });
 
 /*

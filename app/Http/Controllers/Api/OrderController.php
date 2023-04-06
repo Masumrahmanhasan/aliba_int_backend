@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\SManagerPaymentController;
 use App\Models\Content\Coupon;
 use App\Models\Content\CouponUser;
+use App\Models\Content\SubApiOrder;
 use App\Models\Content\Frontend\CustomerCart;
 use App\Models\Content\Invoice;
 use App\Models\Content\Order;
@@ -65,10 +66,15 @@ class OrderController extends Controller
                 CustomerCart::where('user_id', $auth_id)->whereNull('buy_status')->update([
                     'buy_status' => Carbon::now()->toDateTimeString()
                 ]);
+
             }, 3);
         } catch (\Exception $ex) {
             return $this->error($ex, 417);
         }
+
+        // FOR SUB API DOMAINS
+        // update_order_tracker();
+        // FOR SUB API DOMAINS
 
         if ($pay_method === "sManager") {
             $sManager =  new  SManagerPaymentController();

@@ -17,10 +17,11 @@
         "arcanedev/log-viewer": "^5.0",
         "creativeorange/gravatar": "~1.0",
         "davejamesmiller/laravel-breadcrumbs": "^5.0",
-        "dompdf/dompdf": "^1.0",
+        "dompdf/dompdf": "^2.0",
         "facade/ignition": "^1.11",
         "fideloper/proxy": "^4.0",
         "fruitcake/laravel-cors": "^2.0",
+        "guzzlehttp/guzzle": "^7",
         "intervention/image": "^2.5",
         "lab404/laravel-impersonate": "^1.4",
         "langleyfoxall/laravel-nist-password-rules": "^4.0",
@@ -52,7 +53,10 @@
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
     },
     "autoload": {
         "classmap": [

@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Auth\User;
 use App\Models\Content\OrderItem;
 use App\Models\Content\OrderItemVariation;
+use App\Models\Content\SubApiOrder;
 use App\Notifications\PushNotification;
 use Illuminate\Support\Facades\Notification;
 use Maatwebsite\Excel\Facades\Excel;
@@ -49,7 +50,11 @@ class DashboardController extends Controller
       $this->first_payment_updated();
     }
 
-    return view('backend.dashboard');
+    // FOR MAIN DOMAIN
+    $data['subApis'] = SubApiOrder::all();
+
+    return view('backend.dashboard', $data);
+    // FOR MAIN DOMAIN
   }
 
 

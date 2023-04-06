@@ -3,7 +3,7 @@
 
 /**
  * A helper file for Laravel, to provide autocomplete information to your IDE
- * Generated for Laravel 6.20.34.
+ * Generated for Laravel 6.20.44.
  *
  * This file should not be included in your code, only analyzed by your IDE!
  *
@@ -129,7 +129,7 @@
                     /**
          * Get the base path of the Laravel installation.
          *
-         * @param string $path Optionally, a path to append to the base path
+         * @param string $path
          * @return string 
          * @static 
          */ 
@@ -141,7 +141,7 @@
                     /**
          * Get the path to the bootstrap directory.
          *
-         * @param string $path Optionally, a path to append to the bootstrap path
+         * @param string $path
          * @return string 
          * @static 
          */ 
@@ -153,7 +153,7 @@
                     /**
          * Get the path to the application configuration files.
          *
-         * @param string $path Optionally, a path to append to the config path
+         * @param string $path
          * @return string 
          * @static 
          */ 
@@ -165,7 +165,7 @@
                     /**
          * Get the path to the database directory.
          *
-         * @param string $path Optionally, a path to append to the database path
+         * @param string $path
          * @return string 
          * @static 
          */ 
@@ -8643,7 +8643,7 @@
                     /**
          * Gets the user info.
          *
-         * @return string A user name and, optionally, scheme-specific information about how to gain authorization to access the server
+         * @return string|null A user name if any and, optionally, scheme-specific information about how to gain authorization to access the server
          * @static 
          */ 
         public static function getUserInfo()
@@ -13758,11 +13758,12 @@
          * @param string $fileName
          * @param string|null $writerType
          * @param mixed $withHeadings
+         * @param array $responseHeaders
          * @static 
          */ 
-        public static function downloadExcel($fileName, $writerType = null, $withHeadings = false)
+        public static function downloadExcel($fileName, $writerType = null, $withHeadings = false, $responseHeaders = [])
         {
-                        return \Illuminate\Support\Collection::downloadExcel($fileName, $writerType, $withHeadings);
+                        return \Illuminate\Support\Collection::downloadExcel($fileName, $writerType, $withHeadings, $responseHeaders);
         }
                     /**
          * 
@@ -13796,9 +13797,9 @@
          * @param string|null $fileName
          * @param string $writerType
          * @param array $headers
+         * @return \Symfony\Component\HttpFoundation\BinaryFileResponse 
          * @throws \PhpOffice\PhpSpreadsheet\Exception
          * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
-         * @return \Symfony\Component\HttpFoundation\BinaryFileResponse 
          * @static 
          */ 
         public static function download($export, $fileName, $writerType = null, $headers = [])
@@ -13814,9 +13815,9 @@
          * @param string|null $disk
          * @param string $writerType
          * @param mixed $diskOptions
+         * @return bool 
          * @throws \PhpOffice\PhpSpreadsheet\Exception
          * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
-         * @return bool 
          * @static 
          */ 
         public static function store($export, $filePath, $diskName = null, $writerType = null, $diskOptions = [])
@@ -14040,6 +14041,8 @@
      * @method static void log(mixed $message)
      * @method static void notice(mixed $message)
      * @method static void warning(mixed $message)
+     * @deprecated Renamed to \Barryvdh\Debugbar\Facades\Debugbar
+     * @see \Barryvdh\Debugbar\Facades\Debugbar
      * @see \Barryvdh\Debugbar\LaravelDebugbar
      */ 
         class Facade {
@@ -14603,7 +14606,7 @@
          * Get the gravatar url
          *
          * @param string $email
-         * @param string $configGroup
+         * @param string|array|null $configGroup
          * @return string 
          * @throws InvalidEmailException
          * @static 
@@ -14881,6 +14884,16 @@
         {
                         /** @var \Facade\FlareClient\Flare $instance */
                         return $instance->filterExceptionsUsing($filterExceptionsCallable);
+        }
+                    /**
+         * 
+         *
+         * @static 
+         */ 
+        public static function filterReportsUsing($filterReportsCallable)
+        {
+                        /** @var \Facade\FlareClient\Flare $instance */
+                        return $instance->filterReportsUsing($filterReportsCallable);
         }
                     /**
          * 
