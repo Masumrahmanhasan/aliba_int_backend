@@ -35,11 +35,11 @@ class OrderController extends Controller
         $pwgDiscount = json_decode(request('pwgDiscount'), true);
 
         $tran_id = generate_transaction_id();
-        $pay_method = request('paymentMethod');
-        $percent = request('advancePercent');
+        $payment_method = request('paymentMethod');
+        $payment_percentage = request('advancePercent');
 
         try {
-            DB::transaction(function () use ($tran_id, $pay_method, $cart, $summary, $address, $percent, $pwgDiscount) {
+            DB::transaction(function () use ($tran_id, $payment_method, $cart, $summary, $address, $payment_percentage, $pwgDiscount) {
                 $status = 'waiting-for-payment';
 
                 if (request('shopAsCustomer') == true) {
@@ -48,7 +48,7 @@ class OrderController extends Controller
                     $auth_id = auth()->id();
                 }
 
-                $order = $this->orderStore($tran_id, $pay_method, $summary, $address, $status, $percent, $pwgDiscount, $auth_id);
+                $order = $this->orderStore($tran_id, $payment_method, $summary, $address, $status, $payment_percentage, $pwgDiscount, $auth_id);
                 foreach ($cart as $product) {
                     $itemVariations = $product['ConfiguredItems'];
                     $OrderItemData = [
@@ -58,9 +58,11 @@ class OrderController extends Controller
                         'shipping_rate' => $product['shippingRate'] ?? 0,
                         'approxWeight' => $product['ApproxWeight'],
                         'status' => $status,
+                        'product_value' => $product['itemTotal'],
+                        'chinaLocalDelivery' => $product['chinaLocalDelivery'],
                     ];
 
-                    $this->storeOrderItems($order, $product, $itemVariations, $OrderItemData, $percent, $pwgDiscount, $auth_id);
+                    $this->storeOrderItems($order, $product, $itemVariations, $OrderItemData, $payment_percentage, $pwgDiscount, $auth_id);
                 }
 
                 CustomerCart::where('user_id', $auth_id)->whereNull('buy_status')->update([
@@ -76,13 +78,13 @@ class OrderController extends Controller
         // update_order_tracker();
         // FOR SUB API DOMAINS
 
-        if ($pay_method === "sManager") {
+        if ($payment_method === "sManager") {
             $sManager =  new  SManagerPaymentController();
             $feedback = $sManager->initial_payment($tran_id);
             if (is_array($feedback)) {
                 return $this->success($feedback);
             }
-        } else if ($pay_method === "nagad_payment" || $pay_method === "bkash_payment" || $pay_method === "bank_payment") {
+        } else if ($payment_method === "nagad_payment" || $payment_method === "bkash_payment" || $payment_method === "bank_payment") {
             $user = User::where('email', 'rayhan@lskit.com')->first();
             $subject = "Order placed | 1688cart.com";
             $generateText = "An order on your site 1688cart.com has been placed. Please visit https://admin.1688cart.com to check in detail.";
@@ -229,13 +231,17 @@ class OrderController extends Controller
         return $this->error('Order not found!', 417);
     }
 
-    public function orderStore($tran_id, $pay_method, $summary, $address, $status, $percent, $pwgDiscount, $auth_id)
+    public function orderStore($tran_id, $payment_method, $summary, $address, $status, $payment_percentage, $pwgDiscount, $auth_id)
     {
         //order_number
         $user = User::where('id', $auth_id)->first();
+
+        $cart_total = $summary['cartTotal'] ?? null;
+
+        $payment_discount = $pwgDiscount['discountAmount'];
+        $coupon_discount = $summary['couponDiscount'] ?? null;
+
         $couponCode = $summary['couponCode'] ?? null;
-        $couponDiscount = $summary['couponDiscount'] ?? null;
-        $cartTotal = $summary['cartTotal'] ?? null;
         $advanced = $summary['advanced'] ?? null;
         $dueAmount = $summary['dueAmount'] ?? null;
         $refNumber = $summary['refNumber'] ?? null;
@@ -245,32 +251,37 @@ class OrderController extends Controller
             'amount' => $pwgDiscount['discountAmount'],
             'product_count' => $pwgDiscount['totalProduct'],
         ];
-        // $trxId = $summary['trxId'] ?? null;
+
         $trxId = [
             'payment_1st' => '',
             'payment_2nd' => ''
         ];
+
+        $initial_payment = $cart_total * ($payment_percentage / 100);
+        $due_payment = $cart_total - $initial_payment;
+        $initial_payment -= ($payment_discount + $coupon_discount);
 
         $order = Order::create([
             'name' => $user->name ?? $user->full_name ?? $user->first_name ?? 'No Name',
             'user_id' => $user->id,
             'email' => $user->email,
             'phone' => $user->phone ?? '',
-            'amount' => $cartTotal,
+            'amount' => $cart_total,
             'coupon_code' => $couponCode,
-            'coupon_victory' => $couponDiscount,
-            'needToPay' => $advanced - $pwgDiscount['discountAmount'] - $couponDiscount,
-            'dueForProducts' => $dueAmount,
+            'coupon_victory' => $coupon_discount,
+            'needToPay' => $initial_payment,
+            'dueForProducts' => $due_payment,
             'status' => $status,
             'address' => json_encode($address),
             'transaction_id' => $tran_id,
             'refNumber' => $refNumber,
             'trxId' => json_encode($trxId),
             'currency' => 'BDT',
-            'pay_method' => $pay_method,
-            'pay_percent' => $percent,
+            'pay_method' => $payment_method,
+            'pay_percent' => $payment_percentage,
             'pay_discount' => json_encode($discount),
         ]);
+
         $order_number = generate_order_number($order->id);
         $order->update(['order_number' => $order_number]);
 
@@ -280,7 +291,7 @@ class OrderController extends Controller
                 'coupon_id' => $findCoupon->id,
                 'coupon_code' => $couponCode,
                 'coupon_details' => '',
-                'win_amount' => $couponDiscount,
+                'win_amount' => $coupon_discount,
                 'order_id' => $order->id,
                 'user_id' => $user->id,
             ]);
@@ -290,7 +301,7 @@ class OrderController extends Controller
     }
 
 
-    public function storeOrderItems($order, $productItem, $itemVariations, $OrderItemData, $percent, $pwgDiscount, $auth_id)
+    public function storeOrderItems($order, $productItem, $itemVariations, $OrderItemData, $payment_percentage, $pwgDiscount, $auth_id)
     {
         $order_id = $order->id;
         $Id = $productItem['Id'];
@@ -339,27 +350,28 @@ class OrderController extends Controller
         $order_item_number = generate_order_number($order_item_id);
         $approxWeight = $orderItem->approxWeight ? $itemTotalQuantity * $orderItem->approxWeight : 0;
         $coupon_victory = $order->coupon_victory ? $order->coupon_victory : 0;
-        $order_amount = $order->amount;
 
         if ($orderItem) {
             $order_item_number = generate_order_number($orderItem->id);
-            $itemTotal = $itemTotalPrice + (($itemTotalPrice < 3000) ? get_setting('china_local_delivery_charge') : 0);
+
+            $itemTotal = $orderItem->product_value;
 
             // APPLICABLE FOR FIRST PAYMENT ONLY
             $discount = $pwgDiscount['discountAmount'] / $pwgDiscount['totalProduct'];
             $contribution = ($coupon_victory != 0) ? $coupon_victory / $pwgDiscount['totalProduct'] : 0;
             // APPLICABLE FOR FIRST PAYMENT ONLY
 
-            $first_payment = $itemTotal * ($percent / 100);
+            $first_payment = $itemTotal * ($payment_percentage / 100);
+            $due_payment = $itemTotal - $first_payment;
+            $first_payment -= ($discount - $contribution);
+
             $orderItem->update([
                 'order_item_number' => $order_item_number,
                 'quantity' => $itemTotalQuantity,
-                'product_value' => $itemTotal,
-                'first_payment' => $first_payment - $discount - $contribution,
-                'due_payment' => $itemTotal - $first_payment,
+                'first_payment' => $first_payment,
+                'due_payment' => $due_payment,
                 'approxWeight' => floating($approxWeight, 3),
                 'coupon_contribution' => $contribution,
-                'chinaLocalDelivery' => ($itemTotalPrice < 3000) ? get_setting('china_local_delivery_charge') : 0,
                 'discount' => $discount
             ]);
         } // end condition
