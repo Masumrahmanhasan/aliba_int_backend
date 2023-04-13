@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Filesystem;
 use PhpOffice\PhpSpreadsheet\Calculation\TextData\Format;
+use GuzzleHttp\Client;
 
 class SettingController extends Controller
 {
@@ -53,6 +54,20 @@ class SettingController extends Controller
         }
 
         Setting::save_settings($data);
+
+        // FOR MAIN DOMAIN
+        $query = [
+            'currency_rate' => $data['currency_rate'],
+            'increase_rate' => $data['increase_rate']
+        ];
+
+        $client = new Client();
+        $response = $client->request('POST', 'https://admin.dokaner.com/api/v1/update-currency-rates', ['query' => $query]);
+
+        $client2 = new Client();
+        $response = $client2->request('POST', 'https://admin.alibainternational.com/api/v1/update-currency-rates', ['query' => $query]);
+        // FOR MAIN DOMAIN
+
         Cache::forget('settings'); // remove setting cache
 
         return redirect()->back()->withFlashSuccess('Setting Updated Successfully');
@@ -564,6 +579,7 @@ class SettingController extends Controller
         unset($data['_token']);
 
         Setting::save_settings($data);
+
         return redirect()->back()->withFlashSuccess('Cache Settings Updated Successfully');
     }
 }

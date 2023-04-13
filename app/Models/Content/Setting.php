@@ -41,6 +41,9 @@ class Setting extends Model
         [
           'value' => $value,
           'user_id' => auth()->user()->id,
+        //   FOR SUB API DOMAINS
+        //   'user_id' => 0,
+        //   FOR SUB API DOMAINS
         ]
       );
     }

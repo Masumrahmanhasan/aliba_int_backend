@@ -66,6 +66,8 @@ Route::group(['prefix' => 'v1', 'as' => 'v1.'], function () {
     Route::get('/get-super-deals', [HomeController::class, 'getSuperDealSection']);
     Route::get('/get-discount-section', [HomeController::class, 'getSectionBelowBanner']);
 
+    Route::post('/update-currency-rates', [HomeController::class, 'updateCurrencyRates']);
+
 
     Route::get('/categories', [CatalogController::class, 'categories']);
     Route::get('/banners', [CatalogController::class, 'banners']);

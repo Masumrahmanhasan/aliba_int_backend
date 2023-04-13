@@ -10,6 +10,7 @@ use App\Models\Content\OrderItem;
 use App\Models\Content\Post;
 use App\Models\Content\Product;
 use App\Models\Content\Taxonomy;
+use App\Models\Content\Setting;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -687,5 +688,17 @@ class HomeController extends Controller
         $rate = request('rate', get_setting('increase_rate', 20));
 
         return getSaleOfferProducts($item_id, $rate);
+    }
+
+    public function updateCurrencyRates()
+    {
+        $data['currency_rate'] = request('currency_rate');
+        $data['increase_rate'] = request('increase_rate');
+
+        Setting::save_settings($data);
+
+        return response()->json([
+            'status' => 'success'
+        ]);
     }
 }

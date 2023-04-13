@@ -37,7 +37,7 @@
                     <div class="form-group row mb-4">
                         {{ html()->label('Currency Rate')->class('col-md-4 col-form-label text-right')->for('currency_rate') }}
                         <div class="col-md-8">
-                            {{ html()->text('currency_rate')->class('form-control')->value(get_setting('currency_rate'))->placeholder(13.02)->attribute('aria-describedby', 'currencyRate') }}
+                            {{ html()->text('currency_rate')->class('form-control')->value(get_setting('currency_rate'))->placeholder(13.02)->attribute('aria-describedby', 'currencyRate')->readonly() }}
                             <small id="currencyRate" class="form-text text-muted">Example: &nbsp; 1 CNY to BDT.
                                 13.02</small>
                         </div> <!-- col-->
@@ -46,7 +46,7 @@
                     <div class="form-group row mb-4">
                         {{ html()->label('Currency Rate After Increase')->class('col-md-4 col-form-label text-right')->for('increase_rate') }}
                         <div class="col-md-8">
-                            {{ html()->text('increase_rate')->class('form-control')->value(get_setting('increase_rate'))->placeholder(22.02)->attribute('aria-describedby', 'increase_rate') }}
+                            {{ html()->text('increase_rate')->class('form-control')->value(get_setting('increase_rate'))->placeholder(22.02)->attribute('aria-describedby', 'increase_rate')->readonly() }}
                             <small id="increase_rate" class="form-text text-muted">Example: &nbsp; This rate will multiple
                                 the cny price</small>
                         </div> <!-- col-->
