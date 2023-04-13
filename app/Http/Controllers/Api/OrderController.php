@@ -613,4 +613,15 @@ class OrderController extends Controller
             'message' => 'Cart not found!'
         ]);
     }
+
+    // FOR SUB APU DOMAINS
+    // public function getUserData($id)
+    // {
+    //     $user = User::where('id', $id)->first();
+
+    //     return $this->success([
+    //         'user' => $user
+    //     ]);
+    // }
+    // FOR SUB APU DOMAINS
 }

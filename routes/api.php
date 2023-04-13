@@ -88,8 +88,7 @@ Route::group(['prefix' => 'v1', 'as' => 'v1.'], function () {
 
     Route::get('/image-search-items', [CatalogController::class, 'image_search_items']);
 
-
-
+    Route::get('/get-user-data/{id}', [OrderController::class, 'getUserData']);
 
     Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
         Route::post('/me', [AuthController::class, 'me']);
