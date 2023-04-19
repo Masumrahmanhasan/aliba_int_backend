@@ -157,6 +157,10 @@ class WalletTable extends TableComponent
                 ->format(function (OrderItem $model) {
                     return $this->html('<span class="refunded">' . $model->refunded . '</span>');
                 }),
+            Column::make('Refund TrxId', 'refund_trxId')
+                ->format(function (OrderItem $model) {
+                    return $this->html('<span class="refund_trxId">' . $model->refund_trxId . '</span>');
+                }),
             Column::make('Adjustment', 'adjustment')
                 ->format(function (OrderItem $model) {
                     return $this->html('<span class="adjustment">' . $model->adjustment . '</span>');

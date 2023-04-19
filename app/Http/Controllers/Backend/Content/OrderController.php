@@ -158,8 +158,6 @@ class OrderController extends Controller
             $data = $request->only('actual_weight', 'status');
             $data['shipping_charge'] = $orderItem->shipping_rate * $data['actual_weight'];
             $data['ready_to_deliver_at'] = date('Y-m-d H:i:s' ,time());
-        } elseif ($status === 'ready-to-deliver') {
-            $data = $request->only('status');
         } elseif ($status === 'BD-customs') {
             $data = $request->only('status');
         } elseif ($status === 'on-transit-to-customer') {
@@ -178,7 +176,7 @@ class OrderController extends Controller
             $data = $request->only('adjustment');
             $amount = $data['adjustment'];
         } elseif ($status === 'refunded') {
-            $data = $request->only('refunded', 'status');
+            $data = $request->only('refunded', 'status', 'refund_trxId');
             $amount = $data['refunded'];
         }
 
@@ -194,21 +192,23 @@ class OrderController extends Controller
             $product_value = (int)$orderItem->product_value;
             $chinaLocalDelivery = (int)$orderItem->chinaLocalDelivery;
             $coupon_contribution = (int)$orderItem->coupon_contribution;
-            $first_payment = (int)$orderItem->first_payment;
 
             $out_of_stock = (int)$orderItem->out_of_stock;
-            $adjustment = $orderItem->adjustment;
             $refunded = (int)$orderItem->refunded;
             $shipping_charge = (int)$orderItem->shipping_charge;
             $courier_bill = (int)$orderItem->courier_bill;
             $last_payment = (int)$orderItem->last_payment;
             $missing = (int)$orderItem->missing;
 
-            $due_payment = $orderItem->due_payment;
+            if (isset($data['adjustment'])) {
+                $first_payment = (int)$orderItem->first_payment;
+                $due_payment = $orderItem->due_payment;
+                $adjustment = $orderItem->adjustment;
 
-            $due_payment = $adjustment > 0 ? $due_payment + abs($adjustment) : $due_payment - abs($adjustment);
+                $due_payment = $adjustment > 0 ? $due_payment + abs($adjustment) : $due_payment - abs($adjustment);
 
-            $orderItem->update(['due_payment' => $due_payment, 'first_payment' => $first_payment]);
+                $orderItem->update(['due_payment' => $due_payment, 'first_payment' => $first_payment]);
+            }
         }
 
         return $orderItem;

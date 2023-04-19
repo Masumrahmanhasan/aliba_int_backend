@@ -8,7 +8,6 @@
         'shipped-from-suppliers' => 'Shipped from Suppliers',
         'received-in-china-warehouse' => 'Received in China Warehouse',
         'shipped-from-china-warehouse' => 'Shipped from China Warehouse',
-        'received-in-BD-warehouse' => 'Received in BD Warehouse',
         'BD-customs' => 'BD Customs',
         'ready-to-deliver' => 'Ready to Deliver',
         'on-transit-to-customer' => 'On Transit to Customer',

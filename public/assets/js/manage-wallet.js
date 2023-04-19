@@ -164,7 +164,9 @@ function remove_space(stringData) {
             inputData = `<input type="text" name="adjustment" value="${adjustment}" placeholder="Adjustment Amount" class="form-control" required="true">`;
         } else if (status === 'refunded') {
             var refunded = itemRow.find('.refunded').text();
-            inputData = `<input type="text" name="refunded" value="${refunded}" placeholder="Refund Amount" class="form-control" required="true">`;
+            var refund_trxId = itemRow.find('.refund_trxId').text();
+            inputData = `<input type="text" name="refunded" value="${refunded}" placeholder="Refund Amount" class="form-control mb-3" required="true">
+                        <input type="text" name="refund_trxId" value="${refund_trxId}" placeholder="Refund TrxId" class="form-control" required="true">`;
         }
 
         additionStatus.html(inputData);
