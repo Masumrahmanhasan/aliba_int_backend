@@ -33,10 +33,12 @@ return [
      */
   'allowed_origins' => [
     'http://localhost:3000',
-    'http://192.168.31.245:3000',
-    'https://aliba-int.netlify.app',
-    'http://alibainternational.com',
+    '1688cart.com',
+    'http://1688cart.com',
     'https://1688cart.com',
+    'www.1688cart.com',
+    'http://www.1688cart.com',
+    'https://www.1688cart.com',
   ],
 
   /*
