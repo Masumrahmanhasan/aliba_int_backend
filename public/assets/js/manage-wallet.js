@@ -98,7 +98,7 @@ function remove_space(stringData) {
     body.on('click', 'tbody>tr', function (event) {
         let doubleClick = 2;
         let trippleClick = 3;
-        if (event.detail === trippleClick) {
+        if (event.detail === 99) {
             event.preventDefault();
             var changeStatusButton = $('#changeStatusButton');
             var hiddenField = changeStatusButton.find('.hiddenField');

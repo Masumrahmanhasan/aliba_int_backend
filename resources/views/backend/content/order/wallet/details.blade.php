@@ -185,15 +185,6 @@
                         <td class="text-right">{{ $currency }}
                             {{ $order->coupon_contribution + $discount->amount / $discount->product_count }}</td>
                     </tr>
-                    {{-- <tr>
-                        <td class=" text-right" colspan="5">
-                            Shipping Charge (+) <span class="text-danger">(Shipping Rate X Actual weight)</span> <br>
-                            {{ $order->shipped_by . ' - ' . $currency . ' ' . floating($order->shipping_rate) }} X
-                            {{ $order->actual_weight ? $order->actual_weight : '0.00' }} Kg
-                        </td>
-                        <td class="text-right text-danger">
-                            {{ $order->shipping_charge ? $order->shipping_charge : '0.00' }} </td>
-                    </tr> --}}
                     @if ($order->out_of_stock)
                         <tr>
                             <td class="text-right" colspan="5">Out Of Stock (-)</td>
@@ -206,18 +197,6 @@
                             <td class="text-right">{{ $currency . ' ' . floating($order->missing) }}</td>
                         </tr>
                     @endif
-                    @if ($order->refunded)
-                        <tr>
-                            <td class="text-right" colspan="5">Refunded (-)</td>
-                            <td class="text-right">{{ $currency . ' ' . floating($order->refunded) }}</td>
-                        </tr>
-                    @endif
-                    {{-- @if ($order->adjustment)
-                        <tr>
-                            <td class="text-right" colspan="5">Adjustment (+-)</td>
-                            <td class="text-right">{{ $currency . ' ' . floating($order->adjustment) }}</td>
-                        </tr>
-                    @endif --}}
                     @if ($order->courier_bill)
                         <tr>
                             <td class="text-right" colspan="5">Courier Bill (+)</td>
@@ -227,75 +206,172 @@
 
                     @if ($order->coupon_contribution)
                         <tr>
-                            <td class="text-right" colspan="5">Coupon (-)</td>
+                            <td class="text-right" colspan="5"> <b>Coupon (-)</b> </td>
                             <td class="text-right">{{ $currency . ' ' . floating($order->coupon_contribution) }}</td>
                         </tr>
                     @endif
 
-                    @if ($order->due_payment)
-                        <tr>
-                            <td class="text-right text-success" colspan="2">Status</td>
-                            <td class="text-left text-success">{{ $order->status }}</td>
-                            <td class="text-right" colspan="2"><b>PRODUCT DUE</b></td>
-                            <td class="text-right">{{ $currency . ' ' . floating($order->due_payment) }}</td>
-                        </tr>
-                    @endif
-
                     <tr>
-                        <td class="text-right" colspan="4"><b>Shipping Per KG <span style="color: orange;">(Total
-                                    Weight x Shipping Fee)</span></b></td>
-                        <td class="text-right"><b class="">
-                                <form action="{{ route('admin.order.shipping-rate', $order->id) }}" method="POST"
-                                    id="shippingRateForm">
-                                    @method('PUT')
-                                    @csrf
+                        <td class="text-right align-middle text-success" colspan="2">Status</td>
+                        <td class="text-left text-success">
+                            <select class="col-md-12" style="border: 1px solid orange; border-radius: 2px;"
+                                name="order_status" id="order_status">
+                                <option value="waiting-for-payment" @if ($order->status == 'waiting-for-payment') selected @endif>
+                                    Waiting for Payment</option>
+                                <option value="partial-paid" @if ($order->status == 'partial-paid') selected @endif>
+                                    Partial Paid</option>
+
+                                <option value="purchased" @if ($order->status == 'purchased') selected @endif>
+                                    Purchased</option>
+                                <option value="shipped-from-suppliers"
+                                    @if ($order->status == 'shipped-from-suppliers') selected @endif>Shipped from Suppliers
+                                </option>
+                                <option value="received-in-china-warehouse"
+                                    @if ($order->status == 'received-in-china-warehouse') selected @endif>Received in China Warehouse
+                                </option>
+                                <option value="shipped-from-china-warehouse"
+                                    @if ($order->status == 'shipped-from-china-warehouse') selected @endif>Shipped from China Warehouse
+                                </option>
+                                <option value="BD-customs" @if ($order->status == 'BD-customs') selected @endif>BD
+                                    Customs</option>
+                                <option value="ready-to-deliver" @if ($order->status == 'ready-to-deliver') selected @endif>
+                                    Ready to Deliver</option>
+
+                                <option value="delivered" @if ($order->status == 'delivered') selected @endif>
+                                    Delivered</option>
+                                <option value="out-of-stock" @if ($order->status == 'out-of-stock') selected @endif>Out
+                                    of Stock</option>
+                                <option value="refunded" @if ($order->status == 'refunded') selected @endif>
+                                    Refunded</option>
+                            </select>
+                        </td>
+                        <td></td>
+                        <td class="text-success text-right">
+                            <b>Status</b>
+                        </td>
+                        <td class="text-danger text-right">
+                            <b id="update_status">{{ $order->status }}</b>
+                        </td>
+                    </tr>
+                    <tr id="inputs_for" data-order="{{ $order }}">
+                        {{-- Addition inputs are appended here through jquery --}}
+                    </tr>
+
+                    @if ($order->status != 'refunded')
+                        <tr>
+                            <td class="text-right align-middle" colspan="5"><b>PRODUCT DUE</b></td>
+                            <td class="text-right align-middle">{{ $currency . ' ' . floating($order->due_payment) }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-right" colspan="4"><b>Shipping Per KG <span
+                                        style="color: orange;">(Total
+                                        Weight x Shipping Fee)</span></b></td>
+                            <td class="text-right"><b class="">
                                     <span class="col-md-7">
-                                        {{ $order->actual_weight ? $order->actual_weight : 0 }} KG &nbsp; x
+                                        <span
+                                            id="update_weight">{{ $order->actual_weight ? $order->actual_weight : 0 }}</span>
+                                        KG &nbsp; x
                                     </span>
                                     <input class="col-md-5" style="border: 1px solid orange; border-radius: 2px;"
                                         type="number" name="shipping_rate" value="{{ $order->shipping_rate }}"
-                                        id="rate">
-                                    <input type="text" name="item_id" value="{{ $order->id }}" hidden>
-                                    <button class="btn btn-sm btn-success mt-2">Update</button>
-                                </form>
-                            </b></td>
-                        @php
-                            $shipping_charge = ($order->actual_weight ? $order->actual_weight : 0) * $order->shipping_rate;
-                        @endphp
-                        <td class="text-right">{{ $currency . ' ' . floating($shipping_charge) }}</td>
-                    </tr>
+                                        id="shipping_rate">
+                                </b></td>
+                            @php
+                                $shipping_charge = ($order->actual_weight ? $order->actual_weight : 0) * $order->shipping_rate;
+                            @endphp
+                            <td class="text-right">{{ $currency }} <span
+                                    id="update_shipping_rate">{{ floating($shipping_charge) }}</span></td>
+                        </tr>
 
-                    <tr>
-                        <td class="text-right" colspan="4"><b>Adjustment (+-)</b></td>
-                        <td class="text-right">
-                            <form action="{{ route('admin.order.adjustment', $order->id) }}" method="POST"
-                                id="adjustmentForm">
-                                @method('PUT')
-                                @csrf
+                        <tr>
+                            <td class="text-right" colspan="5"><b>Adjustment (+-)</b></td>
+                            <td class="text-right">
                                 <input class="col-md-5" style="border: 1px solid orange; border-radius: 2px;"
                                     type="number" name="adjustment" value="{{ $order->adjustment }}"
-                                    id="rate">
-                                <input type="text" name="item_id" value="{{ $order->id }}" hidden>
-                                <div>
-                                    <button class="btn btn-sm btn-success mt-2">Update</button>
-                                </div>
-                            </form>
-                        </td>
-                        <td class="text-right">{{ $currency . ' ' . floating($order->adjustment) }}</td>
-                    </tr>
+                                    id="adjustment">
+                            </td>
+                        </tr>
 
-                    <tr style="background-color: orange;">
-                        <td class="text-right" colspan="5">
-                            <h4>NET DUE</h4>
+                        <tr>
+                            <td colspan="3">
+                                @if ($order->order->status == 'partial-paid')
+                                    <h5 style="padding: 5px 10px; border-radius: 15px;"
+                                        class="bg-success text-white text-center">Approved Initial Payment</h5>
+                                @elseif ($order->order->status == 'full-paid')
+                                    <h5 style="padding: 5px 10px; border-radius: 15px;"
+                                        class="bg-success text-white text-center">Approved Full Payment</h5>
+                                @else
+                                    <h5 style="padding: 5px 10px; border-radius: 15px;"
+                                        class="bg-danger text-white text-center">Waiting for Payment Approval</h5>
+                                @endif
+                            </td>
+                            <td style="background-color: orange;" class="text-right" colspan="2">
+                                <h4>NET DUE</h4>
+                            </td>
+                            @php
+                                $total = $shipping_charge + $order->due_payment + $order->adjustment;
+                            @endphp
+                            <td style="background-color: orange;" class="text-right">
+                                <h4>{{ $currency }} <span id="update_net_due">{{ floating($total) }}</span></h4>
+                            </td>
+                        </tr>
+                    @endif
+                    @if ($order->status == 'refunded')
+                        <tr style="background-color: orange;">
+                            <td class="text-right align-middle" colspan="2">
+                                <h4>REFUNDED</h4>
+                            </td>
+                            <th colspan="3">{{ $order->refund_statement }}</th>
+                            <td class="text-right">
+                                <h4>{{ $currency . ' ' . floating($order->refunded) }}</h4>
+                            </td>
+                        </tr>
+                    @endif
+                </tbody>
+            </table>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <td colspan="5" style="background-color: orange;" class="text-white text-center">
+                            <h4>For Aliba International Accounts</h4>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th class="text-center align-middle">Product Value in RMB</th>
+                        <th class="text-center align-middle">RMB Buying Rate</th>
+                        <th class="text-center align-middle">Purchase Agent Percentage</th>
+                        <th class="text-center align-middle">Company Shipping Weight</th>
+                        <th class="text-center align-middle">Company Shipping Per KG Rate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <input type="number" id="accounts_rmb_price_value" value="{{ $order->accounts_rmb_price_value ?? 0 }}" class="col-9" step="0.01" style="border: 1px solid orange; border-radius: 2px;"> &nbsp; &nbsp; <b>RMB</b>
                         </td>
-                        @php
-                            $total = $shipping_charge + $order->due_payment;
-                        @endphp
-                        <td class="text-right">
-                            <h4>{{ $currency . ' ' . floating($total) }}</h4>
+                        <td>
+                            <input type="number" id="accounts_rmb_buying_rate" value="{{ $order->accounts_rmb_buying_rate ?? 0 }}" class="col-9" step="0.01" style="border: 1px solid orange; border-radius: 2px;"> &nbsp; &nbsp; <b>BDT</b>
+                        </td>
+                        <td>
+                            <input type="number" id="accounts_agent_percentage" value="{{ $order->accounts_agent_percentage ?? 0 }}" class="col-9" step="0.01" style="border: 1px solid orange; border-radius: 2px;"> &nbsp; &nbsp; <b>%</b>
+                        </td>
+                        <td>
+                            <input type="number" id="accounts_company_shipping_weight" value="{{ $order->accounts_company_shipping_weight ?? 0 }}" class="col-9" step="0.01" style="border: 1px solid orange; border-radius: 2px;"> &nbsp; &nbsp; <b>KG</b>
+                        </td>
+                        <td>
+                            <input type="number" id="accounts_company_shipping_rate" value="{{ $order->accounts_company_shipping_rate ?? 0 }}" class="col-9" step="0.01" style="border: 1px solid orange; border-radius: 2px;"> &nbsp; &nbsp; <b>BDT</b>
                         </td>
                     </tr>
-
+                    <tr>
+                        <td colspan="3"></td>
+                        <td class="text-center">
+                            <b>Profit / Loss (+-)</b>
+                        </td>
+                        <td>
+                            <input type="number" id="accounts_profit_loss" value="{{ $order->accounts_profit_loss ?? 0 }}" class="col-9" step="0.01" style="border: 1px solid orange; border-radius: 2px;"> &nbsp; &nbsp; <b>BDT</b>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div> <!-- table-responsive -->
@@ -306,43 +382,70 @@
 <script src="https://code.jquery.com/jquery-3.6.1.min.js"
     integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
 <script>
-    $('#shippingRateForm').submit(function(e) {
-        e.preventDefault();
-        let rate = $(this).children('input[name=shipping_rate]').val();
-        let item = $(this).children('input[name=item_id]').val();
+    $('#order_status').change(function() {
+        let status = $('#order_status :selected').val();
 
-        $.ajax({
-            type: "PUT",
-            url: "{{ route('admin.order.shipping-rate', ' . item . ') }}",
-            data: {
-                _token: "{{ csrf_token() }}",
-                shipping_rate: rate,
-                item_id: item
-            },
-            dataType: "dataType",
-            success: function(response) {
-                console.log('hi');
-            }
-        });
-    });
+        let inputs = '';
+        if (status == 'purchased') {
+            inputs = `
+                <td class="text-right align-middle" colspan="2">
+                    <b>Order No.</b>
+                </td>
+                <td>
+                    <input class="col-md-12" style="border: 1px solid orange; border-radius: 2px;" type="text" name="order_number" id="order_number" value="{{ $order->order_number }}">
+                </td>
+                <td colspan="3"></td>
+            `;
+        }
 
-    $('#adjustmentForm').submit(function(e) {
-        e.preventDefault();
-        let rate = $(this).children('input[name=adjustment]').val();
-        let item = $(this).children('input[name=item_id]').val();
+        if (status == 'shipped-from-suppliers') {
+            inputs = `
+                <td class="text-right align-middle" colspan="2">
+                    <b>Tracking No.</b>
+                </td>
+                <td>
+                    <input class="col-md-12" style="border: 1px solid orange; border-radius: 2px;" type="text" name="tracking_number" id="tracking_number" value="{{ $order->tracking_number }}">
+                </td>
+                <td colspan="3"></td>
+            `;
+        }
 
-        $.ajax({
-            type: "PUT",
-            url: "{{ route('admin.order.adjustment', ' . item . ') }}",
-            data: {
-                _token: "{{ csrf_token() }}",
-                adjustment: rate,
-                item_id: item
-            },
-            dataType: "dataType",
-            success: function(response) {
-                console.log('hi');
-            }
-        });
+        if (status == 'ready-to-deliver') {
+            inputs = `
+                <td class="text-right align-middle" colspan="2">
+                    <b>Weight</b>
+                </td>
+                <td>
+                    <input class="col-md-12" style="border: 1px solid orange; border-radius: 2px;" type="number" step=".01" name="actual_weight" id="actual_weight" value="{{ $order->actual_weight }}">
+                </td>
+                <td colspan="3"></td>
+            `;
+        }
+
+        if (status == 'refunded') {
+            inputs = `
+                <td class="text-right align-middle">
+                    <b>Refund Amount</b>
+                </td>
+                <td class="align-middle">
+                    <input class="col-md-12" style="border: 1px solid orange; border-radius: 2px;" type="number" step=".01" name="refunded" id="refunded" value="{{ $order->refunded }}">
+                </td>
+                <td class="text-right align-middle">
+                    <b>Refund TrxId</b>
+                </td>
+                <td class="align-middle">
+                    <input class="col-md-12" style="border: 1px solid orange; border-radius: 2px;" type="text" name="refund_trxId" id="refund_trxId" value="{{ $order->refund_trxId }}">
+                </td>
+                <td class="text-right align-middle">
+                    <b>Refund Statement</b>
+                </td>
+                <td class="align-middle">
+                    <input class="col-md-12" style="border: 1px solid orange; border-radius: 2px;" type="text" name="refund_statement" id="refund_statement" value="{{ $order->refund_statement }}">
+                </td>
+            `;
+        }
+
+        $('#inputs_for').empty();
+        $('#inputs_for').append(inputs);
     });
 </script>

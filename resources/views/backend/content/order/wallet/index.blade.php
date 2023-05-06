@@ -4,19 +4,19 @@
 
 @php
     $options = [
+        'waiting-for-payment' => 'Waiting for Payment',
+        'partial-paid' => 'Partial Paid',
+
         'purchased' => 'Purchased',
         'shipped-from-suppliers' => 'Shipped from Suppliers',
         'received-in-china-warehouse' => 'Received in China Warehouse',
         'shipped-from-china-warehouse' => 'Shipped from China Warehouse',
         'BD-customs' => 'BD Customs',
         'ready-to-deliver' => 'Ready to Deliver',
-        'on-transit-to-customer' => 'On Transit to Customer',
-        'out-of-stock' => 'Out of Stock',
-        'adjustment' => 'Adjustment',
-        'refunded' => 'Refunded',
+
         'delivered' => 'Delivered',
-        'waiting-for-payment' => 'Waiting for Payment',
-        'partial-paid' => 'Partial Paid',
+        'out-of-stock' => 'Out of Stock',
+        'refunded' => 'Refunded',
     ];
 @endphp
 
@@ -93,10 +93,10 @@
                 </div> <!-- col-->
                 <div class="col-md-2 text-right">
                     <div class="btn-group" role="group" aria-label="header_button_group">
-                        <button type="button" class="btn btn-primary" id="changeGroupStatusButton" data-toggle="tooltip"
+                        {{-- <button type="button" class="btn btn-primary" id="changeGroupStatusButton" data-toggle="tooltip"
                             title="@lang('Change Status')" disabled="true">
                             @lang('Status')
-                        </button>
+                        </button> --}}
                         <button type="button" class="btn btn-danger" id="generateInvoiceButton" data-toggle="tooltip"
                             title="Generate Invoice" disabled="true">
                             @lang('Generate')

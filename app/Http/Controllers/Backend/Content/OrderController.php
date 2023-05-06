@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Throwable;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Collection;
 
 class OrderController extends Controller
 {
@@ -86,6 +87,59 @@ class OrderController extends Controller
             $items = OrderItem::where('order_id', $request->orderId)->get();
             return response()->json([
                 'items' => $items
+            ]);
+        }
+    }
+
+    public function updateOrderItems(Request $request)
+    {
+        if ($request->ajax()) {
+            $orderItem = OrderItem::where('id', $request->order['id'])->first();
+
+            $data = [
+                'shipping_rate' => (float)$request->shippingRate,
+                'adjustment' => (float)$request->adjustment,
+                'status' => $request->status,
+                'accounts_rmb_price_value' => $request->accounts_rmb_price_value,
+                'accounts_rmb_buying_rate' => $request->accounts_rmb_buying_rate,
+                'accounts_agent_percentage' => $request->accounts_agent_percentage,
+                'accounts_company_shipping_weight' => $request->accounts_company_shipping_weight,
+                'accounts_company_shipping_rate' => $request->accounts_company_shipping_rate,
+                'accounts_profit_loss' => $request->accounts_profit_loss,
+            ];
+
+            if ($request->orderNumber) {
+                $data['order_number'] = $request->orderNumber;
+            }
+
+            if ($request->trackingNumber) {
+                $data['tracking_number'] = $request->trackingNumber;
+            }
+
+            if ($request->actualWeight) {
+                $data['actual_weight'] = (float)$request->actualWeight;
+                $data['shipping_charge'] = $request->shippingRate * $request->actualWeight;
+            } else {
+                $data['shipping_charge'] = $request->shippingRate * $orderItem->actual_weight;
+            }
+
+            if ($request->refundAmount) {
+                $data['refunded'] = (float)$request->refundAmount;
+            }
+
+            if ($request->refundTrxId) {
+                $data['refund_trxId'] = $request->refundTrxId;
+            }
+
+            if ($request->refundStatement) {
+                $data['refund_statement'] = $request->refundStatement;
+            }
+
+            $orderItem->update($data);
+
+            return response()->json([
+                'status' => 'success',
+                'orderItem' => $orderItem,
             ]);
         }
     }
@@ -281,7 +335,7 @@ class OrderController extends Controller
             $customer = $order->user->name ?? "Customer";
             $item_no = $order->order_number;
             $status = true;
-            $title = "Order details of Mr. {$customer} and Order No #{$item_no}";
+            $title = "Order details of {$customer} and Order No #{$item_no}";
             $render = view('backend.content.order.show', compact('order'))->render();
         }
 
@@ -315,7 +369,7 @@ class OrderController extends Controller
             $customer = $order->user->first_name . ' ' . $order->user->last_name;
             $item_no = $order->order_item_number;
             $status = true;
-            $title = "Wallet details of Mr. {$customer} and Item No #{$item_no}";
+            $title = "Wallet details of {$customer} and Item No #{$item_no}";
             $render = view('backend.content.order.wallet.details', compact('order'))->render();
         }
 
