@@ -218,9 +218,10 @@
                                 name="order_status" id="order_status">
                                 <option value="waiting-for-payment" @if ($order->status == 'waiting-for-payment') selected @endif>
                                     Waiting for Payment</option>
-                                <option value="partial-paid" @if ($order->status == 'partial-paid') selected @endif>
+                                <option value="partial-paid" @if ($order->status == 'partial-paid') selected @endif disabled>
                                     Partial Paid</option>
-
+                                <option value="full-paid" @if ($order->status == 'full-paid') selected @endif disabled>
+                                    Full Paid</option>
                                 <option value="purchased" @if ($order->status == 'purchased') selected @endif>
                                     Purchased</option>
                                 <option value="shipped-from-suppliers"
@@ -255,6 +256,68 @@
                     </tr>
                     <tr id="inputs_for" data-order="{{ $order }}">
                         {{-- Addition inputs are appended here through jquery --}}
+                        @if ($order->status == 'purchased')
+                            <td class="text-right align-middle" colspan="2">
+                                <b>Order No.</b>
+                            </td>
+                            <td>
+                                <input class="col-md-12" style="border: 1px solid orange; border-radius: 2px;"
+                                    type="text" name="order_number" id="order_number"
+                                    value="{{ $order->order_number }}">
+                            </td>
+                            <td colspan="3"></td>
+                        @endif
+
+                        @if ($order->status == 'shipped-from-suppliers')
+                            <td class="text-right align-middle" colspan="2">
+                                <b>Tracking No.</b>
+                            </td>
+                            <td>
+                                <input class="col-md-12" style="border: 1px solid orange; border-radius: 2px;"
+                                    type="text" name="tracking_number" id="tracking_number"
+                                    value="{{ $order->tracking_number }}">
+                            </td>
+                            <td colspan="3"></td>
+                        @endif
+
+                        @if ($order->status == 'ready-to-deliver')
+                            <td class="text-right align-middle" colspan="2">
+                                <b>Weight</b>
+                            </td>
+                            <td>
+                                <input class="col-md-12" style="border: 1px solid orange; border-radius: 2px;"
+                                    type="number" step=".01" name="actual_weight" id="actual_weight"
+                                    value="{{ $order->actual_weight }}">
+                            </td>
+                            <td colspan="3"></td>
+                        @endif
+
+                        @if ($order->status == 'refunded')
+                            <td class="text-right align-middle">
+                                <b>Refund Amount</b>
+                            </td>
+                            <td class="align-middle">
+                                <input class="col-md-12" style="border: 1px solid orange; border-radius: 2px;"
+                                    type="number" step=".01" name="refunded" id="refunded"
+                                    value="{{ $order->refunded }}">
+                            </td>
+                            <td class="text-right align-middle">
+                                <b>Refund TrxId</b>
+                            </td>
+                            <td class="align-middle">
+                                <input class="col-md-12" style="border: 1px solid orange; border-radius: 2px;"
+                                    type="text" name="refund_trxId" id="refund_trxId"
+                                    value="{{ $order->refund_trxId }}">
+                            </td>
+                            <td class="text-right align-middle">
+                                <b>Refund Statement</b>
+                            </td>
+                            <td class="align-middle">
+                                <input class="col-md-12" style="border: 1px solid orange; border-radius: 2px;"
+                                    type="text" name="refund_statement" id="refund_statement"
+                                    value="{{ $order->refund_statement }}">
+                            </td>
+                        @endif
                     </tr>
 
                     @if ($order->status != 'refunded')
@@ -335,7 +398,7 @@
                     <tr>
                         <td colspan="5" style="background-color: orange;" class="text-white text-center">
                             <h4>For Aliba International Accounts</h4>
-                        </th>
+                            </th>
                     </tr>
                     <tr>
                         <th class="text-center align-middle">Product Value in RMB</th>
@@ -348,19 +411,31 @@
                 <tbody>
                     <tr>
                         <td>
-                            <input type="number" id="accounts_rmb_price_value" value="{{ $order->accounts_rmb_price_value ?? 0 }}" class="col-9" step="0.01" style="border: 1px solid orange; border-radius: 2px;"> &nbsp; &nbsp; <b>RMB</b>
+                            <input type="number" id="accounts_rmb_price_value"
+                                value="{{ $order->accounts_rmb_price_value ?? 0 }}" class="col-9" step="0.01"
+                                style="border: 1px solid orange; border-radius: 2px;"> &nbsp; &nbsp; <b>RMB</b>
                         </td>
                         <td>
-                            <input type="number" id="accounts_rmb_buying_rate" value="{{ $order->accounts_rmb_buying_rate ?? 0 }}" class="col-9" step="0.01" style="border: 1px solid orange; border-radius: 2px;"> &nbsp; &nbsp; <b>BDT</b>
+                            <input type="number" id="accounts_rmb_buying_rate"
+                                value="{{ $order->accounts_rmb_buying_rate ?? 0 }}" class="col-9" step="0.01"
+                                style="border: 1px solid orange; border-radius: 2px;"> &nbsp; &nbsp; <b>BDT</b>
                         </td>
                         <td>
-                            <input type="number" id="accounts_agent_percentage" value="{{ $order->accounts_agent_percentage ?? 0 }}" class="col-9" step="0.01" style="border: 1px solid orange; border-radius: 2px;"> &nbsp; &nbsp; <b>%</b>
+                            <input type="number" id="accounts_agent_percentage"
+                                value="{{ $order->accounts_agent_percentage ?? 0 }}" class="col-9" step="0.01"
+                                style="border: 1px solid orange; border-radius: 2px;"> &nbsp; &nbsp; <b>%</b>
                         </td>
                         <td>
-                            <input type="number" id="accounts_company_shipping_weight" value="{{ $order->accounts_company_shipping_weight ?? 0 }}" class="col-9" step="0.01" style="border: 1px solid orange; border-radius: 2px;"> &nbsp; &nbsp; <b>KG</b>
+                            <input type="number" id="accounts_company_shipping_weight"
+                                value="{{ $order->accounts_company_shipping_weight ?? 0 }}" class="col-9"
+                                step="0.01" style="border: 1px solid orange; border-radius: 2px;"> &nbsp; &nbsp;
+                            <b>KG</b>
                         </td>
                         <td>
-                            <input type="number" id="accounts_company_shipping_rate" value="{{ $order->accounts_company_shipping_rate ?? 0 }}" class="col-9" step="0.01" style="border: 1px solid orange; border-radius: 2px;"> &nbsp; &nbsp; <b>BDT</b>
+                            <input type="number" id="accounts_company_shipping_rate"
+                                value="{{ $order->accounts_company_shipping_rate ?? 0 }}" class="col-9"
+                                step="0.01" style="border: 1px solid orange; border-radius: 2px;"> &nbsp; &nbsp;
+                            <b>BDT</b>
                         </td>
                     </tr>
                     <tr>
@@ -369,7 +444,9 @@
                             <b>Profit / Loss (+-)</b>
                         </td>
                         <td>
-                            <input type="number" id="accounts_profit_loss" value="{{ $order->accounts_profit_loss ?? 0 }}" class="col-9" step="0.01" style="border: 1px solid orange; border-radius: 2px;"> &nbsp; &nbsp; <b>BDT</b>
+                            <input type="number" id="accounts_profit_loss"
+                                value="{{ $order->accounts_profit_loss ?? 0 }}" class="col-9" step="0.01"
+                                style="border: 1px solid orange; border-radius: 2px;"> &nbsp; &nbsp; <b>BDT</b>
                         </td>
                     </tr>
                 </tbody>

@@ -72,6 +72,13 @@ class WalletTable extends TableComponent
                     $checkbox = '<input type="checkbox" class="checkboxItem " data-status="' . $model->status . '" data-user="' . $model->user_id . '" name="wallet[]" value="' . $model->id . '">';
                     return $this->html($checkbox);
                 })->excludeFromExport(),
+            Column::make(__('Action'), 'action')
+                ->format(function (OrderItem $model) {
+                    $htmlHref = '<div class="d-flex"><a href="' . route('admin.order.wallet.details', $model->id) . '" class="btn btn-secondary btn-sm mr-2" data-method="show" data-toggle="tooltip" data-placement="top" title="Order Details"><i class="fa fa-file-o"></i></a>
+                        <a href="' . route('admin.order.show', $model->order_id) . '" class="btn btn-primary btn-sm" data-method="show" data-toggle="tooltip" data-placement="top" title="View Invoice"><i class="fa fa-file-o"></i></a></div>';
+                    return $this->html($htmlHref);
+                })
+                ->excludeFromExport(),
             Column::make('Date', 'created_at')
                 ->searchable()
                 ->format(function (OrderItem $model) {
@@ -189,13 +196,6 @@ class WalletTable extends TableComponent
                 ->format(function (OrderItem $model) {
                     return $this->html('<span class="invoice_no">' . $model->invoice_no . '</span>');
                 }),
-            Column::make(__('Action'), 'action')
-                ->format(function (OrderItem $model) {
-                    $htmlHref = '<div class="d-flex"><a href="' . route('admin.order.wallet.details', $model->id) . '" class="btn btn-secondary btn-sm mr-2" data-method="show" data-toggle="tooltip" data-placement="top" title="Order Details"><i class="fa fa-file-o"></i></a>
-                        <a href="' . route('admin.order.show', $model->order_id) . '" class="btn btn-primary btn-sm" data-method="show" data-toggle="tooltip" data-placement="top" title="View Invoice"><i class="fa fa-file-o"></i></a></div>';
-                    return $this->html($htmlHref);
-                })
-                ->excludeFromExport(),
         ];
     }
 
@@ -213,7 +213,7 @@ class WalletTable extends TableComponent
         } elseif ($attribute == 'order_number') {
             return ['style' => 'min-width: 150px'];
         } elseif ($attribute == 'checkbox') {
-            return ['style' => 'min-width: 100px'];
+            return ['style' => 'min-width: 50px'];
         }
         return [
             'style' => 'min-width:120px'
@@ -222,7 +222,7 @@ class WalletTable extends TableComponent
 
     public function setTableHeadClass($attribute): ?string
     {
-        $array = ['id', 'image', 'shipped_by', 'chinaLocalDelivery', '1688_link', 'action', 'due_payment'];
+        $array = ['id', 'image', 'shipped_by', 'chinaLocalDelivery', '1688_link', 'due_payment'];
         if (in_array($attribute, $array)) {
             $allSelect = $attribute == 'id' ? 'allSelectTitle' : '';
             return ' text-center ' . $allSelect;
@@ -234,46 +234,52 @@ class WalletTable extends TableComponent
             return ' text-center sticky sticky1' . $allSelect;
         }
 
-        $array2 = ['created_at'];
+        $array2 = ['action'];
         if (in_array($attribute, $array2)) {
             $allSelect = $attribute == 'id' ? 'allSelectTitle' : '';
             return ' text-center sticky sticky2' . $allSelect;
         }
 
-        $array3 = ['order.transaction_id'];
+        $array3 = ['created_at'];
         if (in_array($attribute, $array3)) {
             $allSelect = $attribute == 'id' ? 'allSelectTitle' : '';
             return ' text-center sticky sticky3' . $allSelect;
         }
 
-        $array4 = ['order_item_number'];
+        $array4 = ['order.transaction_id'];
         if (in_array($attribute, $array4)) {
             $allSelect = $attribute == 'id' ? 'allSelectTitle' : '';
             return ' text-center sticky sticky4' . $allSelect;
         }
 
-        $array5 = ['user.name'];
+        $array5 = ['order_item_number'];
         if (in_array($attribute, $array5)) {
             $allSelect = $attribute == 'id' ? 'allSelectTitle' : '';
             return ' text-center sticky sticky5' . $allSelect;
         }
 
-        $array6 = ['status'];
+        $array6 = ['user.name'];
         if (in_array($attribute, $array6)) {
             $allSelect = $attribute == 'id' ? 'allSelectTitle' : '';
             return ' text-center sticky sticky6' . $allSelect;
         }
 
-        $array7 = ['order_number'];
+        $array7 = ['status'];
         if (in_array($attribute, $array7)) {
             $allSelect = $attribute == 'id' ? 'allSelectTitle' : '';
             return ' text-center sticky sticky7' . $allSelect;
         }
 
-        $array8 = ['tracking_number'];
+        $array8 = ['order_number'];
         if (in_array($attribute, $array8)) {
             $allSelect = $attribute == 'id' ? 'allSelectTitle' : '';
             return ' text-center sticky sticky8' . $allSelect;
+        }
+
+        $array9 = ['tracking_number'];
+        if (in_array($attribute, $array9)) {
+            $allSelect = $attribute == 'id' ? 'allSelectTitle' : '';
+            return ' text-center sticky sticky9' . $allSelect;
         }
 
         return $attribute;
@@ -292,39 +298,44 @@ class WalletTable extends TableComponent
             return 'text-center align-middle sticky sticky1';
         }
 
-        $array2 = ['created_at'];
+        $array2 = ['action'];
         if (in_array($attribute, $array2)) {
             return 'text-center align-middle sticky sticky2';
         }
 
-        $array3 = ['order.transaction_id'];
+        $array3 = ['created_at'];
         if (in_array($attribute, $array3)) {
             return 'text-center align-middle sticky sticky3';
         }
 
-        $array4 = ['order_item_number'];
+        $array4 = ['order.transaction_id'];
         if (in_array($attribute, $array4)) {
             return 'text-center align-middle sticky sticky4';
         }
 
-        $array5 = ['user.name'];
+        $array5 = ['order_item_number'];
         if (in_array($attribute, $array5)) {
             return 'text-center align-middle sticky sticky5';
         }
 
-        $array6 = ['status'];
+        $array6 = ['user.name'];
         if (in_array($attribute, $array6)) {
             return 'text-center align-middle sticky sticky6';
         }
 
-        $array7 = ['order_number'];
+        $array7 = ['status'];
         if (in_array($attribute, $array7)) {
             return 'text-center align-middle sticky sticky7';
         }
 
-        $array8 = ['tracking_number'];
+        $array8 = ['order_number'];
         if (in_array($attribute, $array8)) {
             return 'text-center align-middle sticky sticky8';
+        }
+
+        $array9 = ['tracking_number'];
+        if (in_array($attribute, $array9)) {
+            return 'text-center align-middle sticky sticky9';
         }
 
         return 'text-center align-middle';

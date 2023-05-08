@@ -32,31 +32,35 @@
         }
 
         .sticky2 {
-            left: 100px;
+            left: 49px;
         }
 
         .sticky3 {
-            left: 220px;
+            left: 141px;
         }
 
         .sticky4 {
-            left: 343px;
+            left: 240px;
         }
 
         .sticky5 {
-            left: 443px;
+            left: 365px;
         }
 
         .sticky6 {
-            left: 563px;
+            left: 454px;
         }
 
         .sticky7 {
-            left: 683px;
+            left: 573px;
         }
 
         .sticky8 {
-            left: 840px;
+            left: 692px;
+        }
+
+        .sticky9 {
+            left: 848px;
         }
     </style>
 @endsection
