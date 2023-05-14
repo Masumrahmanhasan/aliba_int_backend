@@ -486,4 +486,9 @@ class OrderController extends Controller
             'transaction_no' => 'required|string|max:191',
         ]);
     }
+
+    public function sales()
+    {
+        return view('backend.content.accounts.sales');
+    }
 }

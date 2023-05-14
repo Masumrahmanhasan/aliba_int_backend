@@ -56,6 +56,31 @@
           </ul>
         </li> <!-- has-treeview -->
 
+        <li class="nav-item has-treeview {{ active_class(active_class(Route::is('admin.accounts.*')), 'menu-open') }}">
+          <a href="#" class="nav-link {{ active_class(Route::is('admin.accounts.*')) }}">
+            <i class="fa fa-money nav-icon"></i>
+            <p> Accounts
+              <i class="fa fa-angle-left right"></i>
+            </p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="{{ route('admin.accounts.sales') }}"
+                 class="nav-link {{ active_class(Route::is('admin.accounts.sales')) }}">
+                <i class="nav-icon fa fa-circle-o"></i>
+                <p class="text">Sales</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ route('admin.order.wallet') }}"
+                 class="nav-link {{ active_class(Route::is('admin.order.wallet')) }}">
+                <i class="nav-icon fa fa-circle-o"></i>
+                <p class="text">Expenses</p>
+              </a>
+            </li>
+          </ul>
+        </li> <!-- has-treeview -->
+
         <li class="nav-item">
           <a href="{{ route('admin.product.index') }}"
              class="nav-link {{ active_class(Route::is('admin.product.*')) }}">

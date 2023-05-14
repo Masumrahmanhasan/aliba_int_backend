@@ -55,7 +55,6 @@ Route::namespace('Content')->group(function () {
   Route::post('editor/image-upload', 'PageController@editor_image_upload');
   Route::resource('page', 'PageController');
 
-
   Route::resource('menu', 'MenuController')->except('show');
 
   Route::get('taxonomy/trashed', 'TaxonomyController@trashed')->name('taxonomy.trashed');
@@ -66,9 +65,6 @@ Route::namespace('Content')->group(function () {
   Route::post('taxonomy/make-delete', [TaxonomyController::class, 'makeDelete']);
 
   Route::resource('taxonomy', 'TaxonomyController');
-
-
-
 
   Route::resource('contact', 'ContactController')->except('create', 'store');
 
@@ -85,6 +81,7 @@ Route::namespace('Content')->group(function () {
   Route::get('banner/restore/{faq}', 'BannerController@restore')->name('banner.restore');
   Route::resource('banner', 'BannerController');
 
+  Route::get('accounts/sales', [OrderController::class, 'sales'])->name('accounts.sales');
 
   Route::group(['prefix' => 'setting', 'as' => 'setting.'], function () {
     Route::get('price', [SettingController::class, 'price'])->name('price');
