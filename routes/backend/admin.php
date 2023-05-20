@@ -6,6 +6,7 @@ use App\Http\Controllers\Backend\Content\InvoiceController;
 use App\Http\Controllers\Backend\Content\OrderController;
 use App\Http\Controllers\Backend\Content\ProductController;
 use App\Http\Controllers\Backend\Content\ProductSettingsController;
+use App\Http\Controllers\Backend\Content\ProductCategoryShippingRateController;
 use App\Http\Controllers\Backend\Content\TaxonomyController;
 
 // All route names are prefixed with 'admin.'.
@@ -76,6 +77,8 @@ Route::namespace('Content')->group(function () {
   Route::get('announcement/trashed', 'AnnouncementController@trashed')->name('announcement.trashed');
   Route::get('announcement/restore/{faq}', 'AnnouncementController@restore')->name('announcement.restore');
   Route::resource('announcement', 'AnnouncementController');
+
+  Route::resource('product-category-shipping-rate', 'ProductCategoryShippingRateController');
 
   Route::get('banner/trashed', 'BannerController@trashed')->name('banner.trashed');
   Route::get('banner/restore/{faq}', 'BannerController@restore')->name('banner.restore');

@@ -15,3 +15,5 @@ require __DIR__ . '/content/invoice.php';
 require __DIR__ . '/content/coupon.php';
 require __DIR__ . '/content/customer.php';
 require __DIR__ . '/content/settings.php';
+
+require __DIR__ . '/content/productCategoryShippingRate.php';

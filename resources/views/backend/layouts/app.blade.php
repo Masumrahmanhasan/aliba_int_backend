@@ -126,6 +126,8 @@
             let refundTrxId = null;
             let refundStatement = null;
 
+            let product_category = $('#product_category :selected').val();
+
             let accounts_rmb_price_value = $('#accounts_rmb_price_value').val();
             let accounts_rmb_buying_rate = $('#accounts_rmb_buying_rate').val();
             let accounts_agent_percentage = $('#accounts_agent_percentage').val();
@@ -190,6 +192,7 @@
                     refundAmount: refundAmount,
                     refundTrxId: refundTrxId,
                     refundStatement: refundStatement,
+                    product_category: product_category,
 
                     accounts_rmb_price_value: accounts_rmb_price_value,
                     accounts_rmb_buying_rate: accounts_rmb_buying_rate,
@@ -222,6 +225,39 @@
                     $('#update_status').text(
                         response.orderItem.status
                     );
+
+                    $('#update_accounts_rmb_price_value').text(
+                        response.orderItem.accounts_rmb_price_value
+                    );
+
+                    $('#update_accounts_rmb_buying_rate').text(
+                        response.orderItem.accounts_rmb_buying_rate
+                    );
+
+                    $('#update_accounts_agent_percentage').text(
+                        response.orderItem.accounts_agent_percentage
+                    );
+
+                    $('#update_accounts_company_shipping_weight').text(
+                        response.orderItem.accounts_company_shipping_weight
+                    );
+
+                    $('#update_accounts_company_shipping_rate').text(
+                        response.orderItem.accounts_company_shipping_rate
+                    );
+
+                    $('#update_accounts_profit_loss').text(
+                        response.orderItem.product_value - response.orderItem
+                        .accounts_rmb_price_value * response.orderItem.accounts_rmb_buying_rate +
+                        response.orderItem.accounts_agent_percentage / 100) + (response.orderItem
+                        .shipping_charge + response.orderItem.accounts_company_shipping_weight *
+                        response.orderItem.accounts_company_shipping_rate
+                    );
+
+                    $('#update_product_category').text(
+                        response.orderItem.product_category
+                    );
+
                 }
             });
         });

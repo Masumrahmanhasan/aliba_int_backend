@@ -297,13 +297,17 @@
                             <b>Order No.</b>
                         </td>
                         <td class="text-center">
-                            <input class="col-md-12" style="border: 1px solid orange; border-radius: 2px;" type="text" name="order_number" id="order_number" value="{{ $order->order_number }}">
+                            <input class="col-md-12" style="border: 1px solid orange; border-radius: 2px;"
+                                type="text" name="order_number" id="order_number"
+                                value="{{ $order->order_number }}">
                         </td>
                         <td class="text-center">
                             <b>Tracking No.</b>
                         </td>
                         <td class="text-center">
-                            <input class="col-md-12" style="border: 1px solid orange; border-radius: 2px;" type="text" name="tracking_number" id="tracking_number" value="{{ $order->tracking_number }}">
+                            <input class="col-md-12" style="border: 1px solid orange; border-radius: 2px;"
+                                type="text" name="tracking_number" id="tracking_number"
+                                value="{{ $order->tracking_number }}">
                         </td>
                         <td></td>
                     </tr>
@@ -325,7 +329,9 @@
                         </tr>
                         <tr class="text-center">
                             <td>
-                                <input class="col-md-5" style="border: 1px solid orange; border-radius: 2px;" type="number" step=".01" name="actual_weight" id="actual_weight" value="{{ $order->actual_weight }}">
+                                <input class="col-md-5" style="border: 1px solid orange; border-radius: 2px;"
+                                    type="number" step=".01" name="actual_weight" id="actual_weight"
+                                    value="{{ $order->actual_weight }}">
                             </td>
                             <td>
                                 <input class="col-md-5" style="border: 1px solid orange; border-radius: 2px;"
@@ -336,7 +342,8 @@
                                 $shipping_charge = ($order->actual_weight ? $order->actual_weight : 0) * $order->shipping_rate;
                             @endphp
                             <td>
-                                {{ $currency }} <span id="update_shipping_rate">{{ floating($shipping_charge) }}</span>
+                                {{ $currency }} <span
+                                    id="update_shipping_rate">{{ floating($shipping_charge) }}</span>
                             </td>
                         </tr>
 
@@ -347,11 +354,14 @@
                             <td>
                                 <select class="col-md-12"
                                     style="border: 2px solid orange; border-radius: 10px; padding: 3px;"
-                                    name="order_status" id="order_status">
+                                    name="order_status" id="product_category">
                                     <option selected disabled>Select Product Category</option>
+                                    @foreach ($productCategoryShippingRates as $productCategoryShippingRate)
+                                        <option value="{{ $productCategoryShippingRate->category }}" data-rate="{{ $productCategoryShippingRate->shipping_rate }}">{{ $productCategoryShippingRate->category }}</option>
+                                    @endforeach
                                 </select>
                             </td>
-                            <td></td>
+                            <td class="text-center text-success" id="update_product_category">{{ $order->product_category }}</td>
                             <td class="text-center"><b>Adjustment (+-)</b></td>
                             <td class="text-center">
                                 <input class="col-md-5" style="border: 1px solid orange; border-radius: 2px;"
@@ -430,9 +440,38 @@
                                 step="0.01" style="border: 1px solid orange; border-radius: 2px;"> &nbsp; &nbsp;
                             <b>BDT</b>
                         </td>
-                        <td>
-                            <b>{{ floating($order->product_value / ($order->product_value - $order->accounts_rmb_price_value * $order->accounts_rmb_buying_rate + ($order->accounts_agent_percentage / 100)) + ($order->shipping_charge + ($order->accounts_company_shipping_weight * $order->accounts_company_shipping_rate))) }} %</b>
+                        <td rowspan="2" class="align-middle">
+                            @if (
+                                $order->accounts_rmb_price_value != null &&
+                                    $order->accounts_rmb_buying_rate != null &&
+                                    $order->accounts_agent_percentage != null &&
+                                    $order->accounts_rmb_price_value != 0 &&
+                                    $order->accounts_rmb_buying_rate != 0 &&
+                                    $order->accounts_agent_percentage != 0)
+                                <b><span
+                                        id="update_accounts_profit_loss">{{ floating($order->product_value - $order->accounts_rmb_price_value * $order->accounts_rmb_buying_rate + $order->accounts_agent_percentage / 100) + ($order->shipping_charge + $order->accounts_company_shipping_weight * $order->accounts_company_shipping_rate) }}</span>
+                                    BDT</b>
+                            @else
+                                <b>0 BDT</b>
+                            @endif
                         </td>
+                    </tr>
+                    <tr class="text-center">
+                        <td><b><span
+                                    id="update_accounts_rmb_price_value">{{ $order->accounts_rmb_price_value ?? 0 }}</span>
+                                RMB</b></td>
+                        <td><b><span
+                                    id="update_accounts_rmb_buying_rate">{{ $order->accounts_rmb_buying_rate ?? 0 }}</span>
+                                BDT</b></td>
+                        <td><b><span
+                                    id="update_accounts_agent_percentage">{{ $order->accounts_agent_percentage ?? 0 }}</span>
+                                %</b></td>
+                        <td><b><span
+                                    id="update_accounts_company_shipping_weight">{{ $order->accounts_company_shipping_weight ?? 0 }}</span>
+                                KG</b></td>
+                        <td><b><span
+                                    id="update_accounts_company_shipping_rate">{{ $order->accounts_company_shipping_rate ?? 0 }}</span>
+                                BDT</b></td>
                     </tr>
                 </tbody>
             </table>
@@ -474,5 +513,11 @@
 
         $('#inputs_for').empty();
         $('#inputs_for').append(inputs);
+    });
+
+    $('#product_category').change(function() {
+        let category = $('#product_category :selected');
+        let rate = category[0]['dataset']['rate'];
+        $('#shipping_rate').val(rate);
     });
 </script>

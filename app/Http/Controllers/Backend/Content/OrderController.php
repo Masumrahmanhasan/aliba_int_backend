@@ -7,6 +7,7 @@ use App\Models\Auth\User;
 use App\Models\Content\Order;
 use App\Models\Content\OrderItem;
 use App\Models\Content\OrderItemVariation;
+use App\Models\Content\ProductCategoryShippingRate;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
@@ -106,6 +107,7 @@ class OrderController extends Controller
                 'accounts_company_shipping_weight' => $request->accounts_company_shipping_weight,
                 'accounts_company_shipping_rate' => $request->accounts_company_shipping_rate,
                 'accounts_profit_loss' => $request->accounts_profit_loss,
+                'product_category' => $request->product_category,
             ];
 
             if ($request->orderNumber) {
@@ -362,6 +364,7 @@ class OrderController extends Controller
     public function walletDetails($id)
     {
         $order = OrderItem::with('user', 'order', 'product', 'itemVariations')->find($id);
+        $productCategoryShippingRates = ProductCategoryShippingRate::all();
         $render = '';
         $title = 'Wallet details';
         $status = false;
@@ -370,7 +373,7 @@ class OrderController extends Controller
             $item_no = $order->order_item_number;
             $status = true;
             $title = "Wallet details of {$customer} and Item No #{$item_no}";
-            $render = view('backend.content.order.wallet.details', compact('order'))->render();
+            $render = view('backend.content.order.wallet.details', compact('order', 'productCategoryShippingRates'))->render();
         }
 
         return \response([

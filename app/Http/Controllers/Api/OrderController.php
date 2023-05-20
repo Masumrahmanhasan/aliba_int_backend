@@ -363,7 +363,7 @@ class OrderController extends Controller
 
             $first_payment = $itemTotal * ($payment_percentage / 100);
             $due_payment = $itemTotal - $first_payment;
-            $first_payment -= ($discount - $contribution);
+            $first_payment -= ($discount + $contribution);
 
             $orderItem->update([
                 'order_item_number' => $order_item_number,
